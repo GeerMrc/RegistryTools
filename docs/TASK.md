@@ -1,8 +1,8 @@
 # RegistryTools - 任务追踪文档
 
 > **项目开始**: 2026-01-04
-> **当前状态**: Phase 0 - 项目初始化与文档创建
-> **完成进度**: 5%
+> **当前状态**: Phase 0 已完成，准备进入 Phase 1
+> **完成进度**: 10%
 
 ---
 
@@ -21,21 +21,21 @@
 | 任务ID | 任务描述 | 状态 | 完成时间 | 备注 |
 |--------|----------|------|----------|------|
 | TASK-001 | 创建项目目录结构 | ✅ DONE | 2026-01-04 | 目录结构已创建 |
-| TASK-002 | 创建 docs/ 目录及核心文档 | 🔄 IN_PROGRESS | - | 进行中 |
+| TASK-002 | 创建 docs/ 目录及核心文档 | ✅ DONE | 2026-01-04 | 6个核心文档 |
 | TASK-002-1 | 创建 docs/CONTRIBUTING.md | ✅ DONE | 2026-01-04 | 贡献指南 |
 | TASK-002-2 | 创建 docs/DEVELOPMENT_WORKFLOW.md | ✅ DONE | 2026-01-04 | 开发流程规范 |
 | TASK-002-3 | 创建 docs/TASK.md | ✅ DONE | 2026-01-04 | 任务追踪文档（本文件） |
-| TASK-002-4 | 创建 docs/ARCHITECTURE.md | ⏳ TODO | - | 架构设计文档 |
-| TASK-002-5 | 创建 docs/API.md | ⏳ TODO | - | API 文档模板 |
-| TASK-002-6 | 创建 docs/CHANGELOG.md | ⏳ TODO | - | 变更日志 |
-| TASK-003 | 创建 scripts/ 目录及工具 | ⏳ TODO | - | 脚本工具 |
-| TASK-003-1 | 创建 scripts/build/ 构建脚本 | ⏳ TODO | - | 构建脚本 |
-| TASK-003-2 | 创建 scripts/verify/ 验证脚本 | ⏳ TODO | - | 验证脚本 |
-| TASK-003-3 | 创建 scripts/release/ 发布工具 | ⏳ TODO | - | 发布工具 |
-| TASK-004 | 初始化 pyproject.toml | ⏳ TODO | - | 项目配置 |
-| TASK-005 | 创建 README.md 和 LICENSE | ⏳ TODO | - | 项目说明 |
-| TASK-006 | 初始化 Git 仓库 | ⏳ TODO | - | Git 初始化 |
-| TASK-007 | 交叉验证并提交 | ⏳ TODO | - | 验证确认 |
+| TASK-002-4 | 创建 docs/ARCHITECTURE.md | ✅ DONE | 2026-01-04 | 架构设计文档 |
+| TASK-002-5 | 创建 docs/API.md | ✅ DONE | 2026-01-04 | API 文档模板 |
+| TASK-002-6 | 创建 docs/CHANGELOG.md | ✅ DONE | 2026-01-04 | 变更日志 |
+| TASK-003 | 创建 scripts/ 目录及工具 | ✅ DONE | 2026-01-04 | 脚本工具 |
+| TASK-003-1 | 创建 scripts/build/ 构建脚本 | ✅ DONE | 2026-01-04 | 构建脚本 (2个) |
+| TASK-003-2 | 创建 scripts/verify/ 验证脚本 | ✅ DONE | 2026-01-04 | 验证脚本 (2个) |
+| TASK-003-3 | 创建 scripts/release/ 发布工具 | ✅ DONE | 2026-01-04 | 发布工具 (1个) |
+| TASK-004 | 初始化 pyproject.toml | ✅ DONE | 2026-01-04 | 项目配置 |
+| TASK-005 | 创建 README.md 和 LICENSE | ✅ DONE | 2026-01-04 | 项目说明 |
+| TASK-006 | 初始化 Git 仓库 | ✅ DONE | 2026-01-04 | Git 初始化 |
+| TASK-007 | 交叉验证并提交 | ✅ DONE | 2026-01-04 | Phase 0 完成 |
 
 ---
 
@@ -145,21 +145,21 @@
 ### 总体进度
 
 ```
-Phase 0: [████░░░░░░░░░░░░░░░] 15% 项目初始化
-Phase 1: [░░░░░░░░░░░░░░░░░░░] 0%  数据模型
-Phase 2: [░░░░░░░░░░░░░░░░░░░] 0%  搜索算法
-Phase 3: [░░░░░░░░░░░░░░░░░░░] 0%  工具注册表
-Phase 4: [░░░░░░░░░░░░░░░░░░░] 0%  存储层
-Phase 5: [░░░░░░░░░░░░░░░░░░░] 0%  MCP 工具
-Phase 6: [░░░░░░░░░░░░░░░░░░░] 0%  服务器入口
-Phase 7: [░░░░░░░░░░░░░░░░░░░] 0%  测试文档
-Phase 8: [░░░░░░░░░░░░░░░░░░░] 0%  性能优化
-Phase 9: [░░░░░░░░░░░░░░░░░░░] 0%  发布准备
+Phase 0: [████████████████████] 100% 项目初始化 ✅
+Phase 1: [░░░░░░░░░░░░░░░░░░░] 0%   数据模型
+Phase 2: [░░░░░░░░░░░░░░░░░░░] 0%   搜索算法
+Phase 3: [░░░░░░░░░░░░░░░░░░░] 0%   工具注册表
+Phase 4: [░░░░░░░░░░░░░░░░░░░] 0%   存储层
+Phase 5: [░░░░░░░░░░░░░░░░░░░] 0%   MCP 工具
+Phase 6: [░░░░░░░░░░░░░░░░░░░] 0%   服务器入口
+Phase 7: [░░░░░░░░░░░░░░░░░░░] 0%   测试文档
+Phase 8: [░░░░░░░░░░░░░░░░░░░] 0%   性能优化
+Phase 9: [░░░░░░░░░░░░░░░░░░░] 0%   发布准备
 ```
 
 ### 里程碑
 
-- [x] M1: 项目初始化完成 (2026-01-04)
+- [x] M1: 项目初始化完成 (2026-01-04) ✅
 - [ ] M2: 核心组件实现完成
 - [ ] M3: 测试与文档完成
 - [ ] M4: v0.1.0 发布
@@ -170,11 +170,23 @@ Phase 9: [░░░░░░░░░░░░░░░░░░░] 0%  发布�
 
 ### 2026-01-04
 
-**Phase 0 启动**:
-- 创建项目目录结构
-- 创建 docs/CONTRIBUTING.md（贡献指南）
-- 创建 docs/DEVELOPMENT_WORKFLOW.md（开发流程规范）
-- 创建 docs/TASK.md（任务追踪文档）
+**Phase 0 完成 ✅**:
+- ✅ 创建项目目录结构
+- ✅ 创建核心文档 (6个)
+  - CONTRIBUTING.md（贡献指南）
+  - DEVELOPMENT_WORKFLOW.md（开发流程规范）
+  - TASK.md（任务追踪文档）
+  - ARCHITECTURE.md（架构设计文档）
+  - API.md（API 文档）
+  - CHANGELOG.md（变更日志）
+- ✅ 创建脚本工具 (5个)
+  - build-wheel.py, build-mcp.py
+  - verify-before-release.py, verify-after-install.py
+  - create-release.py
+- ✅ 初始化 pyproject.toml
+- ✅ 创建 README.md 和 LICENSE
+- ✅ 初始化 Git 仓库
+- ✅ 完成初始提交 (c2a06bd)
 
 ---
 
