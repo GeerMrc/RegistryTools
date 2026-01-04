@@ -8,26 +8,18 @@ RegistryTools MCP 服务器入口
 """
 
 import argparse
-import sys
 from pathlib import Path
+
+from RegistryTools import __version__
 
 
 def main():
     """主入口"""
-    parser = argparse.ArgumentParser(
-        description="RegistryTools - MCP Tool Registry Server"
-    )
+    parser = argparse.ArgumentParser(description="RegistryTools - MCP Tool Registry Server")
     parser.add_argument(
-        "--data-path",
-        type=str,
-        default=None,
-        help="数据目录路径 (默认: ~/.RegistryTools)"
+        "--data-path", type=str, default=None, help="数据目录路径 (默认: ~/.RegistryTools)"
     )
-    parser.add_argument(
-        "--version",
-        action="version",
-        version=f"RegistryTools {__version__}"
-    )
+    parser.add_argument("--version", action="version", version=f"RegistryTools {__version__}")
 
     args = parser.parse_args()
 

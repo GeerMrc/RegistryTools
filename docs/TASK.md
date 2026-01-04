@@ -1,8 +1,8 @@
 # RegistryTools - 任务追踪文档
 
 > **项目开始**: 2026-01-04
-> **当前状态**: Phase 0 已完成，准备进入 Phase 1
-> **完成进度**: 10%
+> **当前状态**: Phase 1 已完成，准备进入 Phase 2
+> **完成进度**: 20%
 
 ---
 
@@ -43,10 +43,10 @@
 
 | 任务ID | 任务描述 | 状态 | 完成时间 | 备注 |
 |--------|----------|------|----------|------|
-| TASK-101 | 实现 ToolMetadata 数据模型 | ⏳ TODO | - | 包含所有元数据字段 |
-| TASK-102 | 实现 ToolSearchResult 数据模型 | ⏳ TODO | - | 搜索结果模型 |
-| TASK-103 | 实现 SearchMethod 枚举 | ⏳ TODO | - | 搜索方法枚举 |
-| TASK-104 | 编写数据模型单元测试 | ⏳ TODO | - | 测试覆盖 |
+| TASK-101 | 实现 ToolMetadata 数据模型 | ✅ DONE | 2026-01-04 | 包含所有元数据字段 |
+| TASK-102 | 实现 ToolSearchResult 数据模型 | ✅ DONE | 2026-01-04 | 搜索结果模型 |
+| TASK-103 | 实现 SearchMethod 枚举 | ✅ DONE | 2026-01-04 | 搜索方法枚举 |
+| TASK-104 | 编写数据模型单元测试 | ✅ DONE | 2026-01-04 | 12 个测试全部通过 |
 
 ---
 
@@ -146,7 +146,7 @@
 
 ```
 Phase 0: [████████████████████] 100% 项目初始化 ✅
-Phase 1: [░░░░░░░░░░░░░░░░░░░] 0%   数据模型
+Phase 1: [████████████████████] 100% 数据模型 ✅
 Phase 2: [░░░░░░░░░░░░░░░░░░░] 0%   搜索算法
 Phase 3: [░░░░░░░░░░░░░░░░░░░] 0%   工具注册表
 Phase 4: [░░░░░░░░░░░░░░░░░░░] 0%   存储层
@@ -169,6 +169,24 @@ Phase 9: [░░░░░░░░░░░░░░░░░░░] 0%   发布
 ## 变更日志
 
 ### 2026-01-04
+
+**Phase 1 完成 ✅**:
+- ✅ 实现 ToolMetadata 数据模型
+  - 包含所有元数据字段 (name, description, tags, category, use_frequency 等)
+  - Pydantic V2 配置 (ConfigDict)
+  - 自定义序列化器 (tags, last_used)
+- ✅ 实现 ToolSearchResult 数据模型
+  - 包含搜索结果字段 (tool_name, description, score, match_reason)
+  - 分数范围验证 (0-1)
+- ✅ 实现 SearchMethod 枚举
+  - REGEX, BM25, EMBEDDING 三种搜索方法
+- ✅ 编写数据模型单元测试
+  - 12 个测试用例全部通过
+  - 覆盖所有模型和方法
+- ✅ 代码格式化和质量检查
+  - Black 格式化
+  - Ruff 检查通过
+  - Pydantic V2 语法更新
 
 **Phase 0 完成 ✅**:
 - ✅ 创建项目目录结构

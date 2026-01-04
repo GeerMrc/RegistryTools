@@ -11,14 +11,22 @@ __version__ = "0.1.0"
 __author__ = "Maric"
 __license__ = "MIT"
 
-from RegistryTools.registry.models import ToolMetadata, ToolSearchResult
-from RegistryTools.registry.tool_registry import ToolRegistry
+# 导入数据模型
+from RegistryTools.registry.models import (
+    SearchMethod,
+    ToolMetadata,
+    ToolSearchResult,
+)
+
+# TODO: 在 Phase 3 中添加 ToolRegistry
+# from RegistryTools.registry.tool_registry import ToolRegistry
 
 __all__ = [
     "__version__",
     "__author__",
     "__license__",
+    "SearchMethod",
     "ToolMetadata",
     "ToolSearchResult",
-    "ToolRegistry",
+    # "ToolRegistry",  # Phase 3
 ]
