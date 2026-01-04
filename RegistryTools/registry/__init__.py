@@ -8,5 +8,6 @@ License: MIT
 """
 
 from RegistryTools.registry.models import SearchMethod, ToolMetadata, ToolSearchResult
+from RegistryTools.registry.registry import ToolRegistry
 
-__all__ = ["SearchMethod", "ToolMetadata", "ToolSearchResult"]
+__all__ = ["SearchMethod", "ToolMetadata", "ToolSearchResult", "ToolRegistry"]
