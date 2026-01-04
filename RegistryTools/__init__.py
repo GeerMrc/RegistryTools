@@ -18,6 +18,9 @@ from RegistryTools.registry.models import (
     ToolSearchResult,
 )
 
+# 导入搜索算法
+from RegistryTools.search import SearchAlgorithm
+
 # TODO: 在 Phase 3 中添加 ToolRegistry
 # from RegistryTools.registry.tool_registry import ToolRegistry
 
@@ -28,5 +31,6 @@ __all__ = [
     "SearchMethod",
     "ToolMetadata",
     "ToolSearchResult",
+    "SearchAlgorithm",
     # "ToolRegistry",  # Phase 3
 ]
