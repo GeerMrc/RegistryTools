@@ -11,9 +11,14 @@ import json
 import sqlite3
 from datetime import datetime
 from pathlib import Path
+from typing import TYPE_CHECKING
 
+from RegistryTools.defaults import HOT_TOOL_THRESHOLD, WARM_TOOL_THRESHOLD
 from RegistryTools.registry.models import ToolMetadata
 from RegistryTools.storage.base import ToolStorage
+
+if TYPE_CHECKING:
+    from RegistryTools.registry.models import ToolTemperature
 
 
 class SQLiteStorage(ToolStorage):
@@ -52,6 +57,7 @@ class SQLiteStorage(ToolStorage):
         category TEXT,
         use_frequency INTEGER DEFAULT 0,
         last_used TEXT,
+        temperature TEXT DEFAULT 'cold',
         input_schema TEXT,
         output_schema TEXT
     )
@@ -126,7 +132,7 @@ class SQLiteStorage(ToolStorage):
                 cursor.execute(
                     f"""
                     INSERT OR REPLACE INTO {self._TABLE_NAME}
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """,
                     self._tool_to_row(tool),
                 )
@@ -164,7 +170,7 @@ class SQLiteStorage(ToolStorage):
                         cursor.execute(
                             f"""
                             INSERT OR REPLACE INTO {self._TABLE_NAME}
-                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                             """,
                             self._tool_to_row(tool),
                         )
@@ -225,6 +231,62 @@ class SQLiteStorage(ToolStorage):
 
         except sqlite3.Error:
             return False
+
+    def load_by_temperature(
+        self,
+        temperature: "ToolTemperature",
+        limit: int | None = None,
+    ) -> list[ToolMetadata]:
+        """
+        按温度级别加载工具 (TASK-802)
+
+        SQLite 优化版本：使用 WHERE 子句直接过滤。
+
+        Args:
+            temperature: 温度级别 (HOT/WARM/COLD)
+            limit: 加载数量限制
+
+        Returns:
+            工具元数据列表
+        """
+        self._ensure_initialized()
+
+        try:
+            with self._get_connection() as conn:
+                cursor = conn.cursor()
+
+                # 根据温度构建 WHERE 子句
+                if temperature.value == "hot":
+                    where_clause = f"use_frequency >= {HOT_TOOL_THRESHOLD}"
+                elif temperature.value == "warm":
+                    where_clause = (
+                        f"use_frequency >= {WARM_TOOL_THRESHOLD} "
+                        f"AND use_frequency < {HOT_TOOL_THRESHOLD}"
+                    )
+                else:  # cold
+                    where_clause = f"use_frequency < {WARM_TOOL_THRESHOLD}"
+
+                # 构建 SQL 查询
+                sql = f"SELECT * FROM {self._TABLE_NAME} WHERE {where_clause}"
+                if limit:
+                    sql += f" LIMIT {limit}"
+
+                cursor.execute(sql)
+                rows = cursor.fetchall()
+
+            # 转换为 ToolMetadata 列表
+            tools = []
+            for row in rows:
+                try:
+                    tool = self._row_to_tool(row)
+                    tools.append(tool)
+                except Exception:
+                    continue
+
+            return tools
+
+        except sqlite3.Error as e:
+            raise OSError(f"按温度加载工具失败: {e}") from e
 
     # ============================================================
     # 优化的工具方法
@@ -378,6 +440,7 @@ class SQLiteStorage(ToolStorage):
             tool.category,
             tool.use_frequency,
             self._serialize_datetime(tool.last_used),
+            tool.temperature.value,
             json.dumps(tool.input_schema) if tool.input_schema else None,
             json.dumps(tool.output_schema) if tool.output_schema else None,
         )
@@ -392,17 +455,60 @@ class SQLiteStorage(ToolStorage):
         Returns:
             工具元数据
         """
+        from RegistryTools.registry.models import ToolTemperature
+
+        # 处理旧数据：可能没有 temperature 字段
+        if len(row) == 10:
+            # 旧格式（无 temperature 字段）
+            (
+                name,
+                description,
+                mcp_server,
+                defer_loading,
+                tags,
+                category,
+                use_frequency,
+                last_used,
+                input_schema,
+                output_schema,
+            ) = row
+            temperature = ToolTemperature.COLD
+        else:
+            # 新格式（有 temperature 字段）
+            (
+                name,
+                description,
+                mcp_server,
+                defer_loading,
+                tags,
+                category,
+                use_frequency,
+                last_used,
+                temperature,
+                input_schema,
+                output_schema,
+            ) = row
+            # 将字符串转换为 ToolTemperature 枚举
+            if isinstance(temperature, str):
+                try:
+                    temperature = ToolTemperature(temperature)
+                except ValueError:
+                    temperature = ToolTemperature.COLD
+            else:
+                temperature = ToolTemperature.COLD
+
         return ToolMetadata(
-            name=row[0],
-            description=row[1],
-            mcp_server=row[2],
-            defer_loading=bool(row[3]),
-            tags=set(json.loads(row[4]) if row[4] else []),
-            category=row[5],
-            use_frequency=row[6],
-            last_used=self._deserialize_datetime(row[7]),
-            input_schema=json.loads(row[8]) if row[8] else None,
-            output_schema=json.loads(row[9]) if row[9] else None,
+            name=name,
+            description=description,
+            mcp_server=mcp_server,
+            defer_loading=bool(defer_loading),
+            tags=set(json.loads(tags) if tags else []),
+            category=category,
+            use_frequency=use_frequency,
+            last_used=self._deserialize_datetime(last_used),
+            temperature=temperature,
+            input_schema=json.loads(input_schema) if input_schema else None,
+            output_schema=json.loads(output_schema) if output_schema else None,
         )
 
     @staticmethod

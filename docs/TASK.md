@@ -144,8 +144,43 @@
 | 任务ID | 任务描述 | 状态 | 完成时间 | 备注 |
 |--------|----------|------|----------|------|
 | TASK-801 | 实现索引缓存机制 | ✅ DONE | 2026-01-05 | 哈希值检测 + 线程锁 |
-| TASK-802 | 实现冷热工具分离 | ⏳ TODO | - | 基于使用频率 |
+| TASK-802 | 实现冷热工具分离 | ✅ DONE | 2026-01-05 | 三层分类 + 升降级机制 |
 | TASK-803 | 性能基准测试 | ✅ DONE | 2026-01-05 | 11个测试全部通过 |
+
+### Phase 8 实施详情
+
+#### TASK-801-FIX: 修复 RegexSearch 缓存机制
+- **问题**: RegexSearch 使用对象比较而非哈希值检测
+- **修复**: 统一使用基类的 `_should_rebuild_index()` 方法
+- **测试**: 添加 6 个 RegexSearch 缓存测试
+
+#### TASK-802: 冷热工具分离 (TASK-802)
+**新增组件**:
+- `ToolTemperature` 枚举：HOT/WARM/COLD 三层分类
+- `defaults.py` 配置：阈值常量（HOT=10, WARM=3）
+- 三层存储字典：`_hot_tools`, `_warm_tools`, `_cold_tools`
+- 温度锁：`_temp_lock` (threading.RLock)
+
+**核心方法**:
+- `_classify_tool_temperature()`: 根据使用频率分类
+- `_add_to_temperature_layer()`: 添加到对应温度层
+- `_check_downgrade_tool()`: 检查是否需要降级
+- `_downgrade_tool()`: 降级工具温度
+- `load_hot_tools()`: 预加载热工具
+
+**修改的方法**:
+- `register()`: 自动分类工具温度
+- `update_usage()`: 自动升级 + 检查降级
+- `unregister()`: 从温度层移除
+
+**存储层支持**:
+- `ToolStorage.load_by_temperature()`: 抽象接口
+- `JSONStorage`: 过滤模式实现
+- `SQLiteStorage`: SQL WHERE 子句优化
+
+**测试验证**:
+- 172 个测试全部通过
+- 测试覆盖率保持在 80%+
 
 ---
 

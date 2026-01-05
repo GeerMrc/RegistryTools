@@ -9,6 +9,27 @@
 
 ## [Unreleased]
 
+### 新增
+- **冷热工具分离机制** (TASK-802)
+  - 新增 `ToolTemperature` 枚举（HOT/WARM/COLD）
+  - 新增 `defaults.py` 配置文件，包含分类阈值常量
+  - 新增三层存储字典和温度锁
+  - 新增工具温度自动分类和升降级机制
+  - 新增存储层 `load_by_temperature()` 接口
+
+### 变更
+- **RegexSearch 缓存修复** (TASK-801-FIX)
+  - 统一使用基类的哈希值检测方法
+  - 添加 6 个 RegexSearch 缓存测试
+
+### 改进
+- `ToolRegistry.register()`: 自动分类工具温度
+- `ToolRegistry.update_usage()`: 自动升级温度 + 检查降级
+- `ToolRegistry.unregister()`: 从温度层移除
+- `ToolMetadata`: 新增 `temperature` 字段
+- `JSONStorage`: 实现按温度加载工具（过滤模式）
+- `SQLiteStorage`: 实现按温度加载工具（SQL 优化）
+
 ### 计划中
 - 语义搜索支持 (Embedding)
 - Web UI 管理界面

@@ -1,7 +1,7 @@
 """
 默认工具集配置
 
-提供预定义的工具元数据，用于首次启动时的初始化。
+提供预定义的工具元数据和冷热分离配置。
 
 Copyright (c) 2026 Maric
 License: MIT
@@ -10,6 +10,31 @@ License: MIT
 from pathlib import Path
 
 from RegistryTools.registry.models import ToolMetadata
+
+# ============================================================
+# 冷热工具分类配置 (TASK-802)
+# ============================================================
+
+# 冷热工具分类阈值
+HOT_TOOL_THRESHOLD = 10
+"""热工具: 使用频率 ≥ 10"""
+
+WARM_TOOL_THRESHOLD = 3
+"""温工具: 使用频率 ≥ 3"""
+
+# 降级机制配置
+HOT_TOOL_INACTIVE_DAYS = 30
+"""热工具 30 天未使用降级为温工具"""
+
+WARM_TOOL_INACTIVE_DAYS = 60
+"""温工具 60 天未使用降级为冷工具"""
+
+# 预加载配置
+MAX_HOT_TOOLS_PRELOAD = 100
+"""最多预加载的热工具数量"""
+
+ENABLE_DOWNGRADE = True
+"""是否启用工具降级机制"""
 
 # ============================================================
 # 默认工具集 (TASK-603)

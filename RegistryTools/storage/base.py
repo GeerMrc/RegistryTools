@@ -9,8 +9,12 @@ License: MIT
 
 from abc import ABC, abstractmethod
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from RegistryTools.registry.models import ToolMetadata
+
+if TYPE_CHECKING:
+    from RegistryTools.registry.models import ToolTemperature
 
 
 class ToolStorage(ABC):
@@ -109,6 +113,37 @@ class ToolStorage(ABC):
 
         Returns:
             True 如果工具存在，否则 False
+        """
+        pass
+
+    # ============================================================
+    # 冷热分层加载接口 (TASK-802)
+    # ============================================================
+
+    @abstractmethod
+    def load_by_temperature(
+        self,
+        temperature: "ToolTemperature",
+        limit: int | None = None,
+    ) -> list[ToolMetadata]:
+        """
+        按温度级别加载工具 (TASK-802)
+
+        根据工具的使用频率（温度级别）加载工具。
+        热工具：高频使用，预加载到内存
+        温工具：中频使用，按需加载
+        冷工具：低频使用，延迟加载
+
+        Args:
+            temperature: 温度级别 (HOT/WARM/COLD)
+            limit: 加载数量限制，None 表示加载所有
+
+        Returns:
+            工具元数据列表
+
+        Raises:
+            FileNotFoundError: 如果存储文件不存在
+            IOError: 如果读取失败
         """
         pass
 

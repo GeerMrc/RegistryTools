@@ -283,6 +283,106 @@ class TestThreadSafety:
         assert not errors, f"并发搜索不应该产生错误: {errors}"
 
 
+class TestRegexSearchCache:
+    """RegexSearch 缓存功能测试（TASK-801-FIX）"""
+
+    def test_regex_search_uses_hash_detection(self, sample_tools: list[ToolMetadata]) -> None:
+        """测试 RegexSearch 使用哈希值检测而非对象比较"""
+        searcher = RegexSearch()
+
+        # 首次搜索会建立索引
+        results1 = searcher.search("github", sample_tools, 5)
+
+        # 验证索引已建立
+        assert searcher.is_indexed(), "RegexSearch 应该建立索引"
+
+        # 验证哈希值已计算
+        assert searcher._tools_hash is not None, "应该计算工具哈希值"
+
+        # 第二次搜索应该使用缓存的索引
+        results2 = searcher.search("github", sample_tools, 5)
+
+        # 结果应该相同
+        assert len(results1) == len(results2), "缓存命中结果应该一致"
+
+    def test_regex_search_cache_hit_after_modification(
+        self, sample_tools: list[ToolMetadata]
+    ) -> None:
+        """测试工具修改后 RegexSearch 重新建立索引"""
+        searcher = RegexSearch()
+
+        # 首次索引
+        searcher.index(sample_tools)
+        original_hash = searcher._tools_hash
+
+        # 修改工具列表
+        modified_tools = [
+            ToolMetadata(
+                name=t.name,
+                description=t.description + " (modified)",
+                tags=t.tags,
+                category=t.category,
+            )
+            for t in sample_tools
+        ]
+
+        # 应该检测到变化
+        assert searcher._should_rebuild_index(modified_tools), "修改后应该检测到变化"
+
+        # 重新索引
+        searcher.index(modified_tools)
+        new_hash = searcher._tools_hash
+
+        # 哈希值应该改变
+        assert original_hash != new_hash, "哈希值应该改变"
+
+    def test_regex_search_hash_consistency(self, sample_tools: list[ToolMetadata]) -> None:
+        """测试 RegexSearch 哈希值计算的一致性"""
+        searcher = RegexSearch()
+
+        hash1 = searcher._compute_tools_hash(sample_tools)
+        hash2 = searcher._compute_tools_hash(sample_tools)
+
+        # 相同工具列表应该产生相同哈希值
+        assert hash1 == hash2, "相同工具列表应该产生相同哈希值"
+
+    def test_regex_search_hash_uniqueness(self, sample_tools: list[ToolMetadata]) -> None:
+        """测试 RegexSearch 哈希值对工具变化的敏感性"""
+        searcher = RegexSearch()
+
+        hash1 = searcher._compute_tools_hash(sample_tools)
+
+        # 添加新工具
+        modified_tools = sample_tools + [
+            ToolMetadata(
+                name="new_tool",
+                description="A new tool",
+                tags={"new"},
+            )
+        ]
+        hash2 = searcher._compute_tools_hash(modified_tools)
+
+        # 不同工具列表应该产生不同哈希值
+        assert hash1 != hash2, "不同工具列表应该产生不同哈希值"
+
+    def test_regex_search_should_rebuild_initial(self, sample_tools: list[ToolMetadata]) -> None:
+        """测试 RegexSearch 初始状态需要重建索引"""
+        searcher = RegexSearch()
+
+        # 初始状态下应该需要重建索引
+        assert searcher._should_rebuild_index(sample_tools), "初始状态应该需要重建索引"
+
+    def test_regex_search_should_rebuild_after_indexing(
+        self, sample_tools: list[ToolMetadata]
+    ) -> None:
+        """测试 RegexSearch 索引后不需要重建"""
+        searcher = RegexSearch()
+        searcher.index(sample_tools)
+
+        # 索引后相同工具列表不需要重建
+        assert not searcher._should_rebuild_index(sample_tools), "索引后相同工具列表不需要重建"
+
+
 class TestCachePerformance:
     """缓存性能测试"""
 

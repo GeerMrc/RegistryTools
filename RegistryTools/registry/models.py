@@ -9,8 +9,13 @@ License: MIT
 
 from datetime import datetime
 from enum import Enum
+from typing import TYPE_CHECKING
 
 from pydantic import BaseModel, ConfigDict, Field, field_serializer
+
+# 避免循环导入：阈值常量仅在类型检查时使用
+if TYPE_CHECKING:
+    pass
 
 
 class SearchMethod(str, Enum):
@@ -24,6 +29,19 @@ class SearchMethod(str, Enum):
 
     EMBEDDING = "embedding"
     """语义向量搜索"""
+
+
+class ToolTemperature(str, Enum):
+    """工具温度级别枚举 (TASK-802)"""
+
+    HOT = "hot"
+    """热工具: 高频使用，预加载到内存"""
+
+    WARM = "warm"
+    """温工具: 中频使用，按需加载"""
+
+    COLD = "cold"
+    """冷工具: 低频使用，延迟加载"""
 
 
 class ToolMetadata(BaseModel):
@@ -68,6 +86,9 @@ class ToolMetadata(BaseModel):
 
     last_used: datetime | None = None
     """最后使用时间（可选）"""
+
+    temperature: ToolTemperature = ToolTemperature.COLD
+    """工具温度级别，默认为冷工具 (TASK-802)"""
 
     input_schema: dict | None = None
     """输入参数的 JSON Schema（可选）"""

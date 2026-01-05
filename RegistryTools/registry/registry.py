@@ -7,15 +7,26 @@ Copyright (c) 2026 Maric
 License: MIT
 """
 
+import threading
 from collections import defaultdict
 from datetime import datetime
 from typing import TYPE_CHECKING
 
+from RegistryTools.defaults import (
+    ENABLE_DOWNGRADE,
+    HOT_TOOL_INACTIVE_DAYS,
+    HOT_TOOL_THRESHOLD,
+    WARM_TOOL_INACTIVE_DAYS,
+    WARM_TOOL_THRESHOLD,
+)
 from RegistryTools.registry.models import SearchMethod, ToolMetadata, ToolSearchResult
 from RegistryTools.search.base import SearchAlgorithm
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
+
+    from RegistryTools.registry.models import ToolTemperature
+    from RegistryTools.storage.base import ToolStorage
 
 
 class ToolRegistry:
@@ -26,14 +37,26 @@ class ToolRegistry:
 
     Attributes:
         _tools: 按名称索引的工具字典
+        _hot_tools: 热工具字典
+        _warm_tools: 温工具字典
+        _cold_tools: 冷工具字典
         _searchers: 搜索算法实例字典
         _category_index: 按类别索引的工具名称集合
+        _temp_lock: 温度层锁（线程安全）
     """
 
     def __init__(self) -> None:
         """初始化工具注册表"""
-        # 工具存储：name -> ToolMetadata
+        # 主工具存储：name -> ToolMetadata
         self._tools: dict[str, ToolMetadata] = {}
+
+        # 冷热分层存储 (TASK-802)
+        self._hot_tools: dict[str, ToolMetadata] = {}
+        self._warm_tools: dict[str, ToolMetadata] = {}
+        self._cold_tools: dict[str, ToolMetadata] = {}
+
+        # 温度锁：保护分层存储的并发访问
+        self._temp_lock = threading.RLock()
 
         # 搜索算法实例：SearchMethod -> SearchAlgorithm
         self._searchers: dict[SearchMethod, SearchAlgorithm] = {}
@@ -72,6 +95,145 @@ class ToolRegistry:
         return self._searchers.get(method)
 
     # ============================================================
+    # 冷热工具分类方法 (TASK-802)
+    # ============================================================
+
+    def _classify_tool_temperature(self, tool: ToolMetadata) -> "ToolTemperature":
+        """
+        根据使用频率分类工具温度 (TASK-802)
+
+        Args:
+            tool: 工具元数据
+
+        Returns:
+            工具温度级别
+        """
+        from RegistryTools.registry.models import ToolTemperature
+
+        if tool.use_frequency >= HOT_TOOL_THRESHOLD:
+            return ToolTemperature.HOT
+        elif tool.use_frequency >= WARM_TOOL_THRESHOLD:
+            return ToolTemperature.WARM
+        else:
+            return ToolTemperature.COLD
+
+    def _add_to_temperature_layer(self, tool: ToolMetadata, temp: "ToolTemperature") -> None:
+        """
+        将工具添加到对应的温度层 (TASK-802)
+
+        Args:
+            tool: 工具元数据
+            temp: 温度级别
+        """
+        tool_name = tool.name
+
+        # 从所有层移除（确保工具只在一个层）
+        self._hot_tools.pop(tool_name, None)
+        self._warm_tools.pop(tool_name, None)
+        self._cold_tools.pop(tool_name, None)
+
+        # 添加到对应层
+        if temp.value == "hot":
+            self._hot_tools[tool_name] = tool
+        elif temp.value == "warm":
+            self._warm_tools[tool_name] = tool
+        else:
+            self._cold_tools[tool_name] = tool
+
+    def _check_downgrade_tool(self, tool: ToolMetadata) -> bool:
+        """
+        检查工具是否需要降级 (TASK-802)
+
+        Args:
+            tool: 工具元数据
+
+        Returns:
+            True 如果需要降级，否则 False
+        """
+        from RegistryTools.registry.models import ToolTemperature
+
+        # 如果未启用降级机制，直接返回 False
+        if not ENABLE_DOWNGRADE:
+            return False
+
+        # 如果工具没有使用记录，不需要降级
+        if tool.last_used is None:
+            return False
+
+        # 计算未使用天数
+        days_since_last_use = (datetime.now() - tool.last_used).days
+
+        # 热工具降级检查
+        if tool.temperature == ToolTemperature.HOT:
+            return days_since_last_use >= HOT_TOOL_INACTIVE_DAYS
+
+        # 温工具降级检查
+        if tool.temperature == ToolTemperature.WARM:
+            return days_since_last_use >= WARM_TOOL_INACTIVE_DAYS
+
+        # 冷工具不需要降级
+        return False
+
+    def _downgrade_tool(self, tool_name: str) -> bool:
+        """
+        降级工具温度 (TASK-802)
+
+        Args:
+            tool_name: 工具名称
+
+        Returns:
+            True 如果降级成功，False 如果工具不存在或已经是冷工具
+        """
+        from RegistryTools.registry.models import ToolTemperature
+
+        tool = self._tools.get(tool_name)
+        if not tool:
+            return False
+
+        # 已经是冷工具，无需降级
+        if tool.temperature == ToolTemperature.COLD:
+            return False
+
+        # 降级：热 -> 温 -> 冷
+        if tool.temperature == ToolTemperature.HOT:
+            new_temp = ToolTemperature.WARM
+        else:  # WARM
+            new_temp = ToolTemperature.COLD
+
+        # 更新工具温度
+        tool.temperature = new_temp
+
+        # 移动到新温度层
+        self._add_to_temperature_layer(tool, new_temp)
+
+        return True
+
+    def load_hot_tools(self, storage: "ToolStorage", limit: int | None = None) -> int:
+        """
+        从存储预加载热工具 (TASK-802)
+
+        Args:
+            storage: 存储实例
+            limit: 最大加载数量，None 表示加载所有热工具
+
+        Returns:
+            实际加载的热工具数量
+        """
+        from RegistryTools.registry.models import ToolTemperature
+
+        # 从存储加载热工具
+        hot_tools_from_storage = storage.load_by_temperature(ToolTemperature.HOT, limit)
+
+        # 注册到内存
+        for tool in hot_tools_from_storage:
+            if tool.name not in self._tools:
+                # 确保温度正确
+                tool.temperature = ToolTemperature.HOT
+                self.register(tool)
+
+        return len(hot_tools_from_storage)
+
+    # ============================================================
     # 工具注册功能 (TASK-302)
     # ============================================================
 
@@ -80,6 +242,7 @@ class ToolRegistry:
         注册工具到注册表
 
         如果工具名称已存在，将更新其元数据。
+        自动分类工具温度并添加到对应层 (TASK-802)。
 
         Args:
             tool: 工具元数据
@@ -95,11 +258,15 @@ class ToolRegistry:
         """
         tool_name = tool.name
 
-        # 如果工具已存在，先从类别索引中移除
+        # 如果工具已存在，先从类别索引和温度层中移除
         if tool_name in self._tools:
             old_tool = self._tools[tool_name]
             if old_tool.category in self._category_index:
                 self._category_index[old_tool.category].discard(tool_name)
+            # 从温度层移除
+            self._hot_tools.pop(tool_name, None)
+            self._warm_tools.pop(tool_name, None)
+            self._cold_tools.pop(tool_name, None)
 
         # 添加工具
         self._tools[tool_name] = tool
@@ -109,6 +276,12 @@ class ToolRegistry:
             self._category_index[tool.category].add(tool_name)
         else:
             self._category_index[None].add(tool_name)
+
+        # 自动分类工具温度并添加到对应层 (TASK-802)
+        with self._temp_lock:
+            temperature = self._classify_tool_temperature(tool)
+            tool.temperature = temperature
+            self._add_to_temperature_layer(tool, temperature)
 
         # 标记搜索索引需要重建（延迟重建）
         self._invalidate_search_indexes()
@@ -149,6 +322,12 @@ class ToolRegistry:
         # 从类别索引中移除
         if tool.category in self._category_index:
             self._category_index[tool.category].discard(tool_name)
+
+        # 从温度层中移除 (TASK-802)
+        with self._temp_lock:
+            self._hot_tools.pop(tool_name, None)
+            self._warm_tools.pop(tool_name, None)
+            self._cold_tools.pop(tool_name, None)
 
         # 从注册表中移除
         del self._tools[tool_name]
@@ -255,7 +434,9 @@ class ToolRegistry:
 
     def update_usage(self, tool_name: str) -> bool:
         """
-        更新工具使用频率和最后使用时间
+        更新工具使用频率和最后使用时间 (TASK-304 + TASK-802)
+
+        自动升级工具温度，并检查是否需要降级其他工具。
 
         Args:
             tool_name: 工具名称
@@ -272,10 +453,45 @@ class ToolRegistry:
             return False
 
         tool = self._tools[tool_name]
+        old_temperature = tool.temperature
+
+        # 更新使用统计
         tool.use_frequency += 1
         tool.last_used = datetime.now()
 
+        # 重新分类工具温度 (TASK-802)
+        with self._temp_lock:
+            new_temperature = self._classify_tool_temperature(tool)
+            if new_temperature != old_temperature:
+                tool.temperature = new_temperature
+                self._add_to_temperature_layer(tool, new_temperature)
+
+        # 检查是否需要降级其他工具 (TASK-802)
+        if ENABLE_DOWNGRADE and new_temperature.value in ("hot", "warm"):
+            self._check_and_downgrade_other_tools()
+
         return True
+
+    def _check_and_downgrade_other_tools(self) -> None:
+        """
+        检查并降级其他长时间未使用的工具 (TASK-802)
+
+        这是一个后台维护操作，用于在工具升级时触发降级检查。
+        """
+        with self._temp_lock:
+            # 检查热工具是否需要降级
+            hot_tools_to_downgrade = [
+                name for name, tool in self._hot_tools.items() if self._check_downgrade_tool(tool)
+            ]
+            for tool_name in hot_tools_to_downgrade:
+                self._downgrade_tool(tool_name)
+
+            # 检查温工具是否需要降级
+            warm_tools_to_downgrade = [
+                name for name, tool in self._warm_tools.items() if self._check_downgrade_tool(tool)
+            ]
+            for tool_name in warm_tools_to_downgrade:
+                self._downgrade_tool(tool_name)
 
     def get_usage_stats(self) -> "Mapping[str, int]":
         """

@@ -10,9 +10,14 @@ License: MIT
 import json
 from pathlib import Path
 from tempfile import NamedTemporaryFile
+from typing import TYPE_CHECKING
 
+from RegistryTools.defaults import HOT_TOOL_THRESHOLD, WARM_TOOL_THRESHOLD
 from RegistryTools.registry.models import ToolMetadata
 from RegistryTools.storage.base import ToolStorage
+
+if TYPE_CHECKING:
+    from RegistryTools.registry.models import ToolTemperature
 
 
 class JSONStorage(ToolStorage):
@@ -186,6 +191,39 @@ class JSONStorage(ToolStorage):
             return tool_name in data
         except (OSError, json.JSONDecodeError):
             return False
+
+    def load_by_temperature(
+        self,
+        temperature: "ToolTemperature",
+        limit: int | None = None,
+    ) -> list[ToolMetadata]:
+        """
+        按温度级别加载工具 (TASK-802)
+
+        JSON 实现版本：加载全部工具后过滤。
+
+        Args:
+            temperature: 温度级别 (HOT/WARM/COLD)
+            limit: 加载数量限制
+
+        Returns:
+            工具元数据列表
+        """
+        # 加载所有工具
+        all_tools = self.load_all()
+
+        # 根据温度过滤
+        if temperature.value == "hot":
+            filtered = [t for t in all_tools if t.use_frequency >= HOT_TOOL_THRESHOLD]
+        elif temperature.value == "warm":
+            filtered = [
+                t for t in all_tools if WARM_TOOL_THRESHOLD <= t.use_frequency < HOT_TOOL_THRESHOLD
+            ]
+        else:  # cold
+            filtered = [t for t in all_tools if t.use_frequency < WARM_TOOL_THRESHOLD]
+
+        # 应用限制
+        return filtered[:limit] if limit else filtered
 
     # ============================================================
     # 优化的工具方法

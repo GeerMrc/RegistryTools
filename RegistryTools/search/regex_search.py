@@ -63,8 +63,8 @@ class RegexSearch(SearchAlgorithm):
         Returns:
             搜索结果列表，按匹配精度降序排列
         """
-        # 重建索引（如果需要）
-        if tools != self._tools:
+        # 重建索引（如果需要）- 使用基类的哈希值检测
+        if self._should_rebuild_index(tools):
             self.index(tools)
 
         # 编译正则表达式
