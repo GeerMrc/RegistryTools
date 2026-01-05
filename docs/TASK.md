@@ -105,6 +105,7 @@
 | TASK-506 | 代码格式化和质量检查 | ✅ DONE | 2026-01-05 | Black + Ruff |
 | TASK-507 | 运行测试套件验证 | ✅ DONE | 2026-01-05 | 127/127 测试通过 |
 | TASK-508 | 更新 TASK.md 并提交 | ✅ DONE | 2026-01-05 | Phase 5 完成 |
+| TASK-509 | 修复 create_server_with_sqlite() 不完整实现 | ✅ DONE | 2026-01-05 | 技术债务修复 |
 
 ---
 

@@ -314,7 +314,224 @@ def create_server_with_sqlite(data_path: Path) -> FastMCP:
     # 重建搜索索引
     registry.rebuild_indexes()
 
-    # 注册工具（与 JSON 版本相同的实现）
-    # ... (重复工具注册代码)
+    # ========================================================
+    # MCP 工具: search_tools (与 JSON 版本相同的实现)
+    # ========================================================
+
+    @mcp.tool()
+    def search_tools(
+        query: str,
+        search_method: str = "bm25",
+        limit: int = 5,
+    ) -> str:
+        """
+        搜索可用的 MCP 工具
+
+        根据查询字符串在已注册的工具中搜索匹配项。
+
+        Args:
+            query: 搜索查询字符串
+            search_method: 搜索方法 (regex/bm25)，默认 bm25
+            limit: 返回结果数量，默认 5
+
+        Returns:
+            匹配的工具列表，JSON 格式字符串
+
+        Raises:
+            ValueError: 如果搜索方法无效
+        """
+        try:
+            method = SearchMethod(search_method)
+        except ValueError as err:
+            raise ValueError(f"无效的搜索方法: {search_method}。支持的方法: regex, bm25") from err
+
+        # 执行搜索
+        results = registry.search(query, method=method, limit=limit)
+
+        # 转换为字典列表
+        output = []
+        for result in results:
+            output.append(
+                {
+                    "tool_name": result.tool_name,
+                    "description": result.description,
+                    "score": result.score,
+                    "match_reason": result.match_reason,
+                }
+            )
+
+        return json.dumps(output, ensure_ascii=False, indent=2)
+
+    # ========================================================
+    # MCP 工具: get_tool_definition
+    # ========================================================
+
+    @mcp.tool()
+    def get_tool_definition(tool_name: str) -> str:
+        """
+        获取指定工具的完整定义
+
+        返回工具的完整元数据，包括输入输出 Schema。
+
+        Args:
+            tool_name: 工具名称
+
+        Returns:
+            工具的完整定义，JSON 格式字符串
+
+        Raises:
+            ValueError: 如果工具不存在
+        """
+        tool = registry.get_tool(tool_name)
+        if tool is None:
+            raise ValueError(f"工具不存在: {tool_name}")
+
+        # 转换为字典
+        definition = tool.model_dump(mode="json", exclude_none=True)
+
+        return json.dumps(definition, ensure_ascii=False, indent=2)
+
+    # ========================================================
+    # MCP 工具: list_tools_by_category
+    # ========================================================
+
+    @mcp.tool()
+    def list_tools_by_category(category: str, limit: int = 20) -> str:
+        """
+        按类别列出工具
+
+        列出指定类别下的所有工具。
+
+        Args:
+            category: 工具类别，使用 "all" 列出所有类别
+            limit: 返回结果数量，默认 20
+
+        Returns:
+            该类别下的工具列表，JSON 格式字符串
+        """
+        if category.lower() == "all":
+            # 列出所有类别
+            categories = registry.list_categories()
+            result = {"categories": categories}
+        else:
+            # 按类别列出工具
+            tools = registry.list_tools(category=category)[:limit]
+            result = {
+                "category": category,
+                "count": len(tools),
+                "tools": [
+                    {
+                        "name": tool.name,
+                        "description": tool.description,
+                        "tags": list(tool.tags),
+                    }
+                    for tool in tools
+                ],
+            }
+
+        return json.dumps(result, ensure_ascii=False, indent=2)
+
+    # ========================================================
+    # MCP 工具: register_tool
+    # ========================================================
+
+    @mcp.tool()
+    def register_tool(
+        name: str,
+        description: str,
+        category: str | None = None,
+        tags: list[str] | None = None,
+    ) -> str:
+        """
+        动态注册新工具
+
+        向工具注册表中添加一个新的工具元数据。
+
+        Args:
+            name: 工具名称（唯一标识符）
+            description: 工具描述
+            category: 工具类别（可选）
+            tags: 工具标签列表（可选）
+
+        Returns:
+            注册结果，JSON 格式字符串
+
+        Raises:
+            ValueError: 如果工具名称已存在
+        """
+        # 检查工具是否已存在
+        if registry.get_tool(name) is not None:
+            raise ValueError(f"工具已存在: {name}")
+
+        # 创建工具元数据
+        tool = ToolMetadata(
+            name=name,
+            description=description,
+            category=category,
+            tags=set(tags) if tags else set(),
+        )
+
+        # 注册到注册表
+        registry.register(tool)
+
+        # 保存到存储
+        storage.save(tool)
+
+        result = {
+            "success": True,
+            "message": f"工具已注册: {name}",
+            "tool": {
+                "name": tool.name,
+                "description": tool.description,
+                "category": tool.category,
+                "tags": list(tool.tags),
+            },
+        }
+
+        return json.dumps(result, ensure_ascii=False, indent=2)
+
+    # ========================================================
+    # 资源: 工具统计信息
+    # ========================================================
+
+    @mcp.resource("registry://stats")
+    def get_stats() -> str:
+        """
+        获取工具注册表统计信息
+
+        Returns:
+            统计信息，JSON 格式字符串
+        """
+        stats = {
+            "total_tools": registry.tool_count,
+            "total_categories": registry.category_count,
+            "categories": registry.list_categories(),
+            "most_used": [
+                {"name": t.name, "description": t.description, "use_count": t.use_frequency}
+                for t in registry.get_most_used(5)
+            ],
+        }
+
+        return json.dumps(stats, ensure_ascii=False, indent=2)
+
+    # ========================================================
+    # 资源: 类别列表
+    # ========================================================
+
+    @mcp.resource("registry://categories")
+    def get_categories() -> str:
+        """
+        获取所有工具类别
+
+        Returns:
+            类别列表，JSON 格式字符串
+        """
+        categories = registry.list_categories()
+        result = {
+            "count": len(categories),
+            "categories": categories,
+        }
+
+        return json.dumps(result, ensure_ascii=False, indent=2)
 
     return mcp
