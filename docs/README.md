@@ -17,7 +17,7 @@
 | [USER_GUIDE.md](USER_GUIDE.md) | 用户使用指南（工具接口、搜索算法） |
 | [ARCHITECTURE.md](ARCHITECTURE.md) | 系统架构设计文档 |
 | [API.md](API.md) | API 接口文档 |
-| [CLAUDE_CONFIG.md](CLAUDE_CONFIG.md) | Claude Desktop/Cline/Cursor 配置指南 |
+| [IDE_CONFIG.md](IDE_CONFIG.md) | IDE 完整配置指南（Claude Desktop/Code/Cursor/Continue.dev/Cline） |
 
 ---
 
@@ -34,7 +34,7 @@
 
 | 文档 | 描述 |
 |------|------|
-| [TASK.md](TASK.md) | 项目任务追踪文档（Phase 0-12） |
+| [TASK.md](TASK.md) | 项目任务追踪文档（Phase 0-13） |
 | [CHANGELOG.md](CHANGELOG.md) | 版本变更日志 |
 
 ### 发布部署
@@ -55,7 +55,8 @@
 
 ### 安装与配置
 - **INSTALLATION.md**: 多种安装方式（uvx/pip/uv）和环境配置
-- **CLAUDE_CONFIG.md**: Claude Desktop/Cline/Cursor MCP 客户端配置
+- **IDE_CONFIG.md**: IDE 完整配置指南（Claude Desktop/Code/Cursor/Continue.dev/Cline）
+- **CLAUDE_CONFIG.md**: Claude Desktop 基础配置（已整合到 IDE_CONFIG.md）
 
 ### 用户指南
 - **USER_GUIDE.md**: 工具搜索接口、搜索算法、使用场景
@@ -81,7 +82,7 @@
 |------|----------|
 | 了解项目 | [README.md](../README.md) |
 | 快速开始 | [README.md](../README.md) / [INSTALLATION.md](INSTALLATION.md) |
-| 安装配置 | [INSTALLATION.md](INSTALLATION.md) / [CLAUDE_CONFIG.md](CLAUDE_CONFIG.md) |
+| 安装配置 | [INSTALLATION.md](INSTALLATION.md) / [IDE_CONFIG.md](IDE_CONFIG.md) |
 | 使用工具 | [USER_GUIDE.md](USER_GUIDE.md) |
 | 了解架构 | [ARCHITECTURE.md](ARCHITECTURE.md) |
 | 查看API | [API.md](API.md) |
@@ -101,6 +102,7 @@
 | INSTALLATION.md | v1.0 | ✅ 新增 | 2026-01-05 |
 | USER_GUIDE.md | v1.0 | ✅ 新增 | 2026-01-05 |
 | CLAUDE_CONFIG.md | v1.0 | ✅ 新增 | 2026-01-05 |
+| IDE_CONFIG.md | v1.0 | ✅ 新增 | 2026-01-05 |
 | ARCHITECTURE.md | v1.0 | ✅ 最新 | 2026-01-04 |
 | API.md | v0.1.0 | ✅ 最新 | 2026-01-05 |
 | DEVELOPMENT_WORKFLOW.md | v1.0 | ✅ 最新 | 2026-01-04 |

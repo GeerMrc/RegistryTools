@@ -1,8 +1,8 @@
 # RegistryTools - 任务追踪文档
 
 > **项目开始**: 2026-01-04
-> **当前状态**: Phase 12 已完成 - 文档体系完善
-> **完成进度**: 97%
+> **当前状态**: Phase 13 已完成 - IDE 配置文档补充
+> **完成进度**: 98%
 
 ---
 
@@ -723,6 +723,7 @@ Phase 10.1:[████████████████████] 100% �
 Phase 11:   [████████████████████] 100% 项目结构标准化重构 ✅
 Phase 11.1:[████████████████████] 100% 结构化变更文档审核 ✅
 Phase 12:   [████████████████████] 100% 文档体系完善 ✅
+Phase 13:   [████████████████████] 100% IDE 配置文档补充 ✅
 ```
 
 ### 里程碑
@@ -733,6 +734,7 @@ Phase 12:   [████████████████████] 100% 
 - [x] M4: Streamable HTTP 传输支持完成 (2026-01-05) ✅
 - [x] M4.5: 项目结构标准化重构完成 (2026-01-05) ✅
 - [x] M4.6: 文档体系完善完成 (2026-01-05) ✅
+- [x] M4.7: IDE 配置文档补充完成 (2026-01-05) ✅
 - [ ] M5: v0.1.0 发布
 
 ---
@@ -943,6 +945,141 @@ Phase 12:   [████████████████████] 100% 
 - ✅ 创建 README.md 和 LICENSE
 - ✅ 初始化 Git 仓库
 - ✅ 完成初始提交 (c2a06bd)
+
+---
+
+## Phase 13: IDE 配置文档补充 (Day 22)
+
+> **开始日期**: 2026-01-05
+> **目标**: 补充 IDE 相关配置信息内容，创建完整的 IDE 配置指南
+> **触发**: 用户发现文档缺少 Claude Code CLI 等主流 IDE 配置信息
+
+### 任务清单
+
+| 任务ID | 任务描述 | 状态 | 完成时间 | 备注 |
+|--------|----------|------|----------|------|
+| TASK-1301 | 创建 docs/IDE_CONFIG.md IDE 配置指南 | ✅ DONE | 2026-01-05 | 完整 IDE 配置 |
+| TASK-1302 | 添加 Claude Desktop 配置章节 | ✅ DONE | 2026-01-05 | STDIO/HTTP 配置 |
+| TASK-1303 | 添加 Claude Code CLI 命令配置章节 | ✅ DONE | 2026-01-05 | 推荐 CLI 方式 |
+| TASK-1304 | 添加 Cursor 配置章节 | ✅ DONE | 2026-01-05 | fastmcp.json 方式 |
+| TASK-1305 | 添加 Continue.dev 和 Cline 配置章节 | ✅ DONE | 2026-01-05 | VSCode 扩展配置 |
+| TASK-1306 | 添加通用配置模式和故障排除章节 | ✅ DONE | 2026-01-05 | 高级配置 |
+| TASK-1307 | 更新 docs/README.md 文档索引 | ✅ DONE | 2026-01-05 | 添加 IDE_CONFIG.md |
+| TASK-1308 | 交叉验证文档完整性和准确性 | ✅ DONE | 2026-01-05 | 质量检查通过 |
+| TASK-1309 | 更新 TASK.md 并 git commit | 📝 IN_PROGRESS | 2026-01-05 | 阶段完成 |
+
+### 新增文档
+
+| 文档 | 用途 | 版本 | 内容概要 |
+|------|------|------|----------|
+| **IDE_CONFIG.md** | IDE 完整配置指南 | v1.0 | Claude Desktop/Code/Cursor/Continue.dev/Cline 配置 |
+
+### 文档内容
+
+**docs/IDE_CONFIG.md** 包含：
+
+1. **概述章节**
+   - 支持的 IDE 列表（Claude Desktop、Claude Code、Cursor、Continue.dev、Cline）
+   - 核心价值说明（Token 消耗、准确率提升）
+
+2. **Claude Desktop 配置**
+   - 基础 STDIO 配置（uvx 推荐）
+   - STDIO + 环境变量配置
+   - Streamable HTTP 模式配置
+   - 多实例配置
+
+3. **Claude Code (VSCode) 配置**
+   - **方式 1：CLI 命令（推荐）** - 一行命令完成配置
+   - **方式 2：配置文件** - `.claude/config.json`
+   - 配置范围说明（local/project/user）
+
+4. **Cursor 配置**
+   - 方法 1：通过 Cursor 设置界面
+   - 方法 2：通过 fastmcp.json
+   - 方法 3：手动编辑配置文件
+
+5. **Continue.dev 配置**
+   - 基础配置
+   - 使用环境变量
+
+6. **Cline 配置**
+   - 项目级和用户级配置
+   - 使用 uv 运行
+
+7. **通用配置模式**
+   - 环境变量配置
+   - 混合配置（CLI + 环境变量）
+   - 多服务器配置
+
+8. **配置验证**
+   - JSON 格式验证
+   - Python 可用性检查
+   - 日志查看方法
+
+9. **故障排除**
+   - 常见问题和解决方案
+   - 日志位置说明
+
+10. **高级配置**
+    - 自定义 Python 解释器
+    - 虚拟环境配置
+    - conda 环境配置
+    - Docker 容器部署
+
+11. **开发模式配置**
+    - 源码开发模式配置
+
+12. **.claude/ 目录结构最佳实践**
+
+### 文档更新
+
+**docs/README.md**:
+- 快速开始：添加 IDE_CONFIG.md
+- 文档分类：添加到"安装与配置"
+- 快速导航：更新安装配置链接
+- 文档状态：添加 IDE_CONFIG.md 记录
+
+### 验证结果
+
+- ✅ IDE_CONFIG.md 创建完成（14,833 字节）
+- ✅ docs/README.md 正确索引新文档
+- ✅ 路径引用检查通过（示例路径正确）
+- ✅ 包名引用一致（Registry-Tools / registrytools）
+- ✅ 文档格式规范（Markdown 正确）
+
+### 关键特性
+
+**Claude Code CLI 配置方式**（Phase 13 新增重点）：
+```bash
+# STDIO 本地服务器
+claude mcp add --transport stdio RegistryTools -- uvx Registry-Tools
+
+# Streamable HTTP 远程服务器
+claude mcp add --transport http RegistryTools-Remote http://localhost:8000/mcp
+
+# 管理命令
+claude mcp list
+claude mcp get RegistryTools
+claude mcp remove RegistryTools
+```
+
+**配置范围**：
+- `--scope local`（默认）：项目特定用户设置
+- `--scope project`：`.mcp.json`（可版本控制）
+- `--scope user`：用户级全局配置
+
+### 文档结构对比
+
+| 特性 | CLAUDE_CONFIG.md | IDE_CONFIG.md |
+|------|------------------|---------------|
+| Claude Desktop | ✅ | ✅ |
+| Claude Code CLI | ❌ | ✅ **新增** |
+| Cursor | ✅ | ✅ |
+| Continue.dev | ❌ | ✅ **新增** |
+| Cline | ✅ | ✅ |
+| 配置范围 | ❌ | ✅ **新增** |
+| 高级配置 | 部分 | ✅ **增强** |
+| 故障排除 | 基础 | ✅ **增强** |
 
 ---
 
