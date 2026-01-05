@@ -7,12 +7,106 @@ Copyright (c) 2026 Maric
 License: MIT
 """
 
+import logging
 from pathlib import Path
 from unittest.mock import Mock, patch
 
 import pytest
 
 from registrytools.__main__ import main
+
+
+class TestLogging:
+    """测试日志功能 (Phase 14.2)"""
+
+    def test_default_log_level_is_info(self, tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+        """测试默认日志级别是 INFO"""
+        with (
+            patch("registrytools.server.create_server") as mock_create_server,
+            patch("sys.argv", ["registry-tools", "--data-path", str(tmp_path)]),
+        ):
+            mock_app = Mock()
+            mock_app.run = Mock()
+            mock_create_server.return_value = mock_app
+
+            main()
+
+            # 验证日志输出包含配置信息
+            captured = capsys.readouterr()
+            assert "数据路径:" in captured.err
+            assert "传输协议:" in captured.err
+
+    def test_debug_log_level_from_env(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+        """测试从环境变量设置 DEBUG 日志级别"""
+        with (
+            patch("registrytools.server.create_server") as mock_create_server,
+            patch("sys.argv", ["registry-tools", "--data-path", str(tmp_path)]),
+        ):
+            monkeypatch.setenv("REGISTRYTOOLS_LOG_LEVEL", "DEBUG")
+
+            mock_app = Mock()
+            mock_app.run = Mock()
+            mock_create_server.return_value = mock_app
+
+            main()
+
+            # 验证日志级别被设置为 DEBUG
+            import logging
+            assert logging.getLogger().level == logging.DEBUG
+
+    def test_warning_log_level_from_env(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+        """测试从环境变量设置 WARNING 日志级别"""
+        with (
+            patch("registrytools.server.create_server") as mock_create_server,
+            patch("sys.argv", ["registry-tools", "--data-path", str(tmp_path)]),
+        ):
+            monkeypatch.setenv("REGISTRYTOOLS_LOG_LEVEL", "WARNING")
+
+            mock_app = Mock()
+            mock_app.run = Mock()
+            mock_create_server.return_value = mock_app
+
+            main()
+
+            # 验证日志级别被设置为 WARNING
+            import logging
+            assert logging.getLogger().level == logging.WARNING
+
+    def test_error_log_level_from_env(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+        """测试从环境变量设置 ERROR 日志级别"""
+        with (
+            patch("registrytools.server.create_server") as mock_create_server,
+            patch("sys.argv", ["registry-tools", "--data-path", str(tmp_path)]),
+        ):
+            monkeypatch.setenv("REGISTRYTOOLS_LOG_LEVEL", "ERROR")
+
+            mock_app = Mock()
+            mock_app.run = Mock()
+            mock_create_server.return_value = mock_app
+
+            main()
+
+            # 验证日志级别被设置为 ERROR
+            import logging
+            assert logging.getLogger().level == logging.ERROR
+
+    def test_debug_log_shows_version(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]) -> None:
+        """测试 DEBUG 级别显示版本信息"""
+        with (
+            patch("registrytools.server.create_server") as mock_create_server,
+            patch("sys.argv", ["registry-tools", "--data-path", str(tmp_path)]),
+        ):
+            monkeypatch.setenv("REGISTRYTOOLS_LOG_LEVEL", "DEBUG")
+
+            mock_app = Mock()
+            mock_app.run = Mock()
+            mock_create_server.return_value = mock_app
+
+            main()
+
+            # 验证 DEBUG 级别显示版本信息
+            captured = capsys.readouterr()
+            assert "RegistryTools 版本:" in captured.err
 
 
 class TestMain:
@@ -183,3 +277,150 @@ class TestMainHttpTransport:
         assert "传输协议" in captured.out or "transport" in captured.out
         assert "stdio" in captured.out
         assert "http" in captured.out
+
+
+class TestMainEnvironmentVariables:
+    """测试环境变量支持 (Phase 14.1)"""
+
+    def test_env_data_path_override(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+        """测试 REGISTRYTOOLS_DATA_PATH 环境变量"""
+        custom_path = tmp_path / "env_data"
+
+        with (
+            patch("registrytools.server.create_server") as mock_create_server,
+            patch("sys.argv", ["registry-tools"]),
+        ):
+            monkeypatch.setenv("REGISTRYTOOLS_DATA_PATH", str(custom_path))
+
+            mock_app = Mock()
+            mock_app.run = Mock()
+            mock_create_server.return_value = mock_app
+
+            main()
+
+            # 验证使用了环境变量指定的路径
+            mock_create_server.assert_called_once_with(custom_path)
+            # 验证数据目录被创建
+            assert custom_path.exists()
+
+    def test_env_data_path_overrides_cli_arg(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """测试环境变量优先级高于命令行参数"""
+        env_path = tmp_path / "from_env"
+        cli_path = tmp_path / "from_cli"
+
+        with (
+            patch("registrytools.server.create_server") as mock_create_server,
+            patch("sys.argv", ["registry-tools", "--data-path", str(cli_path)]),
+        ):
+            monkeypatch.setenv("REGISTRYTOOLS_DATA_PATH", str(env_path))
+
+            mock_app = Mock()
+            mock_app.run = Mock()
+            mock_create_server.return_value = mock_app
+
+            main()
+
+            # 验证环境变量优先
+            mock_create_server.assert_called_once_with(env_path)
+
+    def test_env_transport_stdio(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+        """测试 REGISTRYTOOLS_TRANSPORT=stdio"""
+        with (
+            patch("registrytools.server.create_server") as mock_create_server,
+            patch("sys.argv", ["registry-tools", "--data-path", str(tmp_path)]),
+        ):
+            monkeypatch.setenv("REGISTRYTOOLS_TRANSPORT", "stdio")
+
+            mock_app = Mock()
+            mock_app.run = Mock()
+            mock_create_server.return_value = mock_app
+
+            main()
+
+            # 验证使用 STDIO 传输
+            mock_app.run.assert_called_once_with()
+
+    def test_env_transport_http(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+        """测试 REGISTRYTOOLS_TRANSPORT=http"""
+        with (
+            patch("registrytools.server.create_server") as mock_create_server,
+            patch("sys.argv", ["registry-tools", "--data-path", str(tmp_path)]),
+        ):
+            monkeypatch.setenv("REGISTRYTOOLS_TRANSPORT", "http")
+
+            mock_app = Mock()
+            mock_app.run = Mock()
+            mock_create_server.return_value = mock_app
+
+            main()
+
+            # 验证使用 HTTP 传输
+            mock_app.run.assert_called_once_with(
+                transport="http", host="127.0.0.1", port=8000, path="/"
+            )
+
+    def test_env_transport_overrides_cli_arg(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """测试传输环境变量优先级高于命令行参数"""
+        with (
+            patch("registrytools.server.create_server") as mock_create_server,
+            patch("sys.argv", ["registry-tools", "--transport", "stdio", "--data-path", str(tmp_path)]),
+        ):
+            monkeypatch.setenv("REGISTRYTOOLS_TRANSPORT", "http")
+
+            mock_app = Mock()
+            mock_app.run = Mock()
+            mock_create_server.return_value = mock_app
+
+            main()
+
+            # 验证环境变量优先
+            mock_app.run.assert_called_once_with(
+                transport="http", host="127.0.0.1", port=8000, path="/"
+            )
+
+    def test_env_invalid_transport_raises_error(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """测试无效的传输环境变量"""
+        with (
+            patch("registrytools.server.create_server"),
+            patch("sys.argv", ["registry-tools", "--data-path", str(tmp_path)]),
+        ):
+            monkeypatch.setenv("REGISTRYTOOLS_TRANSPORT", "invalid")
+
+            with pytest.raises(ValueError, match="无效的传输协议"):
+                main()
+
+    def test_env_log_level_valid(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+        """测试有效的日志级别环境变量"""
+        for level in ("DEBUG", "INFO", "WARNING", "ERROR"):
+            with (
+                patch("registrytools.server.create_server"),
+                patch("sys.argv", ["registry-tools", "--data-path", str(tmp_path)]),
+            ):
+                monkeypatch.setenv("REGISTRYTOOLS_LOG_LEVEL", level)
+
+                mock_app = Mock()
+                mock_app.run = Mock()
+                mock_create_server = Mock(return_value=mock_app)
+
+                # 不应该抛出异常
+                main()
+
+    def test_env_log_level_invalid(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """测试无效的日志级别环境变量"""
+        with (
+            patch("registrytools.server.create_server"),
+            patch("sys.argv", ["registry-tools", "--data-path", str(tmp_path)]),
+        ):
+            monkeypatch.setenv("REGISTRYTOOLS_LOG_LEVEL", "INVALID")
+
+            with pytest.raises(ValueError, match="无效的日志级别"):
+                main()
+

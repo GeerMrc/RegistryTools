@@ -83,6 +83,8 @@ RegistryTools 是一个独立的 MCP Tool Registry Server，提供通用的工�
 
 **带认证的 HTTP 配置**：
 
+> **注意**: RegistryTools 服务器端不直接实现认证功能。如需认证，建议使用反向代理（如 Nginx、Caddy）在服务器前进行认证处理。以下 `headers` 配置会被客户端发送到服务器，可由反向代理验证。
+
 ```json
 {
   "mcpServers": {
@@ -159,11 +161,13 @@ claude mcp add --transport stdio RegistryTools -- registry-tools
 # 无认证
 claude mcp add --transport http RegistryTools-Remote http://localhost:8000/mcp
 
-# API Key 认证
+# API Key 认证（通过反向代理验证）
 claude mcp add --transport http RegistryTools-Remote \
   http://localhost:8000/mcp \
   --header "X-API-Key: your-key"
 ```
+
+> **注意**: RegistryTools 服务器端不直接实现认证功能。`--header` 参数设置的 headers 会被客户端发送到服务器，建议使用反向代理（如 Nginx、Caddy）进行认证验证。
 
 **管理命令**：
 ```bash
@@ -440,7 +444,7 @@ Cline 是另一个流行的 VSCode AI 助手。
 }
 ```
 
-**配置优先级**：CLI 参数 > 环境变量 > 代码默认值
+**配置优先级**：环境变量 > CLI 参数 > 代码默认值
 
 ---
 
