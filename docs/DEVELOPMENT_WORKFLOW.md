@@ -88,8 +88,8 @@ ls -la docs/
 
 # 5. 确认代码质量（如有代码变更）
 # pytest tests/
-# ruff check RegistryTools/
-# black --check RegistryTools/
+# ruff check src/registrytools/
+# black --check src/registrytools/
 ```
 
 ---

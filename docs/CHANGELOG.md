@@ -10,6 +10,19 @@
 ## [Unreleased]
 
 ### 新增
+- **Phase 11 项目结构标准化重构** (TASK-1101 至 TASK-1114)
+  - 迁移到标准 Python `src/` 布局
+  - 包名从 `RegistryTools` 改为小写 `registrytools` (PEP 8)
+  - 源代码从 `RegistryTools/` 移动到 `src/registrytools/`
+
+### 变更
+- **项目结构** (Phase 11)
+  - 采用标准 `src/` 布局，符合 Python 社区最佳实践
+  - 更新所有导入语句: `from RegistryTools` → `from registrytools`
+  - 更新 pyproject.toml 配置以支持 src/ 布局
+  - 更新 fastmcp.json 配置文件路径
+  - 更新所有文档中的路径引用
+
 - **Phase 8.5 质量修复** (TASK-851 至 TASK-860)
   - 新增 `tests/test_mcp_integration.py` FastMCP 集成测试（27个测试）
   - 新增 `docs/README.md` 文档索引

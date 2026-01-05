@@ -136,17 +136,17 @@ pytest
 pytest tests/test_registry.py
 
 # 查看覆盖率
-pytest --cov=RegistryTests --cov-report=html
+pytest --cov=registrytools --cov-report=html
 ```
 
 ### 代码格式化
 
 ```bash
 # 格式化代码
-black RegistryTools/ tests/
+black src/registrytools/ tests/
 
 # 代码检查
-ruff check RegistryTools/ tests/
+ruff check src/registrytools/ tests/
 ```
 
 ---

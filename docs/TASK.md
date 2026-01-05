@@ -538,26 +538,91 @@ RegistryTools/
 
 ---
 
+## Phase 11.1: 结构化变更文档全面审核 (Day 20.1)
+
+> **开始日期**: 2026-01-05
+> **目标**: 全面审核所有文档，确保无遗留的 "RegistryTools" 结构引用
+> **触发**: Phase 11 重构后的技术债务清理
+
+### 任务清单
+
+| 任务ID | 任务描述 | 状态 | 完成时间 | 备注 |
+|--------|----------|------|----------|------|
+| TASK-1115 | 全面搜索文档中遗留的结构引用 | ✅ DONE | 2026-01-05 | grep 搜索 |
+| TASK-1116 | 更新 README.md | ✅ DONE | 2026-01-05 | fastmcp.json 路径 |
+| TASK-1117 | 更新 docs/ARCHITECTURE.md | ✅ DONE | 2026-01-05 | 配置示例 |
+| TASK-1118 | 更新 docs/CONTRIBUTING.md | ✅ DONE | 2026-01-05 | 代码检查命令 |
+| TASK-1119 | 更新 docs/DEVELOPMENT_WORKFLOW.md | ✅ DONE | 2026-01-05 | 交叉验证命令 |
+| TASK-1120 | 更新 docs/CHANGELOG.md | ✅ DONE | 2026-01-05 | 添加 Phase 11 记录 |
+| TASK-1121 | 更新 scripts/verify/verify-before-release.py | ✅ DONE | 2026-01-05 | 代码质量检查路径 |
+| TASK-1122 | 交叉验证确认无遗漏 | ✅ DONE | 2026-01-05 | 全部通过 |
+| TASK-1123 | 更新 TASK.md 并 git commit | ✅ DONE | 2026-01-05 | Phase 11.1 完成 |
+
+### 审核发现的更新项
+
+**README.md**:
+- `fastmcp.json` 示例: `"path": "RegistryTools/__main__.py"` → `"path": "src/registrytools/__main__.py"`
+- 代码格式命令: `black RegistryTools/` → `black src/registrytools/`
+- 代码检查命令: `ruff check RegistryTools/` → `ruff check src/registrytools/`
+
+**docs/ARCHITECTURE.md**:
+- STDIO 配置示例: `"path": "RegistryTools/__main__.py"` → `"path": "src/registrytools/__main__.py"`
+- HTTP 配置示例: `"path": "RegistryTools/__main__.py"` → `"path": "src/registrytools/__main__.py"`
+
+**docs/CONTRIBUTING.md**:
+- 覆盖率命令: `--cov=RegistryTests` → `--cov=registrytools`
+- 格式命令: `black RegistryTools/` → `black src/registrytools/`
+- 检查命令: `ruff check RegistryTools/` → `ruff check src/registrytools/`
+
+**docs/DEVELOPMENT_WORKFLOW.md**:
+- 代码质量检查注释: `# ruff check RegistryTools/` → `# ruff check src/registrytools/`
+- 代码质量检查注释: `# black --check RegistryTools/` → `# black --check src/registrytools/`
+
+**docs/CHANGELOG.md**:
+- 添加 Phase 11 变更记录到 `[Unreleased]` 部分
+
+**scripts/verify/verify-before-release.py**:
+- Black 检查路径: `"RegistryTools/"` → `"src/registrytools/"`
+- Ruff 检查路径: `"RegistryTools/"` → `"src/registrytools/"`
+
+### 验证结果
+
+- ✅ 249/249 测试通过
+- ✅ Ruff 检查通过
+- ✅ Black 格式检查通过
+- ✅ 无遗留的 "RegistryTools/" 结构引用（除历史文档外）
+- ✅ 文档与实际目录结构一致
+
+### 保留的历史引用
+
+以下文档保留 "RegistryTools/" 作为历史记录，无需更新：
+- `docs/REFACTORING_ANALYSIS.md` - 重构分析文档（记录旧结构）
+- `docs/TASK.md` - 历史任务记录（Phase 11 之前）
+- `docs/CHANGELOG.md` - 历史变更记录
+
+---
+
 ## 进度跟踪
 
 ### 总体进度
 
 ```
-Phase 0:   [████████████████████] 100% 项目初始化 ✅
-Phase 1:   [████████████████████] 100% 数据模型 ✅
-Phase 2:   [████████████████████] 100% 搜索算法 ✅
-Phase 3:   [████████████████████] 100% 工具注册表 ✅
-Phase 4:   [████████████████████] 100% 存储层 ✅
-Phase 5:   [████████████████████] 100% MCP 工具 ✅
-Phase 6:   [████████████████████] 100% 服务器入口 ✅
-Phase 7:   [████████████████████] 100% 测试文档 ✅
-Phase 8:   [████████████████████] 100% 性能优化 ✅
-Phase 8.5: [████████████████████] 100% 质量修复 ✅
-Phase 8.6: [████████████████████] 100% 非阻塞修复 ✅
-Phase 9:   [░░░░░░░░░░░░░░░░░░░] 0%   发布准备
-Phase 10:  [████████████████████] 100% Streamable HTTP 传输支持 ✅
+Phase 0:    [████████████████████] 100% 项目初始化 ✅
+Phase 1:    [████████████████████] 100% 数据模型 ✅
+Phase 2:    [████████████████████] 100% 搜索算法 ✅
+Phase 3:    [████████████████████] 100% 工具注册表 ✅
+Phase 4:    [████████████████████] 100% 存储层 ✅
+Phase 5:    [████████████████████] 100% MCP 工具 ✅
+Phase 6:    [████████████████████] 100% 服务器入口 ✅
+Phase 7:    [████████████████████] 100% 测试文档 ✅
+Phase 8:    [████████████████████] 100% 性能优化 ✅
+Phase 8.5:  [████████████████████] 100% 质量修复 ✅
+Phase 8.6:  [████████████████████] 100% 非阻塞修复 ✅
+Phase 9:    [░░░░░░░░░░░░░░░░░░░] 0%   发布准备
+Phase 10:   [████████████████████] 100% Streamable HTTP 传输支持 ✅
 Phase 10.1:[████████████████████] 100% 传输协议文档审核 ✅
-Phase 11:  [████████████████████] 100% 项目结构标准化重构 ✅
+Phase 11:   [████████████████████] 100% 项目结构标准化重构 ✅
+Phase 11.1:[████████████████████] 100% 结构化变更文档审核 ✅
 ```
 
 ### 里程碑

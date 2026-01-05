@@ -134,7 +134,7 @@ def verify_code_quality():
     # 检查 Black
     try:
         result = subprocess.run(
-            ["black", "--check", "RegistryTools/"],
+            ["black", "--check", "src/registrytools/"],
             capture_output=True,
             timeout=30
         )
@@ -148,7 +148,7 @@ def verify_code_quality():
     # 检查 Ruff
     try:
         result = subprocess.run(
-            ["ruff", "check", "RegistryTools/"],
+            ["ruff", "check", "src/registrytools/"],
             capture_output=True,
             timeout=30
         )

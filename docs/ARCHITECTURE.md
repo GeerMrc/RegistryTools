@@ -177,7 +177,7 @@ registry-tools --transport http --port 8000 --path /api/mcp
 {
   "$schema": "https://gofastmcp.com/public/schemas/fastmcp.json/v1.json",
   "source": {
-    "path": "RegistryTools/__main__.py",
+    "path": "src/registrytools/__main__.py",
     "entrypoint": "main"
   },
   "deployment": {
@@ -191,7 +191,7 @@ registry-tools --transport http --port 8000 --path /api/mcp
 {
   "$schema": "https://gofastmcp.com/public/schemas/fastmcp.json/v1.json",
   "source": {
-    "path": "RegistryTools/__main__.py",
+    "path": "src/registrytools/__main__.py",
     "entrypoint": "main"
   },
   "deployment": {

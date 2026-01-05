@@ -111,7 +111,7 @@ fastmcp run
 {
   "$schema": "https://gofastmcp.com/public/schemas/fastmcp.json/v1.json",
   "source": {
-    "path": "RegistryTools/__main__.py",
+    "path": "src/registrytools/__main__.py",
     "entrypoint": "main"
   },
   "deployment": {
@@ -227,10 +227,10 @@ pytest --cov=RegistryTools --cov-report=html
 
 ```bash
 # 格式化代码
-black RegistryTools/ tests/
+black src/registrytools/ tests/
 
 # 代码检查
-ruff check RegistryTools/ tests/
+ruff check src/registrytools/ tests/
 ```
 
 ### 贡献指南
