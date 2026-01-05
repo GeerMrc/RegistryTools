@@ -88,24 +88,31 @@ class BM25Search(SearchAlgorithm):
         Returns:
             搜索结果列表，按 BM25 分数降序排列
         """
-        # 重建索引（如果需要）
-        if tools != self._tools or self._bm25 is None:
-            self.index(tools)
+        # 使用哈希值检测是否需要重建索引（缓存优化）
+        if self._should_rebuild_index(tools):
+            with self._lock:
+                # 双重检查：可能另一个线程已经重建了索引
+                if self._should_rebuild_index(tools):
+                    self.index(tools)
 
-        if self._bm25 is None:
-            return []
+        # 获取索引状态的快照
+        with self._lock:
+            if self._bm25 is None or not self._indexed:
+                return []
+            bm25 = self._bm25
+            indexed_tools = self._tools
 
-        # 对查询进行分词
+        # 对查询进行分词（不需要锁）
         query_tokens = list(jieba.cut(query))
 
-        # 获取 BM25 分数
-        scores = self._bm25.get_scores(query_tokens)
+        # 获取 BM25 分数（不需要锁，因为我们有索引的快照）
+        scores = bm25.get_scores(query_tokens)
 
         # 构建结果
         results = []
         for i, score in enumerate(scores):
-            if score > 0:
-                results.append((self._tools[i], score))
+            if score > 0 and i < len(indexed_tools):
+                results.append((indexed_tools[i], score))
 
         # 转换并过滤结果
         return self._filter_by_score(results, limit)

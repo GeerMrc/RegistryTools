@@ -7,6 +7,9 @@ Copyright (c) 2026 Maric
 License: MIT
 """
 
+import hashlib
+import json
+import threading
 from abc import ABC, abstractmethod
 
 from RegistryTools.registry.models import SearchMethod, ToolMetadata, ToolSearchResult
@@ -21,6 +24,8 @@ class SearchAlgorithm(ABC):
     Attributes:
         method: 搜索方法类型
         indexed: 是否已建立索引
+        _tools_hash: 工具列表哈希值，用于缓存检测
+        _lock: 线程锁，保护索引操作
     """
 
     method: SearchMethod
@@ -30,6 +35,8 @@ class SearchAlgorithm(ABC):
         """初始化搜索算法"""
         self._indexed = False
         self._tools: list[ToolMetadata] = []
+        self._tools_hash: str | None = None
+        self._lock = threading.RLock()
 
     @abstractmethod
     def index(self, tools: list[ToolMetadata]) -> None:
@@ -40,6 +47,7 @@ class SearchAlgorithm(ABC):
             tools: 工具元数据列表
         """
         self._tools = tools
+        self._tools_hash = self._compute_tools_hash(tools)
         self._indexed = True
 
     @abstractmethod
@@ -65,6 +73,49 @@ class SearchAlgorithm(ABC):
             True 如果已建立索引，否则 False
         """
         return self._indexed
+
+    def _compute_tools_hash(self, tools: list[ToolMetadata]) -> str:
+        """
+        计算工具列表的哈希值
+
+        用于检测工具列表是否发生变化，避免不必要的索引重建。
+
+        Args:
+            tools: 工具元数据列表
+
+        Returns:
+            SHA256 哈希值（十六进制字符串）
+        """
+        # 序列化工具列表为稳定格式
+        tools_data = sorted(
+            [
+                {
+                    "name": t.name,
+                    "description": t.description,
+                    "tags": sorted(t.tags),
+                    "category": t.category or "",
+                }
+                for t in tools
+            ],
+            key=lambda x: x["name"],
+        )
+
+        # 计算哈希值
+        data_str = json.dumps(tools_data, sort_keys=True, ensure_ascii=False)
+        return hashlib.sha256(data_str.encode()).hexdigest()
+
+    def _should_rebuild_index(self, tools: list[ToolMetadata]) -> bool:
+        """
+        检查是否需要重建索引
+
+        Args:
+            tools: 工具元数据列表
+
+        Returns:
+            True 如果需要重建索引，否则 False
+        """
+        current_hash = self._compute_tools_hash(tools)
+        return current_hash != self._tools_hash
 
     def _filter_by_score(
         self, results: list[tuple[ToolMetadata, float]], limit: int

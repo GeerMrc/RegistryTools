@@ -7,9 +7,7 @@ Copyright (c) 2026 Maric
 License: MIT
 """
 
-import json
 from pathlib import Path
-from unittest.mock import Mock
 
 import pytest
 
@@ -99,7 +97,9 @@ def test_server_creation_and_initialization(temp_data_path: Path) -> None:
 # ============================================================
 
 
-def test_tool_registration_and_persistence(temp_data_path: Path, sample_tools: list[ToolMetadata]) -> None:
+def test_tool_registration_and_persistence(
+    temp_data_path: Path, sample_tools: list[ToolMetadata]
+) -> None:
     """测试工具注册与持久化流程"""
     storage_path = temp_data_path / "tools.json"
     storage = JSONStorage(storage_path)
@@ -203,7 +203,9 @@ def test_usage_frequency_tracking(temp_data_path: Path, sample_tools: list[ToolM
 # ============================================================
 
 
-def test_storage_migration_json_to_sqlite(temp_data_path: Path, sample_tools: list[ToolMetadata]) -> None:
+def test_storage_migration_json_to_sqlite(
+    temp_data_path: Path, sample_tools: list[ToolMetadata]
+) -> None:
     """测试从 JSON 存储切换到 SQLite 存储"""
     json_path = temp_data_path / "tools.json"
     sqlite_path = temp_data_path / "tools.db"
@@ -329,7 +331,7 @@ def test_mcp_resources_integration(temp_data_path: Path) -> None:
     from RegistryTools.server import create_server
 
     # 创建服务器并添加工具
-    mcp_server = create_server(temp_data_path)
+    _ = create_server(temp_data_path)
 
     # 创建注册表用于验证
     registry = ToolRegistry()

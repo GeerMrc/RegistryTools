@@ -20,8 +20,9 @@ class TestMain:
 
     def test_main_with_custom_data_path(self, tmp_path: Path) -> None:
         """测试使用自定义数据路径"""
-        with patch("RegistryTools.server.create_server") as mock_create_server, patch(
-            "sys.argv", ["registry-tools", "--data-path", str(tmp_path)]
+        with (
+            patch("RegistryTools.server.create_server") as mock_create_server,
+            patch("sys.argv", ["registry-tools", "--data-path", str(tmp_path)]),
         ):
             mock_app = Mock()
             mock_app.run = Mock()
@@ -34,13 +35,16 @@ class TestMain:
             # 验证 app.run 被调用
             mock_app.run.assert_called_once()
 
-    def test_main_with_default_data_path(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    def test_main_with_default_data_path(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
         """测试使用默认数据路径"""
         # 修改 HOME 环境变量到临时目录
         monkeypatch.setenv("HOME", str(tmp_path))
 
-        with patch("RegistryTools.server.create_server") as mock_create_server, patch(
-            "sys.argv", ["registry-tools"]
+        with (
+            patch("RegistryTools.server.create_server") as mock_create_server,
+            patch("sys.argv", ["registry-tools"]),
         ):
             mock_app = Mock()
             mock_app.run = Mock()
@@ -58,8 +62,9 @@ class TestMain:
         """测试数据目录自动创建"""
         data_path = tmp_path / "custom_data"
 
-        with patch("RegistryTools.server.create_server") as mock_create_server, patch(
-            "sys.argv", ["registry-tools", "--data-path", str(data_path)]
+        with (
+            patch("RegistryTools.server.create_server") as mock_create_server,
+            patch("sys.argv", ["registry-tools", "--data-path", str(data_path)]),
         ):
             mock_app = Mock()
             mock_app.run = Mock()
