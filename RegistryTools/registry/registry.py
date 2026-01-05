@@ -428,6 +428,61 @@ class ToolRegistry:
 
         return results
 
+    def search_hot_warm(
+        self,
+        query: str,
+        method: SearchMethod = SearchMethod.BM25,
+        limit: int = 5,
+    ) -> list[ToolSearchResult]:
+        """
+        优先搜索热工具和温工具 (TASK-802)
+
+        性能优化的搜索方法，仅在热工具和温工具中搜索，
+        避免冷工具延迟加载开销。
+
+        Args:
+            query: 搜索查询字符串
+            method: 搜索方法 (REGEX/BM25/EMBEDDING)，默认 BM25
+            limit: 返回结果数量限制，默认 5
+
+        Returns:
+            搜索结果列表，按相关度降序排列
+
+        Raises:
+            ValueError: 如果搜索方法未注册
+
+        Examples:
+            >>> registry = ToolRegistry()
+            >>> # ... 注册工具和搜索器 ...
+            >>> # 快速搜索热+温工具（性能优化）
+            >>> results = registry.search_hot_warm("git", method=SearchMethod.BM25)
+        """
+        # 获取搜索器
+        searcher = self._searchers.get(method)
+        if searcher is None:
+            raise ValueError(
+                f"搜索方法 {method.value} 未注册。" f"请先使用 register_searcher() 注册搜索算法。"
+            )
+
+        # 获取热工具和温工具（合并列表）
+        hot_tools = list(self._hot_tools.values())
+        warm_tools = list(self._warm_tools.values())
+
+        # 如果没有热工具和温工具，返回空结果
+        if not hot_tools and not warm_tools:
+            return []
+
+        # 合并热工具和温工具
+        hot_warm_tools = hot_tools + warm_tools
+
+        # 强制重建索引以匹配热+温工具子集 (TASK-802)
+        searcher.index(hot_warm_tools)
+
+        # 执行搜索
+        results = searcher.search(query, hot_warm_tools, limit)
+
+        return results
+
     # ============================================================
     # 使用频率跟踪 (TASK-304)
     # ============================================================
@@ -559,4 +614,9 @@ class ToolRegistry:
         """清空注册表"""
         self._tools.clear()
         self._category_index.clear()
+        # 清空温度层 (TASK-802)
+        with self._temp_lock:
+            self._hot_tools.clear()
+            self._warm_tools.clear()
+            self._cold_tools.clear()
         self._invalidate_search_indexes()

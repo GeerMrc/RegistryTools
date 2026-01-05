@@ -76,6 +76,58 @@ class BM25Search(SearchAlgorithm):
         # 创建 BM25 索引
         self._bm25 = BM25Okapi(self._tokenized_docs, k1=self.k1, b=self.b, epsilon=self.epsilon)
 
+    def index_layered(
+        self,
+        hot_tools: list[ToolMetadata],
+        warm_tools: list[ToolMetadata],
+        cold_tools: list[ToolMetadata] | None = None,
+    ) -> None:
+        """
+        建立分层 BM25 搜索索引 (TASK-802)
+
+        优化的分层索引实现：热工具和温工具优先索引，冷工具可选。
+        热工具会被放置在索引的前部，提高搜索性能。
+
+        Args:
+            hot_tools: 热工具列表（必须索引，放在索引前部）
+            warm_tools: 温工具列表（必须索引）
+            cold_tools: 冷工具列表（可选索引，默认不索引）
+
+        Examples:
+            >>> searcher = BM25Search()
+            >>> hot = [tool1, tool2]  # 热工具
+            >>> warm = [tool3, tool4]  # 温工具
+            >>> # 只索引热+温工具，冷工具延迟加载
+            >>> searcher.index_layered(hot, warm)
+        """
+        # 合并热工具和温工具（热工具在前）
+        all_indexed = hot_tools + warm_tools
+
+        # 如果提供冷工具，也包含在索引中
+        if cold_tools:
+            all_indexed += cold_tools
+
+        # 调用基类方法记录哈希值和标记
+        super().index(all_indexed)
+
+        # 处理空列表情况
+        if not all_indexed:
+            self._tokenized_docs = []
+            self._bm25 = None
+            return
+
+        # 构建分层的文档集合（热工具优先）
+        self._tokenized_docs = []
+        for tool in all_indexed:
+            # 合并所有可搜索文本
+            text = f"{tool.name} {tool.description} {' '.join(tool.tags)}"
+            # 使用 jieba 分词
+            tokens = list(jieba.cut(text))
+            self._tokenized_docs.append(tokens)
+
+        # 创建 BM25 索引（热工具在索引前部，搜索更快）
+        self._bm25 = BM25Okapi(self._tokenized_docs, k1=self.k1, b=self.b, epsilon=self.epsilon)
+
     def search(self, query: str, tools: list[ToolMetadata], limit: int) -> list[ToolSearchResult]:
         """
         执行 BM25 搜索
@@ -108,10 +160,10 @@ class BM25Search(SearchAlgorithm):
         # 获取 BM25 分数（不需要锁，因为我们有索引的快照）
         scores = bm25.get_scores(query_tokens)
 
-        # 构建结果
+        # 构建结果（不过滤分数，由 _filter_by_score 进行归一化）
         results = []
         for i, score in enumerate(scores):
-            if score > 0 and i < len(indexed_tools):
+            if i < len(indexed_tools):
                 results.append((indexed_tools[i], score))
 
         # 转换并过滤结果

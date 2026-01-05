@@ -50,6 +50,41 @@ class SearchAlgorithm(ABC):
         self._tools_hash = self._compute_tools_hash(tools)
         self._indexed = True
 
+    def index_layered(
+        self,
+        hot_tools: list[ToolMetadata],
+        warm_tools: list[ToolMetadata],
+        cold_tools: list[ToolMetadata] | None = None,
+    ) -> None:
+        """
+        建立分层搜索索引 (TASK-802)
+
+        优先索引热工具和温工具，冷工具可选索引。
+        默认实现合并所有工具并建立索引，子类可覆盖实现更优化的分层索引。
+
+        Args:
+            hot_tools: 热工具列表（必须索引）
+            warm_tools: 温工具列表（必须索引）
+            cold_tools: 冷工具列表（可选索引，默认不索引）
+
+        Examples:
+            >>> searcher = BM25Search()
+            >>> hot = [tool1, tool2]  # 热工具
+            >>> warm = [tool3, tool4]  # 温工具
+            >>> cold = [tool5, tool6]  # 冷工具
+            >>> # 只索引热+温工具，冷工具延迟加载
+            >>> searcher.index_layered(hot, warm)
+        """
+        # 合并热工具和温工具
+        all_indexed = hot_tools + warm_tools
+
+        # 如果提供冷工具，也包含在索引中
+        if cold_tools:
+            all_indexed += cold_tools
+
+        # 建立索引
+        self.index(all_indexed)
+
     @abstractmethod
     def search(self, query: str, tools: list[ToolMetadata], limit: int) -> list[ToolSearchResult]:
         """

@@ -173,13 +173,21 @@
 - `update_usage()`: 自动升级 + 检查降级
 - `unregister()`: 从温度层移除
 
+**搜索算法分层索引 (TASK-802-15 至 TASK-802-17)**:
+- TASK-802-15: SearchAlgorithm 添加 `index_layered()` 方法
+- TASK-802-16: BM25Search 实现优化的分层索引
+- TASK-802-17: ToolRegistry 添加 `search_hot_warm()` 方法
+- BM25Search 修复：移除 `score > 0` 过滤条件，支持负分数归一化
+
 **存储层支持**:
 - `ToolStorage.load_by_temperature()`: 抽象接口
 - `JSONStorage`: 过滤模式实现
 - `SQLiteStorage`: SQL WHERE 子句优化
 
 **测试验证**:
-- 172 个测试全部通过
+- TASK-802-18: 新增 `tests/test_hot_cold_separation.py`（45 个测试）
+- TASK-802-19: 性能对比验证通过
+- 217 个测试全部通过（原 172 + 新 45）
 - 测试覆盖率保持在 80%+
 
 ---
@@ -208,7 +216,7 @@ Phase 4: [████████████████████] 100% 存
 Phase 5: [████████████████████] 100% MCP 工具 ✅
 Phase 6: [████████████████████] 100% 服务器入口 ✅
 Phase 7: [████████████████████] 100% 测试文档 ✅
-Phase 8: [████████░░░░░░░░░░░] 65%  性能优化 (进行中)
+Phase 8: [████████████████████] 100% 性能优化 ✅
 Phase 9: [░░░░░░░░░░░░░░░░░░░] 0%   发布准备
 ```
 
@@ -216,16 +224,17 @@ Phase 9: [░░░░░░░░░░░░░░░░░░░] 0%   发布
 
 - [x] M1: 项目初始化完成 (2026-01-04) ✅
 - [x] M2: 核心组件实现完成 (2026-01-05) ✅
-- [ ] M3: 测试与文档完成
+- [x] M3: 性能优化与测试完成 (2026-01-05) ✅
 - [ ] M4: v0.1.0 发布
 
 ---
 
 ## 变更日志
 
-### 2026-01-05 (Phase 8 进行中)
+### 2026-01-05 (Phase 8 完成 ✅)
 
-**Phase 8 进展 (TASK-801 + TASK-803 完成 ✅)**:
+**Phase 8 完成 (TASK-801 + TASK-802 + TASK-803 全部完成 ✅)**:
+
 - ✅ TASK-801: 实现索引缓存机制
   - 在 SearchAlgorithm 基类添加 `_tools_hash` 字段
   - 实现 `_compute_tools_hash()` 方法（SHA256 哈希）
@@ -233,6 +242,26 @@ Phase 9: [░░░░░░░░░░░░░░░░░░░] 0%   发布
   - 添加 `threading.RLock()` 线程锁保护索引操作
   - 使用双检锁模式减少锁竞争
   - 使用快照模式避免在搜索期间持有锁
+  - 修复 RegexSearch 缓存检测（TASK-801-FIX）
+  - 添加 6 个 RegexSearch 缓存测试
+
+- ✅ TASK-802: 实现冷热工具分离
+  - 新增 `ToolTemperature` 枚举：HOT/WARM/COLD 三层分类
+  - 新增 `defaults.py` 配置：阈值常量（HOT=10, WARM=3）
+  - 新增三层存储字典：`_hot_tools`, `_warm_tools`, `_cold_tools`
+  - 新增温度锁：`_temp_lock` (threading.RLock)
+  - 实现自动分类逻辑：`_classify_tool_temperature()`
+  - 实现自动升级机制：`update_usage()` 中自动升级温度
+  - 实现降级机制：`_check_downgrade_tool()` + `_downgrade_tool()`
+  - 实现预加载方法：`load_hot_tools()`
+  - 修改 `register()`: 自动分类工具温度
+  - 修改 `unregister()`: 从温度层移除
+  - 修改 `clear()`: 清空所有温度层
+  - TASK-802-15: SearchAlgorithm 添加 `index_layered()` 方法
+  - TASK-802-16: BM25Search 实现优化的分层索引
+  - TASK-802-17: ToolRegistry 添加 `search_hot_warm()` 方法
+  - BM25Search 修复：移除 `score > 0` 过滤条件，支持负分数归一化
+
 - ✅ TASK-803: 性能基准测试
   - 添加 pytest-benchmark 和 memory-profiler 依赖
   - 创建 tests/test_performance.py（11 个性能测试）
@@ -243,12 +272,16 @@ Phase 9: [░░░░░░░░░░░░░░░░░░░] 0%   发布
     - 中规模索引（1000 工具）: ~110ms
     - 大规模索引（10000 工具）: ~977ms
     - BM25 搜索（热索引）: ~0.6ms
+
 - ✅ 测试套件验证
-  - 166/166 测试通过（原 127 + 新 39）
+  - TASK-802-18: 新增 `tests/test_hot_cold_separation.py`（45 个测试）
+  - TASK-802-19: 性能对比验证通过
+  - 217/217 测试通过（原 172 + 新 45）
   - 测试覆盖率保持 >80%
+
 - ✅ 代码质量检查
   - Black 格式化通过
-  - Ruff 检查通过
+  - Ruff 检查通过（自动修复 4 个问题）
 
 ### 2026-01-05 (续)
 
