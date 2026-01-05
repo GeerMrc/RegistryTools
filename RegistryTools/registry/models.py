@@ -97,10 +97,6 @@ class ToolMetadata(BaseModel):
     """输出结果的 JSON Schema（可选）"""
 
     model_config = ConfigDict(
-        json_encoders={
-            datetime: lambda v: v.isoformat() if v else None,
-            set: lambda v: list(v),
-        },
         json_schema_extra={
             "examples": [
                 {

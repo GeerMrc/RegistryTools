@@ -10,6 +10,21 @@
 ## [Unreleased]
 
 ### 新增
+- **Phase 8.5 质量修复** (TASK-851 至 TASK-860)
+  - 新增 `tests/test_mcp_integration.py` FastMCP 集成测试（27个测试）
+  - 新增 `docs/README.md` 文档索引
+  - 总测试数量: 217 → 244 (+27)
+  - server.py 测试覆盖率: 46% → 97%
+
+### 修复
+- **Pydantic V2 废弃警告** (TASK-854)
+  - 移除 `json_encoders` 配置
+  - 使用 `field_serializer` 替代
+- **server.py 测试覆盖率** (TASK-852)
+  - 添加 FastMCP 工具层集成测试
+  - 覆盖所有 MCP 工具和资源接口
+
+### 变更
 - **冷热工具分离机制** (TASK-802)
   - 新增 `ToolTemperature` 枚举（HOT/WARM/COLD）
   - 新增 `defaults.py` 配置文件，包含分类阈值常量
