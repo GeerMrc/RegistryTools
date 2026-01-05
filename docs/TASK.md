@@ -213,16 +213,16 @@
 
 | 任务ID | 任务描述 | 状态 | 完成时间 | 备注 |
 |--------|----------|------|----------|------|
-| TASK-851 | 创建 FastMCP 集成测试 | ⏳ TODO | - | test_mcp_integration.py |
-| TASK-852 | 修复 server.py 测试覆盖率 | ⏳ TODO | - | 46% → 80%+ |
-| TASK-853 | 验证 MCP 资源接口测试 | ⏳ TODO | - | stats/categories 资源 |
-| TASK-854 | 修复 Pydantic 废弃警告 | ⏳ TODO | - | 迁移到 field_serializer |
-| TASK-855 | 补充存储层边界测试 | ⏳ TODO | - | 边界情况测试 |
-| TASK-856 | 创建 docs/README.md | ⏳ TODO | - | 文档导航 |
-| TASK-857 | 更新 CHANGELOG.md 版本号 | ⏳ TODO | - | 版本号更新 |
-| TASK-858 | 运行完整测试套件验证 | ⏳ TODO | - | 交叉验证 |
-| TASK-859 | 更新 TASK.md 并提交 | ⏳ TODO | - | Phase 8.5 完成 |
-| TASK-860 | 交叉验证后进入 Phase 9 | ⏳ TODO | - | 质量修复完成 |
+| TASK-851 | 创建 FastMCP 集成测试 | ✅ DONE | 2026-01-05 | 27个测试 |
+| TASK-852 | 修复 server.py 测试覆盖率 | ✅ DONE | 2026-01-05 | 46% → 97% |
+| TASK-853 | 验证 MCP 资源接口测试 | ✅ DONE | 2026-01-05 | stats/categories 资源 |
+| TASK-854 | 修复 Pydantic 废弃警告 | ✅ DONE | 2026-01-05 | 迁移到 field_serializer |
+| TASK-855 | 补充存储层边界测试 | 📝 MOVED | - | 移至后续版本 |
+| TASK-856 | 创建 docs/README.md | ✅ DONE | 2026-01-05 | 文档导航 |
+| TASK-857 | 更新 CHANGELOG.md 版本号 | ✅ DONE | 2026-01-05 | Phase 8.5 记录 |
+| TASK-858 | 运行完整测试套件验证 | ✅ DONE | 2026-01-05 | 244/244 通过 |
+| TASK-859 | 更新 TASK.md 并提交 | ✅ DONE | 2026-01-05 | Phase 8.5 完成 |
+| TASK-860 | 交叉验证后进入 Phase 9 | ✅ DONE | 2026-01-05 | 质量修复完成 |
 
 ---
 
