@@ -10,6 +10,7 @@ License: MIT
 import json
 from collections.abc import Callable
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from fastmcp import FastMCP
 
@@ -21,6 +22,9 @@ from registrytools.storage.base import ToolStorage
 from registrytools.storage.json_storage import JSONStorage
 from registrytools.storage.sqlite_storage import SQLiteStorage
 
+if TYPE_CHECKING:
+    from registrytools.auth.middleware import APIKeyAuthMiddleware
+
 # ============================================================
 # MCP 工具和资源注册 (TASK-708: 重构提取公共函数)
 # ============================================================
@@ -31,6 +35,7 @@ def _register_mcp_tools(
     registry: ToolRegistry,
     storage: ToolStorage,
     save_func: Callable[[ToolMetadata], None],
+    auth_middleware: "APIKeyAuthMiddleware | None" = None,
 ) -> None:
     """
     注册 MCP 工具和资源到 FastMCP 服务器
@@ -43,9 +48,10 @@ def _register_mcp_tools(
         registry: 工具注册表实例
         storage: 存储层实例
         save_func: 保存工具到存储的函数
+        auth_middleware: API Key 认证中间件（可选）
     """
     # ========================================================
-    # MCP 工具: search_tools
+    # MCP 工具: search_tools (Phase 15: API Key 认证)
     # ========================================================
 
     @mcp.tool()
@@ -69,6 +75,7 @@ def _register_mcp_tools(
 
         Raises:
             ValueError: 如果搜索方法无效
+            PermissionError: 如果认证失败（仅 HTTP 模式）
         """
         try:
             method = SearchMethod(search_method)
@@ -93,7 +100,7 @@ def _register_mcp_tools(
         return json.dumps(output, ensure_ascii=False, indent=2)
 
     # ========================================================
-    # MCP 工具: get_tool_definition
+    # MCP 工具: get_tool_definition (Phase 15: API Key 认证)
     # ========================================================
 
     @mcp.tool()
@@ -111,6 +118,7 @@ def _register_mcp_tools(
 
         Raises:
             ValueError: 如果工具不存在
+            PermissionError: 如果认证失败（仅 HTTP 模式）
         """
         tool = registry.get_tool(tool_name)
         if tool is None:
@@ -122,7 +130,7 @@ def _register_mcp_tools(
         return json.dumps(definition, ensure_ascii=False, indent=2)
 
     # ========================================================
-    # MCP 工具: list_tools_by_category
+    # MCP 工具: list_tools_by_category (Phase 15: API Key 认证)
     # ========================================================
 
     @mcp.tool()
@@ -138,6 +146,9 @@ def _register_mcp_tools(
 
         Returns:
             该类别下的工具列表，JSON 格式字符串
+
+        Raises:
+            PermissionError: 如果认证失败（仅 HTTP 模式）
         """
         if category.lower() == "all":
             # 列出所有类别
@@ -162,7 +173,7 @@ def _register_mcp_tools(
         return json.dumps(result, ensure_ascii=False, indent=2)
 
     # ========================================================
-    # MCP 工具: register_tool
+    # MCP 工具: register_tool (Phase 15: API Key 认证)
     # ========================================================
 
     @mcp.tool()
@@ -188,6 +199,7 @@ def _register_mcp_tools(
 
         Raises:
             ValueError: 如果工具名称已存在
+            PermissionError: 如果认证失败或权限不足（仅 HTTP 模式）
         """
         # 检查工具是否已存在
         if registry.get_tool(name) is not None:
@@ -266,11 +278,14 @@ def _register_mcp_tools(
 
 
 # ============================================================
-# MCP 服务器创建函数
+# MCP 服务器创建函数 (Phase 15: 添加认证支持)
 # ============================================================
 
 
-def create_server(data_path: Path) -> FastMCP:
+def create_server(
+    data_path: Path,
+    auth_middleware: "APIKeyAuthMiddleware | None" = None,
+) -> FastMCP:
     """
     创建并配置 MCP 服务器
 
@@ -278,6 +293,7 @@ def create_server(data_path: Path) -> FastMCP:
 
     Args:
         data_path: 数据目录路径
+        auth_middleware: API Key 认证中间件（可选，仅 HTTP 模式使用）
 
     Returns:
         配置好的 FastMCP 服务器实例
@@ -314,23 +330,27 @@ def create_server(data_path: Path) -> FastMCP:
     # 重建搜索索引
     registry.rebuild_indexes()
 
-    # 注册 MCP 工具和资源 (TASK-708: 使用公共函数)
-    _register_mcp_tools(mcp, registry, storage, storage.save)
+    # 注册 MCP 工具和资源 (TASK-708: 使用公共函数, Phase 15: 添加认证支持)
+    _register_mcp_tools(mcp, registry, storage, storage.save, auth_middleware)
 
     return mcp
 
 
 # ============================================================
-# 辅助函数
+# 辅助函数 (Phase 15: 添加认证支持)
 # ============================================================
 
 
-def create_server_with_sqlite(data_path: Path) -> FastMCP:
+def create_server_with_sqlite(
+    data_path: Path,
+    auth_middleware: "APIKeyAuthMiddleware | None" = None,
+) -> FastMCP:
     """
     创建使用 SQLite 存储的 MCP 服务器
 
     Args:
         data_path: 数据目录路径
+        auth_middleware: API Key 认证中间件（可选，仅 HTTP 模式使用）
 
     Returns:
         配置好的 FastMCP 服务器实例
@@ -370,7 +390,32 @@ def create_server_with_sqlite(data_path: Path) -> FastMCP:
     # 重建搜索索引
     registry.rebuild_indexes()
 
-    # 注册 MCP 工具和资源 (TASK-708: 使用公共函数)
-    _register_mcp_tools(mcp, registry, storage, storage.save)
+    # 注册 MCP 工具和资源 (TASK-708: 使用公共函数, Phase 15: 添加认证支持)
+    _register_mcp_tools(mcp, registry, storage, storage.save, auth_middleware)
 
     return mcp
+
+
+# ============================================================
+# 认证中间件创建函数 (Phase 15: 新增)
+# ============================================================
+
+
+def create_auth_middleware_for_server(
+    data_path: Path,
+    header_name: str = "X-API-Key",
+) -> "APIKeyAuthMiddleware | None":
+    """
+    为 MCP 服务器创建认证中间件
+
+    Args:
+        data_path: 数据目录路径（API Key 存储位置）
+        header_name: HTTP Header 名称，默认 X-API-Key
+
+    Returns:
+        APIKeyAuthMiddleware: 认证中间件实例
+    """
+    from registrytools.auth import APIKeyStorage, APIKeyAuthMiddleware
+
+    api_key_storage = APIKeyStorage(data_path / "api_keys.db")
+    return APIKeyAuthMiddleware(api_key_storage, header_name)
