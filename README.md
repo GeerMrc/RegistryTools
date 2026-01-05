@@ -76,11 +76,10 @@ register_tool(
 
 ### 搜索算法
 
-| 算法 | 准确率 | 速度 | 适用场景 |
-|------|--------|------|----------|
-| **Regex** | 56% | 最快 | 精确名称匹配 |
-| **BM25** | 64% | 快 | 关键词搜索（推荐） |
-| **Embedding** | 75%+ | 慢 | 语义搜索（可选） |
+| 算法 | 描述 | 速度 | 适用场景 |
+|------|------|------|----------|
+| **Regex** | 正则表达式精确匹配 | 最快 | 精确名称匹配 |
+| **BM25** | BM25 关键词搜索（支持中文分词） | 快 | 关键词搜索（推荐） |
 
 ### MCP 工具接口
 
@@ -88,6 +87,11 @@ register_tool(
 - `get_tool_definition` - 获取工具的完整定义
 - `list_tools_by_category` - 按类别列出工具
 - `register_tool` - 动态注册新工具
+
+### MCP 资源接口
+
+- `registry://stats` - 工具注册表统计信息
+- `registry://categories` - 所有工具类别
 
 ---
 
@@ -164,6 +168,7 @@ ruff check RegistryTools/ tests/
 
 - [架构设计](docs/ARCHITECTURE.md) - 系统架构说明
 - [API 文档](docs/API.md) - API 接口文档
+- [使用示例](examples/) - 代码示例
 - [开发流程规范](docs/DEVELOPMENT_WORKFLOW.md) - 开发流程规范
 - [任务追踪](docs/TASK.md) - 项目任务追踪
 - [变更日志](docs/CHANGELOG.md) - 版本变更记录
@@ -182,20 +187,18 @@ ruff check RegistryTools/ tests/
 
 ## 路线图
 
-### v0.1.0 (当前)
+### v0.1.0 (当前 - 2026-01-05)
 - ✅ 基础工具注册和搜索
-- ✅ BM25 搜索算法
+- ✅ BM25 搜索算法（支持中文分词）
 - ✅ JSON/SQLite 存储
+- ✅ MCP 工具和资源接口
+- ✅ 测试覆盖率 81%
+- ✅ 完整文档和使用示例
 
 ### v0.2.0 (计划中)
-- ⏳ 语义搜索 (Embedding)
+- ⏳ 性能优化（索引缓存）
 - ⏳ 冷热工具分离
-- ⏳ 性能优化
-
-### v0.3.0 (未来)
-- ⏳ Web UI 管理界面
-- ⏳ 分布式工具索引
-- ⏳ 多语言支持
+- ⏳ 集成测试覆盖
 
 ---
 

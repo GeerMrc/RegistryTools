@@ -1,7 +1,7 @@
 # RegistryTools API 文档
 
 > **版本**: v0.1.0
-> **更新日期**: 2026-01-04
+> **更新日期**: 2026-01-05
 > **项目**: RegistryTools - MCP Tool Registry Server
 
 ---
@@ -14,6 +14,11 @@ RegistryTools 提供以下 MCP 工具接口：
 2. `get_tool_definition` - 获取工具的完整定义
 3. `list_tools_by_category` - 按类别列出工具
 4. `register_tool` - 动态注册新工具
+
+以及以下 MCP 资源接口：
+
+1. `registry://stats` - 工具注册表统计信息
+2. `registry://categories` - 所有工具类别
 
 ---
 
@@ -38,31 +43,35 @@ search_tools(
 | 参数 | 类型 | 必需 | 默认值 | 描述 |
 |------|------|------|--------|------|
 | `query` | string | 是 | - | 搜索查询，支持关键词或自然语言描述 |
-| `search_method` | string | 否 | "bm25" | 搜索方法 (regex/bm25/embedding) |
+| `search_method` | string | 否 | "bm25" | 搜索方法 (regex/bm25) |
 | `limit` | integer | 否 | 5 | 返回结果数量 |
 
 #### 搜索方法
 
 | 方法 | 描述 | 准确率 | 速度 |
 |------|------|--------|------|
-| `regex` | 正则表达式精确匹配 | 56% | 最快 |
-| `bm25` | BM25 关键词搜索 | 64% | 快 |
-| `embedding` | 语义向量搜索 | 75%+ | 慢 |
+| `regex` | 正则表达式精确匹配 | 高 | 最快 |
+| `bm25` | BM25 关键词搜索（支持中文分词） | 高 | 快 |
 
 #### 返回值
 
-返回 Markdown 格式的搜索结果：
+返回 JSON 格式字符串的搜索结果：
 
-```markdown
-## 搜索结果
-
-1. **github.create_pull_request**
-   - 描述: Create a new pull request in a GitHub repository
-   - 相关度: 0.85
-
-2. **gitlab.merge_request**
-   - 描述: Create a merge request in GitLab
-   - 相关度: 0.72
+```json
+[
+  {
+    "tool_name": "github.create_pull_request",
+    "description": "Create a new pull request in a GitHub repository",
+    "score": 0.85,
+    "match_reason": "bm25_keyword_similarity"
+  },
+  {
+    "tool_name": "gitlab.merge_request",
+    "description": "Create a merge request in GitLab",
+    "score": 0.72,
+    "match_reason": "bm25_keyword_similarity"
+  }
+]
 ```
 
 #### 示例
@@ -72,14 +81,14 @@ search_tools(
 search_tools("github create pull request", "bm25", 5)
 
 # 搜索 AWS 工具
-search_tools("aws cost billing", "bm25", 3)
+search_tools("aws s3 upload", "bm25", 3)
 ```
 
 ---
 
 ### get_tool_definition
 
-获取指定工具的完整 JSON Schema 定义
+获取指定工具的完整元数据
 
 #### 语法
 
@@ -95,38 +104,25 @@ get_tool_definition(tool_name: str) -> str
 
 #### 返回值
 
-返回工具的完整 JSON Schema 定义：
+返回工具的完整元数据，JSON 格式字符串：
 
 ```json
 {
   "name": "github.create_pull_request",
   "description": "Create a new pull request in a GitHub repository",
-  "input_schema": {
-    "type": "object",
-    "properties": {
-      "owner": {"type": "string"},
-      "repo": {"type": "string"},
-      "title": {"type": "string"},
-      "body": {"type": "string"},
-      "head": {"type": "string"},
-      "base": {"type": "string"}
-    },
-    "required": ["owner", "repo", "title", "head", "base"]
-  }
+  "mcp_server": "github",
+  "tags": ["github", "git", "pr"],
+  "category": "github",
+  "use_frequency": 5,
+  "defer_loading": true
 }
 ```
-
-**注意**: 调用此工具会自动更新工具的使用频率。
 
 #### 示例
 
 ```python
 # 获取工具定义
 get_tool_definition("github.create_pull_request")
-
-# 不存在的工具
-get_tool_definition("non.existent.tool")
-# 返回: "错误: 工具 'non.existent.tool' 不存在"
 ```
 
 ---
@@ -148,31 +144,40 @@ list_tools_by_category(
 
 | 参数 | 类型 | 必需 | 默认值 | 描述 |
 |------|------|------|--------|------|
-| `category` | string | 是 | - | 工具类别 |
+| `category` | string | 是 | - | 工具类别，使用 "all" 列出所有类别 |
 | `limit` | integer | 否 | 20 | 返回结果数量 |
-
-#### 支持的类别
-
-| 类别 | 描述 |
-|------|------|
-| `github` | GitHub 相关工具 |
-| `gitlab` | GitLab 相关工具 |
-| `slack` | Slack 相关工具 |
-| `aws` | AWS 相关工具 |
-| `database` | 数据库操作 |
-| `notification` | 通知类工具 |
 
 #### 返回值
 
-返回该类别下的所有工具：
+返回 JSON 格式字符串的结果：
 
-```markdown
-## 类别 'github' 下的工具 (15 个)
+**列出指定类别：**
 
-- **github.create_pull_request**: Create a new pull request
-- **github.merge_pull_request**: Merge a pull request
-- **github.add_review_comment**: Add a comment to a PR review
-- ...
+```json
+{
+  "category": "github",
+  "count": 8,
+  "tools": [
+    {
+      "name": "github.create_pull_request",
+      "description": "Create a new pull request in a GitHub repository",
+      "tags": ["github", "git", "pr"]
+    },
+    {
+      "name": "github.merge_pull_request",
+      "description": "Merge a pull request in a GitHub repository",
+      "tags": ["github", "git", "merge"]
+    }
+  ]
+}
+```
+
+**列出所有类别：**
+
+```json
+{
+  "categories": ["github", "gitlab", "slack", "aws", "google", "utilities", "database", "filesystem"]
+}
 ```
 
 #### 示例
@@ -181,8 +186,8 @@ list_tools_by_category(
 # 列出所有 GitHub 工具
 list_tools_by_category("github", 20)
 
-# 列出前 5 个 Slack 工具
-list_tools_by_category("slack", 5)
+# 列出所有类别
+list_tools_by_category("all")
 ```
 
 ---
@@ -206,17 +211,26 @@ register_tool(
 
 | 参数 | 类型 | 必需 | 默认值 | 描述 |
 |------|------|------|--------|------|
-| `name` | string | 是 | - | 工具名称 |
+| `name` | string | 是 | - | 工具名称（唯一标识符） |
 | `description` | string | 是 | - | 工具描述 |
 | `category` | string | 否 | None | 工具类别 |
-| `tags` | list[string] | 否 | [] | 工具标签 |
+| `tags` | list[string] | 否 | [] | 工具标签列表 |
 
 #### 返回值
 
-返回注册结果：
+返回 JSON 格式字符串的注册结果：
 
-```
-工具 'my.custom.tool' 已成功注册
+```json
+{
+  "success": true,
+  "message": "工具已注册: my.custom.tool",
+  "tool": {
+    "name": "my.custom.tool",
+    "description": "A custom tool for specific purpose",
+    "category": "custom",
+    "tags": ["custom", "utility"]
+  }
+}
 ```
 
 #### 示例
@@ -235,6 +249,46 @@ register_tool(
     category="data",
     tags=["etl", "pipeline", "transformation"]
 )
+```
+
+---
+
+## MCP 资源接口
+
+### registry://stats
+
+获取工具注册表统计信息
+
+#### 返回值
+
+```json
+{
+  "total_tools": 26,
+  "total_categories": 8,
+  "categories": ["github", "slack", "aws", "google", "utilities", "database", "filesystem"],
+  "most_used": [
+    {
+      "name": "github.create_pull_request",
+      "description": "Create a new pull request in a GitHub repository",
+      "use_count": 15
+    }
+  ]
+}
+```
+
+---
+
+### registry://categories
+
+获取所有工具类别
+
+#### 返回值
+
+```json
+{
+  "count": 8,
+  "categories": ["github", "slack", "aws", "google", "utilities", "database", "filesystem"]
+}
 ```
 
 ---
@@ -275,15 +329,32 @@ class ToolSearchResult(BaseModel):
 
 ## Python API
 
+### 创建服务器
+
+```python
+from pathlib import Path
+from RegistryTools.server import create_server, create_server_with_sqlite
+
+# 使用 JSON 存储
+mcp_server = create_server(Path("/path/to/data"))
+
+# 使用 SQLite 存储
+mcp_server = create_server_with_sqlite(Path("/path/to/data"))
+
+# 运行服务器
+mcp_server.run()
+```
+
 ### ToolRegistry
 
 工具注册表核心类
 
 ```python
 from RegistryTools.registry import ToolRegistry
+from RegistryTools.registry.models import SearchMethod
 
 # 创建注册表
-registry = ToolRegistry(storage)
+registry = ToolRegistry()
 
 # 注册工具
 registry.register(tool_metadata)
@@ -296,43 +367,34 @@ tool = registry.get_tool("github.create_pull_request")
 
 # 更新使用频率
 registry.update_usage("github.create_pull_request")
-```
 
-### SearchAlgorithm
+# 列出类别
+categories = registry.list_categories()
 
-搜索算法基类
-
-```python
-from RegistryTools.search import BM25Search, RegexSearch
-
-# 创建搜索算法
-search = BM25Search()
-search.index(tools)
-
-# 执行搜索
-results = search.search("query", tools, 5)
+# 按类别列出工具
+github_tools = registry.list_tools(category="github")
 ```
 
 ---
 
 ## 错误处理
 
-### 错误代码
+### 错误响应
 
-| 代码 | 描述 |
-|------|------|
-| `TOOL_NOT_FOUND` | 工具不存在 |
-| `INVALID_SEARCH_METHOD` | 无效的搜索方法 |
-| `INVALID_CATEGORY` | 无效的类别 |
-| `REGISTRATION_FAILED` | 工具注册失败 |
+所有错误通过异常抛出：
 
-### 错误响应格式
+| 异常类型 | 描述 |
+|----------|------|
+| `ValueError` | 工具不存在、搜索方法无效、工具已存在 |
 
-```json
-{
-  "error": "TOOL_NOT_FOUND",
-  "message": "工具 'non.existent.tool' 不存在"
-}
+### 示例
+
+```python
+try:
+    get_tool_definition("non.existent.tool")
+except ValueError as e:
+    print(f"错误: {e}")
+    # 输出: 错误: 工具不存在: non.existent.tool
 ```
 
 ---
