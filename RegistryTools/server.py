@@ -48,6 +48,17 @@ def create_server(data_path: Path) -> FastMCP:
         tools = storage.load_all()
         registry.register_many(tools)
 
+    # 加载默认工具集（如果注册表为空）(TASK-603)
+    from RegistryTools.defaults import load_default_tools_if_empty
+
+    default_tools = load_default_tools_if_empty(
+        tool_count=registry.tool_count,
+        storage_path=data_path / "tools.json",
+        auto_save=True,
+    )
+    if default_tools:
+        registry.register_many(default_tools)
+
     # 注册搜索算法
     registry.register_searcher(SearchMethod.REGEX, RegexSearch(case_sensitive=False))
     registry.register_searcher(SearchMethod.BM25, BM25Search())
@@ -306,6 +317,20 @@ def create_server_with_sqlite(data_path: Path) -> FastMCP:
     if storage.validate():
         tools = storage.load_all()
         registry.register_many(tools)
+
+    # 加载默认工具集（如果注册表为空）(TASK-603)
+    from RegistryTools.defaults import load_default_tools_if_empty
+
+    # 获取默认工具（不自动保存到 JSON）
+    default_tools = load_default_tools_if_empty(
+        tool_count=registry.tool_count,
+        storage_path=None,  # 不保存到 JSON
+        auto_save=False,
+    )
+    if default_tools:
+        registry.register_many(default_tools)
+        # 保存到 SQLite
+        storage.save_many(default_tools)
 
     # 注册搜索算法
     registry.register_searcher(SearchMethod.REGEX, RegexSearch(case_sensitive=False))
