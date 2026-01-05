@@ -1,6 +1,6 @@
 # RegistryTools 用户指南
 
-> **版本**: v1.0
+> **版本**: v1.1
 > **更新日期**: 2026-01-05
 > **项目**: RegistryTools - MCP Tool Registry Server
 
@@ -244,6 +244,165 @@ registry-tools --data-path /custom/path
     }
   }
 }
+```
+
+---
+
+## API Key 认证 (Phase 15)
+
+### 概述
+
+RegistryTools 支持 API Key 认证功能，用于保护 HTTP 模式下的服务访问。通过 API Key 认证，您可以：
+
+- 控制谁可以访问工具注册表
+- 限制不同客户端的操作权限
+- 追踪 API Key 的使用情况
+
+### 何时使用认证
+
+**建议启用认证的场景**：
+- RegistryTools 部署在公网环境中
+- 多个团队或客户端共享同一个 RegistryTools 实例
+- 需要追踪和管理不同客户端的使用情况
+- 需要限制某些客户端的操作权限（只读 vs 读写）
+
+**不需要认证的场景**：
+- 仅在本地环境使用 STDIO 模式
+- 在可信的私有网络中部署
+- 个人开发测试环境
+
+### 启用认证
+
+#### 方法 1: 命令行参数
+
+```bash
+registry-tools --transport http --port 8000 --enable-auth
+```
+
+#### 方法 2: 环境变量
+
+```bash
+export REGISTRYTOOLS_ENABLE_AUTH=true
+registry-tools --transport http --port 8000
+```
+
+### API Key 管理
+
+#### 创建 API Key
+
+**创建只读 Key（可以搜索和查看工具定义）**：
+```bash
+registry-tools api-key create "生产环境只读 Key" --permission read
+```
+
+**创建读写 Key（可以注册新工具）**：
+```bash
+registry-tools api-key create "开发环境读写 Key" --permission write
+```
+
+**创建带过期时间的 Key（1 小时后过期）**：
+```bash
+registry-tools api-key create "临时测试 Key" --expires-in 3600
+```
+
+**创建带所有者的 Key**：
+```bash
+registry-tools api-key create "团队 Key" --owner team@example.com
+```
+
+#### 列出 API Key
+
+**列出所有 Key**：
+```bash
+registry-tools api-key list
+```
+
+**按所有者筛选**：
+```bash
+registry-tools api-key list --owner user@example.com
+```
+
+#### 删除 API Key
+
+```bash
+registry-tools api-key delete <key-id>
+```
+
+### 使用 API Key
+
+#### 在 HTTP 请求中使用
+
+**方法 1: X-API-Key Header**
+
+```bash
+curl -X POST http://localhost:8000/mcp/tools/search_tools \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: rtk_a1b2c3d4e5f6789012345678901234567890123456789012345678901234" \
+  -d '{"query": "github", "method": "bm25", "limit": 5}'
+```
+
+**方法 2: Authorization Bearer Token**
+
+```bash
+curl -X POST http://localhost:8000/mcp/tools/search_tools \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer rtk_a1b2c3d4e5f6789012345678901234567890123456789012345678901234" \
+  -d '{"query": "github", "method": "bm25", "limit": 5}'
+```
+
+#### 在 Claude Desktop 中使用
+
+```json
+{
+  "mcpServers": {
+    "RegistryTools": {
+      "url": "http://localhost:8000/mcp",
+      "headers": {
+        "X-API-Key": "rtk_a1b2c3d4e5f6789012345678901234567890123456789012345678901234"
+      }
+    }
+  }
+}
+```
+
+### 权限级别
+
+| 权限 | 描述 | 允许操作 |
+|------|------|----------|
+| `read` | 只读 | search_tools, get_tool_definition, list_tools_by_category |
+| `write` | 读写 | 上述 + register_tool |
+| `admin` | 管理员 | 所有操作 + API Key 管理 |
+
+### 安全最佳实践
+
+1. **使用 HTTPS**: 生产环境必须使用 HTTPS 传输 API Key
+2. **妥善保管密钥**: API Key 创建后只显示一次，请妥善保存
+3. **权限最小化**: 根据使用场景授予最小必要权限
+4. **定期轮换**: 建议定期更换 API Key
+5. **设置过期**: 为临时使用场景设置过期时间
+6. **定期清理**: 使用 `cleanup_expired` 功能清理过期的 Key
+
+### 示例：完整的认证流程
+
+```bash
+# 1. 启用认证启动服务
+registry-tools --transport http --port 8000 --enable-auth
+
+# 2. 创建只读 API Key
+registry-tools api-key create "我的客户端" --permission read
+# 输出: API Key: rtk_abc123... (请妥善保存)
+
+# 3. 客户端使用 API Key 访问
+curl -X POST http://localhost:8000/mcp/tools/search_tools \
+  -H "X-API-Key: rtk_abc123..." \
+  -H "Content-Type: application/json" \
+  -d '{"query": "github"}'
+
+# 4. 查看使用情况
+registry-tools api-key list
+
+# 5. 如需删除 Key
+registry-tools api-key delete <key-id>
 ```
 
 ---

@@ -117,6 +117,57 @@ registry-tools
 registry-tools --transport http --host 0.0.0.0 --port 8000
 ```
 
+### API Key 认证 (Phase 15)
+
+RegistryTools 支持可选的 API Key 认证功能，用于保护 HTTP 模式下的服务访问。
+
+#### 启用认证
+
+**方式 1: 命令行参数**
+
+```bash
+registry-tools --transport http --port 8000 --enable-auth
+```
+
+**方式 2: 环境变量**
+
+```bash
+export REGISTRYTOOLS_ENABLE_AUTH=true
+registry-tools --transport http --port 8000
+```
+
+#### API Key 管理
+
+启用认证后，需要创建和管理 API Key：
+
+```bash
+# 创建只读 API Key
+registry-tools api-key create "只读 Key" --permission read
+
+# 创建读写 API Key
+registry-tools api-key create "读写 Key" --permission write
+
+# 创建带过期时间的 Key（1 小时）
+registry-tools api-key create "临时 Key" --expires-in 3600
+
+# 列出所有 API Key
+registry-tools api-key list
+
+# 删除 API Key
+registry-tools api-key delete <key-id>
+```
+
+#### 认证配置说明
+
+- **STDIO 模式**: 不需要认证，适用于本地可信环境
+- **HTTP 模式**: 认证可选，默认关闭
+- **权限级别**:
+  - `read`: 只读权限，可以搜索和查看工具定义
+  - `write`: 读写权限，可以注册新工具
+  - `admin`: 管理员权限，包含所有操作
+
+详细使用说明请参考 [API 文档](API.md#api-key-认证-phase-15) 和 [用户指南](USER_GUIDE.md#api-key-认证-phase-15)。
+
 ---
 
 ## MCP 客户端配置
@@ -144,11 +195,43 @@ registry-tools --transport http --host 0.0.0.0 --port 8000
 
 #### HTTP 模式配置
 
+**不带认证**：
+
 ```json
 {
   "mcpServers": {
     "RegistryTools": {
       "url": "http://localhost:8000/mcp"
+    }
+  }
+}
+```
+
+**带 API Key 认证**（需要先启用认证并创建 API Key）：
+
+```json
+{
+  "mcpServers": {
+    "RegistryTools": {
+      "url": "http://localhost:8000/mcp",
+      "headers": {
+        "X-API-Key": "rtk_a1b2c3d4e5f6789012345678901234567890123456789012345678901234"
+      }
+    }
+  }
+}
+```
+
+或者使用 Bearer Token 格式：
+
+```json
+{
+  "mcpServers": {
+    "RegistryTools": {
+      "url": "http://localhost:8000/mcp",
+      "headers": {
+        "Authorization": "Bearer rtk_a1b2c3d4e5f6789012345678901234567890123456789012345678901234"
+      }
     }
   }
 }
@@ -190,8 +273,11 @@ RUN pip install Registry-Tools
 # 暴露 HTTP 端口
 EXPOSE 8000
 
-# 启动 HTTP 服务器
+# 启动 HTTP 服务器（不带认证）
 CMD ["registry-tools", "--transport", "http", "--host", "0.0.0.0", "--port", "8000"]
+
+# 或者启用认证
+# CMD ["registry-tools", "--transport", "http", "--host", "0.0.0.0", "--port", "8000", "--enable-auth"]
 ```
 
 ### 构建和运行
@@ -200,8 +286,36 @@ CMD ["registry-tools", "--transport", "http", "--host", "0.0.0.0", "--port", "80
 # 构建镜像
 docker build -t registrytools .
 
-# 运行容器
+# 运行容器（不带认证）
 docker run -p 8000:8000 -v ~/.RegistryTools:/data registrytools
+
+# 运行容器（启用认证）
+docker run -p 8000:8000 -v ~/.RegistryTools:/data -e REGISTRYTOOLS_ENABLE_AUTH=true registrytools
+```
+
+### 使用 Docker Compose（推荐）
+
+创建 `docker-compose.yml`：
+
+```yaml
+version: '3.8'
+services:
+  registrytools:
+    image: registrytools:latest
+    ports:
+      - "8000:8000"
+    volumes:
+      - ~/.RegistryTools:/data
+    environment:
+      - REGISTRYTOOLS_ENABLE_AUTH=true  # 启用认证
+      - REGISTRYTOOLS_DATA_PATH=/data
+    restart: unless-stopped
+```
+
+运行：
+
+```bash
+docker-compose up -d
 ```
 
 ---

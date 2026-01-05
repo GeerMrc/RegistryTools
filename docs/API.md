@@ -409,5 +409,178 @@ except ValueError as e:
 
 ---
 
+## API Key 认证 (Phase 15)
+
+RegistryTools 支持通过 API Key 进行身份验证，保护 HTTP 模式下的服务访问。
+
+### 启用认证
+
+**命令行参数**:
+```bash
+registry-tools --transport http --host 0.0.0.0 --port 8000 --enable-auth
+```
+
+**环境变量**:
+```bash
+REGISTRYTOOLS_ENABLE_AUTH=true registry-tools --transport http
+```
+
+### API Key 格式
+
+```
+rtk_<64-char-hex>
+```
+
+- 前缀: `rtk` (RegistryTools Key)
+- 随机部分: 64 个十六进制字符（32 字节，256 位安全随机）
+
+### 权限级别
+
+| 权限 | 描述 | 允许操作 |
+|------|------|----------|
+| `READ` | 只读 | search_tools, get_tool_definition, list_tools_by_category |
+| `WRITE` | 读写 | 上述 + register_tool |
+| `ADMIN` | 管理员 | 所有操作 + API Key 管理 |
+
+### 客户端认证
+
+**HTTP Header 方式 1**:
+```
+X-API-Key: rtk_a1b2c3d4e5f6789012345678901234567890123456789012345678901234
+```
+
+**HTTP Header 方式 2 (Bearer Token)**:
+```
+Authorization: Bearer rtk_a1b2c3d4e5f6789012345678901234567890123456789012345678901234
+```
+
+### 命令行管理 API Key
+
+**创建 API Key**:
+```bash
+# 创建只读 Key
+registry-tools api-key create "My Read Key" --permission read
+
+# 创建读写 Key
+registry-tools api-key create "My Write Key" --permission write
+
+# 创建带过期时间的 Key (1 小时)
+registry-tools api-key create "Temp Key" --expires-in 3600
+
+# 创建带所有者的 Key
+registry-tools api-key create "Team Key" --owner team@example.com
+```
+
+**列出 API Key**:
+```bash
+# 列出所有 Key
+registry-tools api-key list
+
+# 按所有者筛选
+registry-tools api-key list --owner user@example.com
+```
+
+**删除 API Key**:
+```bash
+registry-tools api-key delete <key-id>
+```
+
+### Python API
+
+**创建启用认证的服务器**:
+```python
+from pathlib import Path
+from registrytools.server import create_server, create_auth_middleware_for_server
+
+data_path = Path("~/.RegistryTools")
+
+# 创建认证中间件
+auth_middleware = create_auth_middleware_for_server(data_path)
+
+# 创建服务器并启用认证
+mcp_server = create_server(data_path, auth_middleware=auth_middleware)
+mcp_server.run(transport="http", host="0.0.0.0", port=8000)
+```
+
+**使用 API Key 存储**:
+```python
+from registrytools.auth import (
+    APIKeyStorage,
+    APIKeyPermission,
+    generate_api_key,
+)
+
+# 创建存储
+storage = APIKeyStorage("~/.RegistryTools/api_keys.db")
+
+# 生成 API Key
+api_key = generate_api_key(
+    name="My API Key",
+    permission=APIKeyPermission.READ,
+    expires_in=3600  # 1 小时
+)
+
+# 保存到存储
+storage.save(api_key)
+
+# 验证 API Key
+retrieved_key = storage.get_by_api_key(api_key.api_key)
+if retrieved_key and retrieved_key.is_valid():
+    print(f"认证成功: {retrieved_key.name}")
+```
+
+**使用认证中间件**:
+```python
+from registrytools.auth import APIKeyAuthMiddleware, APIKeyStorage
+
+# 创建中间件
+storage = APIKeyStorage("~/.RegistryTools/api_keys.db")
+middleware = APIKeyAuthMiddleware(storage)
+
+# 从 Headers 认证
+headers = {"X-API-Key": "rtk_xxx..."}
+result = middleware.authenticate_from_headers(headers)
+
+if result.success:
+    print(f"认证成功: {result.key_metadata.name}")
+else:
+    print(f"认证失败: {result.error}")
+
+# 带权限检查的认证
+result = middleware.authenticate(
+    "rtk_xxx...",
+    required_permission=APIKeyPermission.WRITE
+)
+```
+
+### 安全注意事项
+
+1. **HTTPS**: 生产环境必须使用 HTTPS 传输 API Key
+2. **密钥保护**: API Key 创建后只显示一次，请妥善保存
+3. **权限最小化**: 根据使用场景授予最小必要权限
+4. **定期轮换**: 建议定期更换 API Key
+5. **过期设置**: 为临时使用场景设置过期时间
+
+### 数据模型
+
+**APIKey**:
+```python
+class APIKey(BaseModel):
+    key_id: str                              # 唯一标识符 (UUID)
+    api_key: str                             # 密钥值
+    name: str                                # 名称/描述
+    permission: APIKeyPermission            # 权限级别
+    scope: APIKeyScope                      # 作用范围
+    is_active: bool                          # 是否激活
+    created_at: datetime                     # 创建时间
+    expires_at: Optional[datetime]          # 过期时间
+    last_used_at: Optional[datetime]        # 最后使用时间
+    usage_count: int                         # 使用次数
+    owner: Optional[str]                     # 所有者
+    metadata: Optional[dict[str, str]]      # 额外元数据
+```
+
+---
+
 **维护者**: Maric
 **文档版本**: v0.1.0
