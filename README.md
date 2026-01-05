@@ -39,7 +39,7 @@ RegistryTools 支持多种 MCP 传输协议:
 | 协议 | 适用场景 | 配置方式 |
 |------|----------|----------|
 | **STDIO** | 本地 CLI 集成 (默认) | `registry-tools` |
-| **HTTP** | 远程服务部署 | `registry-tools --transport http` |
+| **Streamable HTTP** | 远程服务部署 | `registry-tools --transport http` |
 
 #### STDIO 模式 (默认)
 
@@ -64,7 +64,7 @@ RegistryTools 支持多种 MCP 传输协议:
 }
 ```
 
-#### HTTP 模式 (远程部署)
+#### Streamable HTTP 模式 (远程部署)
 
 适用于远程服务、容器化部署、多客户端共享等场景。
 
@@ -267,7 +267,7 @@ ruff check RegistryTools/ tests/
 - ✅ BM25 搜索算法（支持中文分词）
 - ✅ JSON/SQLite 存储
 - ✅ MCP 工具和资源接口
-- ✅ STDIO 和 HTTP 传输协议支持
+- ✅ STDIO 和 Streamable HTTP 传输协议支持
 - ✅ fastmcp.json 配置文件支持
 - ✅ 测试覆盖率 88%
 - ✅ 完整文档和使用示例
