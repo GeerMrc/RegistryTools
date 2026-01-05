@@ -9,7 +9,7 @@ License: MIT
 
 from pathlib import Path
 
-from RegistryTools.registry.models import ToolMetadata
+from registrytools.registry.models import ToolMetadata
 
 # ============================================================
 # 冷热工具分类配置 (TASK-802)
@@ -269,7 +269,7 @@ def load_default_tools_if_empty(
 
     # 如果需要自动保存且提供了存储路径
     if auto_save and storage_path:
-        from RegistryTools.storage.json_storage import JSONStorage
+        from registrytools.storage.json_storage import JSONStorage
 
         storage = JSONStorage(storage_path)
         storage.initialize()

@@ -16,12 +16,12 @@ import json
 import pytest
 from fastmcp import FastMCP
 
-from RegistryTools.registry.models import SearchMethod, ToolMetadata
-from RegistryTools.registry.registry import ToolRegistry
-from RegistryTools.search.bm25_search import BM25Search
-from RegistryTools.search.regex_search import RegexSearch
-from RegistryTools.server import create_server, create_server_with_sqlite
-from RegistryTools.storage.json_storage import JSONStorage
+from registrytools.registry.models import SearchMethod, ToolMetadata
+from registrytools.registry.registry import ToolRegistry
+from registrytools.search.bm25_search import BM25Search
+from registrytools.search.regex_search import RegexSearch
+from registrytools.server import create_server, create_server_with_sqlite
+from registrytools.storage.json_storage import JSONStorage
 
 # ============================================================
 # 测试 fixtures

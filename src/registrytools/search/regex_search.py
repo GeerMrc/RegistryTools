@@ -9,8 +9,8 @@ License: MIT
 
 import re
 
-from RegistryTools.registry.models import SearchMethod, ToolMetadata, ToolSearchResult
-from RegistryTools.search.base import SearchAlgorithm
+from registrytools.registry.models import SearchMethod, ToolMetadata, ToolSearchResult
+from registrytools.search.base import SearchAlgorithm
 
 
 class RegexSearch(SearchAlgorithm):

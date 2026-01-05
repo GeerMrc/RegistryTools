@@ -12,20 +12,20 @@ __author__ = "Maric"
 __license__ = "MIT"
 
 # 导入数据模型
-from RegistryTools.registry.models import (
+from registrytools.registry.models import (
     SearchMethod,
     ToolMetadata,
     ToolSearchResult,
 )
 
 # 导入工具注册表
-from RegistryTools.registry.registry import ToolRegistry
+from registrytools.registry.registry import ToolRegistry
 
 # 导入搜索算法
-from RegistryTools.search import SearchAlgorithm
+from registrytools.search import SearchAlgorithm
 
 # 导入存储层
-from RegistryTools.storage import JSONStorage, SQLiteStorage, ToolStorage
+from registrytools.storage import JSONStorage, SQLiteStorage, ToolStorage
 
 __all__ = [
     "__version__",

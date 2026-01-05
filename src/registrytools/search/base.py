@@ -12,7 +12,7 @@ import json
 import threading
 from abc import ABC, abstractmethod
 
-from RegistryTools.registry.models import SearchMethod, ToolMetadata, ToolSearchResult
+from registrytools.registry.models import SearchMethod, ToolMetadata, ToolSearchResult
 
 
 class SearchAlgorithm(ABC):

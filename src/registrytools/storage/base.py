@@ -11,10 +11,10 @@ from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from RegistryTools.registry.models import ToolMetadata
+from registrytools.registry.models import ToolMetadata
 
 if TYPE_CHECKING:
-    from RegistryTools.registry.models import ToolTemperature
+    from registrytools.registry.models import ToolTemperature
 
 
 class ToolStorage(ABC):

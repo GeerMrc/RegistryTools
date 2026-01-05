@@ -11,7 +11,7 @@ from datetime import datetime
 
 import pytest
 
-from RegistryTools.registry.models import (
+from registrytools.registry.models import (
     SearchMethod,
     ToolMetadata,
     ToolSearchResult,

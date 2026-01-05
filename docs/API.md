@@ -333,7 +333,7 @@ class ToolSearchResult(BaseModel):
 
 ```python
 from pathlib import Path
-from RegistryTools.server import create_server, create_server_with_sqlite
+from registrytools.server import create_server, create_server_with_sqlite
 
 # 使用 JSON 存储
 mcp_server = create_server(Path("/path/to/data"))
@@ -350,8 +350,8 @@ mcp_server.run()
 工具注册表核心类
 
 ```python
-from RegistryTools.registry import ToolRegistry
-from RegistryTools.registry.models import SearchMethod
+from registrytools.registry import ToolRegistry
+from registrytools.registry.models import SearchMethod
 
 # 创建注册表
 registry = ToolRegistry()

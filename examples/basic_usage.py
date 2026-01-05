@@ -8,11 +8,11 @@ License: MIT
 """
 
 from pathlib import Path
-from RegistryTools.registry.models import SearchMethod, ToolMetadata
-from RegistryTools.registry.registry import ToolRegistry
-from RegistryTools.search.bm25_search import BM25Search
-from RegistryTools.search.regex_search import RegexSearch
-from RegistryTools.storage.json_storage import JSONStorage
+from registrytools.registry.models import SearchMethod, ToolMetadata
+from registrytools.registry.registry import ToolRegistry
+from registrytools.search.bm25_search import BM25Search
+from registrytools.search.regex_search import RegexSearch
+from registrytools.storage.json_storage import JSONStorage
 
 
 def main() -> None:

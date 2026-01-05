@@ -1,16 +1,17 @@
 # RegistryTools - 任务追踪文档
 
 > **项目开始**: 2026-01-04
-> **当前状态**: Phase 10 已完成 - Streamable HTTP 传输支持
-> **完成进度**: 90%
+> **当前状态**: Phase 11 已完成 - 项目结构标准化重构
+> **完成进度**: 95%
 
 ---
 
 ## 项目信息
 
 - **项目名称**: RegistryTools
-- **包名**: `RegistryTools` (Python) / `Registry-Tools` (PyPI)
+- **包名**: `registrytools` (Python 模块) / `Registry-Tools` (PyPI 包)
 - **MCP 显示名**: `RegistryTools`
+- **项目布局**: 标准 `src/` 布局
 - **目标**: 实现通用 MCP Tool Search Tool（独立 MCP 服务器）
 - **定位**: 可供任何 MCP 客户端使用的工具目录管理器
 
@@ -446,6 +447,97 @@ mcp.run(transport="http", host="0.0.0.0", port=8000, path="/mcp")
 
 ---
 
+## Phase 11: 项目结构标准化重构 (Day 20)
+
+> **开始日期**: 2026-01-05
+> **目标**: 将项目从 `RegistryTools/` 嵌套目录结构重构为标准 Python `src/` 布局
+> **参考**: [Python Packaging Guide](https://packaging.python.org/en/latest/guides/modern-generic-setup/)
+
+### 任务清单
+
+| 任务ID | 任务描述 | 状态 | 完成时间 | 备注 |
+|--------|----------|------|----------|------|
+| TASK-1101 | 创建 src/ 目录结构 | ✅ DONE | 2026-01-05 | src/ 目录 |
+| TASK-1102 | 移动源代码到 src/registrytools/ | ✅ DONE | 2026-01-05 | git mv |
+| TASK-1103 | 更新 pyproject.toml 配置 | ✅ DONE | 2026-01-05 | packages, scripts, tools |
+| TASK-1104 | 更新源代码内部导入语句 | ✅ DONE | 2026-01-05 | RegistryTools → registrytools |
+| TASK-1105 | 更新测试文件导入语句 | ✅ DONE | 2026-01-05 | 批量替换 |
+| TASK-1106 | 更新脚本文件路径引用 | ✅ DONE | 2026-01-05 | scripts/ |
+| TASK-1107 | 更新配置文件 | ✅ DONE | 2026-01-05 | fastmcp.json |
+| TASK-1108 | 更新示例代码导入语句 | ✅ DONE | 2026-01-05 | examples/ |
+| TASK-1109 | 更新文档中的路径引用 | ✅ DONE | 2026-01-05 | docs/, README.md |
+| TASK-1110 | 运行完整测试套件验证 | ✅ DONE | 2026-01-05 | 249/249 通过 |
+| TASK-1111 | 代码质量检查 | ✅ DONE | 2026-01-05 | ruff ✅, black ✅ |
+| TASK-1112 | 构建与安装验证 | ✅ DONE | 2026-01-05 | build + pip install |
+| TASK-1113 | 删除旧 RegistryTools/ 目录 | ✅ DONE | 2026-01-05 | git mv 已处理 |
+| TASK-1114 | 更新 TASK.md 并 git commit | ✅ DONE | 2026-01-05 | Phase 11 完成 |
+
+### 验收标准
+
+- [x] 使用标准 `src/` 布局
+- [x] 包名改为小写 `registrytools` (PEP 8)
+- [x] 所有测试通过 (249/249)
+- [x] 代码覆盖率保持 88%
+- [x] Ruff/Black 检查通过
+- [x] Wheel 包构建成功
+- [x] 命令行入口正常工作
+
+### 实施详情
+
+**目录结构变更**:
+```
+# 旧结构
+RegistryTools/
+└── RegistryTools/       # 源代码
+
+# 新结构 (标准 src layout)
+RegistryTools/
+└── src/
+    └── registrytools/   # 源代码 (小写包名)
+```
+
+**配置文件更新**:
+- `pyproject.toml`:
+  - `[project.scripts]`: `"registrytools.__main__:main"`
+  - `[tool.hatch.build.targets.wheel]`: `packages = ["src/registrytools"]`
+  - `[tool.pytest.ini_options]`: `--cov=registrytools`
+  - `[tool.coverage.run]`: `source = ["src/registrytools"]`
+  - `[tool.ruff.lint.isort]`: `known-first-party = ["registrytools"]`
+
+- `fastmcp.json`:
+  - `"path": "src/registrytools/__main__.py"`
+
+**导入语句更新**:
+- 所有源代码: `from RegistryTools` → `from registrytools`
+- 所有测试文件: `from RegistryTools` → `from registrytools`
+- 所有脚本: `from RegistryTools` → `from registrytools`
+- 所有示例: `from RegistryTools` → `from registrytools`
+- 所有文档: `from RegistryTools` → `from registrytools`
+
+**特殊修复**:
+- `tests/test_main.py` 中的 mock patch 路径更新
+- `patch("RegistryTools.server.create_server")` → `patch("registrytools.server.create_server")`
+
+### 验证结果
+
+- ✅ 249/249 测试全部通过
+- ✅ 测试覆盖率: 88% (保持不变)
+- ✅ Ruff 代码检查通过
+- ✅ Black 格式检查通过
+- ✅ MyPy 类型检查: 6 个预先存在的警告
+- ✅ Wheel 包构建成功: `registry_tools-0.1.0-py3-none-any.whl`
+- ✅ 命令行入口正常: `registry-tools --help`
+- ✅ 无功能回归
+
+### 优势
+
+1. **标准项目结构**: 符合 Python 社区最佳实践
+2. **更好的测试隔离**: 防止导入已安装的包而非开发版本
+3. **IDE 支持**: 更好的代码导航和自动补全
+4. **PEP 8 合规**: 小写模块名 `registrytools`
+
+---
+
 ## 进度跟踪
 
 ### 总体进度
@@ -465,6 +557,7 @@ Phase 8.6: [████████████████████] 100% �
 Phase 9:   [░░░░░░░░░░░░░░░░░░░] 0%   发布准备
 Phase 10:  [████████████████████] 100% Streamable HTTP 传输支持 ✅
 Phase 10.1:[████████████████████] 100% 传输协议文档审核 ✅
+Phase 11:  [████████████████████] 100% 项目结构标准化重构 ✅
 ```
 
 ### 里程碑

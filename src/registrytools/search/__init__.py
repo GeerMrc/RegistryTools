@@ -7,9 +7,9 @@ Copyright (c) 2026 Maric
 License: MIT
 """
 
-from RegistryTools.search.base import SearchAlgorithm
-from RegistryTools.search.bm25_search import BM25Search
-from RegistryTools.search.regex_search import RegexSearch
+from registrytools.search.base import SearchAlgorithm
+from registrytools.search.bm25_search import BM25Search
+from registrytools.search.regex_search import RegexSearch
 
 __all__ = [
     "SearchAlgorithm",

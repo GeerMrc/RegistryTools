@@ -13,12 +13,12 @@ from datetime import datetime
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from RegistryTools.defaults import HOT_TOOL_THRESHOLD, WARM_TOOL_THRESHOLD
-from RegistryTools.registry.models import ToolMetadata
-from RegistryTools.storage.base import ToolStorage
+from registrytools.defaults import HOT_TOOL_THRESHOLD, WARM_TOOL_THRESHOLD
+from registrytools.registry.models import ToolMetadata
+from registrytools.storage.base import ToolStorage
 
 if TYPE_CHECKING:
-    from RegistryTools.registry.models import ToolTemperature
+    from registrytools.registry.models import ToolTemperature
 
 
 class SQLiteStorage(ToolStorage):
@@ -455,7 +455,7 @@ class SQLiteStorage(ToolStorage):
         Returns:
             工具元数据
         """
-        from RegistryTools.registry.models import ToolTemperature
+        from registrytools.registry.models import ToolTemperature
 
         # 处理旧数据：可能没有 temperature 字段
         if len(row) == 10:

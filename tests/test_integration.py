@@ -11,12 +11,12 @@ from pathlib import Path
 
 import pytest
 
-from RegistryTools.registry.models import SearchMethod, ToolMetadata
-from RegistryTools.registry.registry import ToolRegistry
-from RegistryTools.search.bm25_search import BM25Search
-from RegistryTools.search.regex_search import RegexSearch
-from RegistryTools.storage.json_storage import JSONStorage
-from RegistryTools.storage.sqlite_storage import SQLiteStorage
+from registrytools.registry.models import SearchMethod, ToolMetadata
+from registrytools.registry.registry import ToolRegistry
+from registrytools.search.bm25_search import BM25Search
+from registrytools.search.regex_search import RegexSearch
+from registrytools.storage.json_storage import JSONStorage
+from registrytools.storage.sqlite_storage import SQLiteStorage
 
 # ============================================================
 # 测试标记
@@ -73,7 +73,7 @@ def sample_tools() -> list[ToolMetadata]:
 
 def test_server_creation_and_initialization(temp_data_path: Path) -> None:
     """测试服务器创建与初始化流程"""
-    from RegistryTools.server import create_server
+    from registrytools.server import create_server
 
     # 创建服务器
     mcp_server = create_server(temp_data_path)
@@ -292,7 +292,7 @@ def test_category_management(temp_data_path: Path) -> None:
 
 def test_mcp_tools_integration(temp_data_path: Path) -> None:
     """测试 MCP 工具接口集成"""
-    from RegistryTools.server import create_server
+    from registrytools.server import create_server
 
     # 创建服务器
     mcp_server = create_server(temp_data_path)
@@ -328,7 +328,7 @@ def test_mcp_tools_integration(temp_data_path: Path) -> None:
 
 def test_mcp_resources_integration(temp_data_path: Path) -> None:
     """测试 MCP 资源接口集成"""
-    from RegistryTools.server import create_server
+    from registrytools.server import create_server
 
     # 创建服务器并添加工具
     _ = create_server(temp_data_path)
@@ -358,7 +358,7 @@ def test_mcp_resources_integration(temp_data_path: Path) -> None:
 
 def test_complete_user_workflow(temp_data_path: Path) -> None:
     """测试完整的用户使用工作流"""
-    from RegistryTools.server import create_server
+    from registrytools.server import create_server
 
     # 步骤 1: 启动服务器
     mcp_server = create_server(temp_data_path)

@@ -19,7 +19,7 @@ def verify_import():
     print("🔍 验证模块导入...")
 
     try:
-        import RegistryTools
+        import registrytools
         print("  ✓ RegistryTools 模块导入成功")
         return True
     except ImportError as e:

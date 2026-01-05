@@ -13,13 +13,13 @@ from pathlib import Path
 
 from fastmcp import FastMCP
 
-from RegistryTools.registry.models import SearchMethod, ToolMetadata
-from RegistryTools.registry.registry import ToolRegistry
-from RegistryTools.search.bm25_search import BM25Search
-from RegistryTools.search.regex_search import RegexSearch
-from RegistryTools.storage.base import ToolStorage
-from RegistryTools.storage.json_storage import JSONStorage
-from RegistryTools.storage.sqlite_storage import SQLiteStorage
+from registrytools.registry.models import SearchMethod, ToolMetadata
+from registrytools.registry.registry import ToolRegistry
+from registrytools.search.bm25_search import BM25Search
+from registrytools.search.regex_search import RegexSearch
+from registrytools.storage.base import ToolStorage
+from registrytools.storage.json_storage import JSONStorage
+from registrytools.storage.sqlite_storage import SQLiteStorage
 
 # ============================================================
 # MCP 工具和资源注册 (TASK-708: 重构提取公共函数)
@@ -297,7 +297,7 @@ def create_server(data_path: Path) -> FastMCP:
         registry.register_many(tools)
 
     # 加载默认工具集（如果注册表为空）(TASK-603)
-    from RegistryTools.defaults import load_default_tools_if_empty
+    from registrytools.defaults import load_default_tools_if_empty
 
     default_tools = load_default_tools_if_empty(
         tool_count=registry.tool_count,
@@ -350,7 +350,7 @@ def create_server_with_sqlite(data_path: Path) -> FastMCP:
         registry.register_many(tools)
 
     # 加载默认工具集（如果注册表为空）(TASK-603)
-    from RegistryTools.defaults import load_default_tools_if_empty
+    from registrytools.defaults import load_default_tools_if_empty
 
     # 获取默认工具（不自动保存到 JSON）
     default_tools = load_default_tools_if_empty(

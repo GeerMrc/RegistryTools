@@ -12,7 +12,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from RegistryTools.__main__ import main
+from registrytools.__main__ import main
 
 
 class TestMain:
@@ -21,7 +21,7 @@ class TestMain:
     def test_main_with_custom_data_path(self, tmp_path: Path) -> None:
         """测试使用自定义数据路径"""
         with (
-            patch("RegistryTools.server.create_server") as mock_create_server,
+            patch("registrytools.server.create_server") as mock_create_server,
             patch("sys.argv", ["registry-tools", "--data-path", str(tmp_path)]),
         ):
             mock_app = Mock()
@@ -43,7 +43,7 @@ class TestMain:
         monkeypatch.setenv("HOME", str(tmp_path))
 
         with (
-            patch("RegistryTools.server.create_server") as mock_create_server,
+            patch("registrytools.server.create_server") as mock_create_server,
             patch("sys.argv", ["registry-tools"]),
         ):
             mock_app = Mock()
@@ -63,7 +63,7 @@ class TestMain:
         data_path = tmp_path / "custom_data"
 
         with (
-            patch("RegistryTools.server.create_server") as mock_create_server,
+            patch("registrytools.server.create_server") as mock_create_server,
             patch("sys.argv", ["registry-tools", "--data-path", str(data_path)]),
         ):
             mock_app = Mock()
@@ -92,7 +92,7 @@ class TestMainHttpTransport:
     def test_main_with_http_transport_default_params(self, tmp_path: Path) -> None:
         """测试 HTTP 传输使用默认参数"""
         with (
-            patch("RegistryTools.server.create_server") as mock_create_server,
+            patch("registrytools.server.create_server") as mock_create_server,
             patch(
                 "sys.argv", ["registry-tools", "--transport", "http", "--data-path", str(tmp_path)]
             ),
@@ -111,7 +111,7 @@ class TestMainHttpTransport:
     def test_main_with_http_transport_custom_params(self, tmp_path: Path) -> None:
         """测试 HTTP 传输使用自定义参数"""
         with (
-            patch("RegistryTools.server.create_server") as mock_create_server,
+            patch("registrytools.server.create_server") as mock_create_server,
             patch(
                 "sys.argv",
                 [
@@ -143,7 +143,7 @@ class TestMainHttpTransport:
     def test_main_with_stdio_transport(self, tmp_path: Path) -> None:
         """测试 STDIO 传输 (默认)"""
         with (
-            patch("RegistryTools.server.create_server") as mock_create_server,
+            patch("registrytools.server.create_server") as mock_create_server,
             patch(
                 "sys.argv", ["registry-tools", "--transport", "stdio", "--data-path", str(tmp_path)]
             ),
@@ -160,7 +160,7 @@ class TestMainHttpTransport:
     def test_main_without_transport_arg_uses_stdio(self, tmp_path: Path) -> None:
         """测试未指定传输时默认使用 STDIO"""
         with (
-            patch("RegistryTools.server.create_server") as mock_create_server,
+            patch("registrytools.server.create_server") as mock_create_server,
             patch("sys.argv", ["registry-tools", "--data-path", str(tmp_path)]),
         ):
             mock_app = Mock()

@@ -12,21 +12,21 @@ from collections import defaultdict
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-from RegistryTools.defaults import (
+from registrytools.defaults import (
     ENABLE_DOWNGRADE,
     HOT_TOOL_INACTIVE_DAYS,
     HOT_TOOL_THRESHOLD,
     WARM_TOOL_INACTIVE_DAYS,
     WARM_TOOL_THRESHOLD,
 )
-from RegistryTools.registry.models import SearchMethod, ToolMetadata, ToolSearchResult
-from RegistryTools.search.base import SearchAlgorithm
+from registrytools.registry.models import SearchMethod, ToolMetadata, ToolSearchResult
+from registrytools.search.base import SearchAlgorithm
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
 
-    from RegistryTools.registry.models import ToolTemperature
-    from RegistryTools.storage.base import ToolStorage
+    from registrytools.registry.models import ToolTemperature
+    from registrytools.storage.base import ToolStorage
 
 
 class ToolRegistry:
@@ -108,7 +108,7 @@ class ToolRegistry:
         Returns:
             工具温度级别
         """
-        from RegistryTools.registry.models import ToolTemperature
+        from registrytools.registry.models import ToolTemperature
 
         if tool.use_frequency >= HOT_TOOL_THRESHOLD:
             return ToolTemperature.HOT
@@ -150,7 +150,7 @@ class ToolRegistry:
         Returns:
             True 如果需要降级，否则 False
         """
-        from RegistryTools.registry.models import ToolTemperature
+        from registrytools.registry.models import ToolTemperature
 
         # 如果未启用降级机制，直接返回 False
         if not ENABLE_DOWNGRADE:
@@ -184,7 +184,7 @@ class ToolRegistry:
         Returns:
             True 如果降级成功，False 如果工具不存在或已经是冷工具
         """
-        from RegistryTools.registry.models import ToolTemperature
+        from registrytools.registry.models import ToolTemperature
 
         tool = self._tools.get(tool_name)
         if not tool:
@@ -219,7 +219,7 @@ class ToolRegistry:
         Returns:
             实际加载的热工具数量
         """
-        from RegistryTools.registry.models import ToolTemperature
+        from registrytools.registry.models import ToolTemperature
 
         # 从存储加载热工具
         hot_tools_from_storage = storage.load_by_temperature(ToolTemperature.HOT, limit)

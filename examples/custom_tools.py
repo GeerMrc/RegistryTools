@@ -8,8 +8,8 @@ License: MIT
 """
 
 from pathlib import Path
-from RegistryTools.registry.models import ToolMetadata
-from RegistryTools.storage.json_storage import JSONStorage
+from registrytools.registry.models import ToolMetadata
+from registrytools.storage.json_storage import JSONStorage
 
 
 def main() -> None:

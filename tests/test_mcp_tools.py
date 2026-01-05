@@ -12,7 +12,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from RegistryTools.registry.models import ToolMetadata
+from registrytools.registry.models import ToolMetadata
 
 # ============================================================
 # 测试数据
@@ -64,10 +64,10 @@ def sample_tools() -> list[ToolMetadata]:
 @pytest.fixture
 def mock_registry_with_tools(sample_tools: list[ToolMetadata]) -> MagicMock:
     """返回带有示例工具的模拟注册表"""
-    from RegistryTools.registry.models import SearchMethod
-    from RegistryTools.registry.registry import ToolRegistry
-    from RegistryTools.search.bm25_search import BM25Search
-    from RegistryTools.search.regex_search import RegexSearch
+    from registrytools.registry.models import SearchMethod
+    from registrytools.registry.registry import ToolRegistry
+    from registrytools.search.bm25_search import BM25Search
+    from registrytools.search.regex_search import RegexSearch
 
     registry = ToolRegistry()
 
@@ -93,7 +93,7 @@ class TestSearchTools:
     def test_search_tools_with_bm25(self, mock_registry_with_tools: MagicMock) -> None:
         """测试使用 BM25 搜索工具"""
         # 直接调用注册表的 search 方法
-        from RegistryTools.registry.models import SearchMethod
+        from registrytools.registry.models import SearchMethod
 
         results = mock_registry_with_tools.search(
             query="github pull request", method=SearchMethod.BM25, limit=5
@@ -107,7 +107,7 @@ class TestSearchTools:
 
     def test_search_tools_with_regex(self, mock_registry_with_tools: MagicMock) -> None:
         """测试使用正则表达式搜索工具"""
-        from RegistryTools.registry.models import SearchMethod
+        from registrytools.registry.models import SearchMethod
 
         results = mock_registry_with_tools.search(
             query="lambda", method=SearchMethod.REGEX, limit=5
@@ -119,7 +119,7 @@ class TestSearchTools:
 
     def test_search_tools_empty_query(self, mock_registry_with_tools: MagicMock) -> None:
         """测试空查询"""
-        from RegistryTools.registry.models import SearchMethod
+        from registrytools.registry.models import SearchMethod
 
         results = mock_registry_with_tools.search(query="", method=SearchMethod.BM25, limit=5)
 
@@ -286,7 +286,7 @@ class TestServerCreation:
 
     def test_create_server(self, tmp_path: Path) -> None:
         """测试创建服务器"""
-        from RegistryTools.server import create_server
+        from registrytools.server import create_server
 
         server = create_server(tmp_path)
 
@@ -298,8 +298,8 @@ class TestServerCreation:
         self, tmp_path: Path, sample_tools: list[ToolMetadata]
     ) -> None:
         """测试创建带有工具的服务器"""
-        from RegistryTools.server import create_server
-        from RegistryTools.storage.json_storage import JSONStorage
+        from registrytools.server import create_server
+        from registrytools.storage.json_storage import JSONStorage
 
         # 先保存工具
         storage = JSONStorage(tmp_path / "tools.json")
@@ -326,7 +326,7 @@ class TestIntegration:
 
     def test_complete_workflow(self, mock_registry_with_tools: MagicMock) -> None:
         """测试完整的工具使用流程"""
-        from RegistryTools.registry.models import SearchMethod
+        from registrytools.registry.models import SearchMethod
 
         # 1. 搜索工具
         search_results = mock_registry_with_tools.search(

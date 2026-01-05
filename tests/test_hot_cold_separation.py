@@ -10,21 +10,21 @@ License: MIT
 import time
 from datetime import datetime, timedelta
 
-from RegistryTools.defaults import (
+from registrytools.defaults import (
     HOT_TOOL_INACTIVE_DAYS,
     HOT_TOOL_THRESHOLD,
     WARM_TOOL_INACTIVE_DAYS,
     WARM_TOOL_THRESHOLD,
 )
-from RegistryTools.registry.models import (
+from registrytools.registry.models import (
     SearchMethod,
     ToolMetadata,
     ToolTemperature,
 )
-from RegistryTools.registry.registry import ToolRegistry
-from RegistryTools.search.bm25_search import BM25Search
-from RegistryTools.storage.json_storage import JSONStorage
-from RegistryTools.storage.sqlite_storage import SQLiteStorage
+from registrytools.registry.registry import ToolRegistry
+from registrytools.search.bm25_search import BM25Search
+from registrytools.storage.json_storage import JSONStorage
+from registrytools.storage.sqlite_storage import SQLiteStorage
 
 # ============================================================
 # 工具温度枚举测试 (3个)

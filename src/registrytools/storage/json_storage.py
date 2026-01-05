@@ -12,12 +12,12 @@ from pathlib import Path
 from tempfile import NamedTemporaryFile
 from typing import TYPE_CHECKING
 
-from RegistryTools.defaults import HOT_TOOL_THRESHOLD, WARM_TOOL_THRESHOLD
-from RegistryTools.registry.models import ToolMetadata
-from RegistryTools.storage.base import ToolStorage
+from registrytools.defaults import HOT_TOOL_THRESHOLD, WARM_TOOL_THRESHOLD
+from registrytools.registry.models import ToolMetadata
+from registrytools.storage.base import ToolStorage
 
 if TYPE_CHECKING:
-    from RegistryTools.registry.models import ToolTemperature
+    from registrytools.registry.models import ToolTemperature
 
 
 class JSONStorage(ToolStorage):

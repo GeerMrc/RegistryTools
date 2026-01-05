@@ -9,10 +9,10 @@ License: MIT
 
 import pytest
 
-from RegistryTools.registry.models import SearchMethod, ToolMetadata
-from RegistryTools.registry.registry import ToolRegistry
-from RegistryTools.search.bm25_search import BM25Search
-from RegistryTools.search.regex_search import RegexSearch
+from registrytools.registry.models import SearchMethod, ToolMetadata
+from registrytools.registry.registry import ToolRegistry
+from registrytools.search.bm25_search import BM25Search
+from registrytools.search.regex_search import RegexSearch
 
 
 class TestToolRegistry:

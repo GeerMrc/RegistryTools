@@ -10,8 +10,8 @@ License: MIT
 import jieba
 from rank_bm25 import BM25Okapi
 
-from RegistryTools.registry.models import SearchMethod, ToolMetadata, ToolSearchResult
-from RegistryTools.search.base import SearchAlgorithm
+from registrytools.registry.models import SearchMethod, ToolMetadata, ToolSearchResult
+from registrytools.search.base import SearchAlgorithm
 
 
 class BM25Search(SearchAlgorithm):

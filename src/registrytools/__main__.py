@@ -14,7 +14,7 @@ RegistryTools MCP 服务器入口
 import argparse
 from pathlib import Path
 
-from RegistryTools import __version__
+from registrytools import __version__
 
 
 def main():
@@ -67,7 +67,7 @@ def main():
     data_path.mkdir(parents=True, exist_ok=True)
 
     # 导入并启动服务器
-    from RegistryTools.server import create_server
+    from registrytools.server import create_server
 
     app = create_server(data_path)
 

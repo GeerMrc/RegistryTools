@@ -14,10 +14,10 @@ from pathlib import Path
 
 import pytest
 
-from RegistryTools.registry.models import ToolMetadata
-from RegistryTools.storage.base import ToolStorage
-from RegistryTools.storage.json_storage import JSONStorage
-from RegistryTools.storage.sqlite_storage import SQLiteStorage
+from registrytools.registry.models import ToolMetadata
+from registrytools.storage.base import ToolStorage
+from registrytools.storage.json_storage import JSONStorage
+from registrytools.storage.sqlite_storage import SQLiteStorage
 
 # ============================================================
 # 测试数据
