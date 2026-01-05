@@ -84,3 +84,102 @@ class TestMain:
 
         captured = capsys.readouterr()
         assert "RegistryTools" in captured.out
+
+
+class TestMainHttpTransport:
+    """测试 HTTP 传输协议支持"""
+
+    def test_main_with_http_transport_default_params(self, tmp_path: Path) -> None:
+        """测试 HTTP 传输使用默认参数"""
+        with (
+            patch("RegistryTools.server.create_server") as mock_create_server,
+            patch(
+                "sys.argv", ["registry-tools", "--transport", "http", "--data-path", str(tmp_path)]
+            ),
+        ):
+            mock_app = Mock()
+            mock_app.run = Mock()
+            mock_create_server.return_value = mock_app
+
+            main()
+
+            # 验证 HTTP 传输被正确调用 (使用默认参数)
+            mock_app.run.assert_called_once_with(
+                transport="http", host="127.0.0.1", port=8000, path="/"
+            )
+
+    def test_main_with_http_transport_custom_params(self, tmp_path: Path) -> None:
+        """测试 HTTP 传输使用自定义参数"""
+        with (
+            patch("RegistryTools.server.create_server") as mock_create_server,
+            patch(
+                "sys.argv",
+                [
+                    "registry-tools",
+                    "--transport",
+                    "http",
+                    "--host",
+                    "0.0.0.0",
+                    "--port",
+                    "9000",
+                    "--path",
+                    "/api/mcp",
+                    "--data-path",
+                    str(tmp_path),
+                ],
+            ),
+        ):
+            mock_app = Mock()
+            mock_app.run = Mock()
+            mock_create_server.return_value = mock_app
+
+            main()
+
+            # 验证 HTTP 传输被正确调用 (使用自定义参数)
+            mock_app.run.assert_called_once_with(
+                transport="http", host="0.0.0.0", port=9000, path="/api/mcp"
+            )
+
+    def test_main_with_stdio_transport(self, tmp_path: Path) -> None:
+        """测试 STDIO 传输 (默认)"""
+        with (
+            patch("RegistryTools.server.create_server") as mock_create_server,
+            patch(
+                "sys.argv", ["registry-tools", "--transport", "stdio", "--data-path", str(tmp_path)]
+            ),
+        ):
+            mock_app = Mock()
+            mock_app.run = Mock()
+            mock_create_server.return_value = mock_app
+
+            main()
+
+            # 验证 STDIO 传输被调用 (无参数)
+            mock_app.run.assert_called_once_with()
+
+    def test_main_without_transport_arg_uses_stdio(self, tmp_path: Path) -> None:
+        """测试未指定传输时默认使用 STDIO"""
+        with (
+            patch("RegistryTools.server.create_server") as mock_create_server,
+            patch("sys.argv", ["registry-tools", "--data-path", str(tmp_path)]),
+        ):
+            mock_app = Mock()
+            mock_app.run = Mock()
+            mock_create_server.return_value = mock_app
+
+            main()
+
+            # 验证默认使用 STDIO 传输
+            mock_app.run.assert_called_once_with()
+
+    def test_main_help_includes_transport_options(self, capsys: pytest.CaptureFixture[str]) -> None:
+        """测试帮助信息包含传输协议说明"""
+        with patch("sys.argv", ["registry-tools", "--help"]):
+            with pytest.raises(SystemExit):
+                main()
+
+        captured = capsys.readouterr()
+        # 验证帮助信息包含传输协议说明
+        assert "传输协议" in captured.out or "transport" in captured.out
+        assert "stdio" in captured.out
+        assert "http" in captured.out

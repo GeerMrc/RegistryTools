@@ -32,9 +32,22 @@ uvx Registry-Tools
 pip install Registry-Tools
 ```
 
-### Claude Desktop 配置
+### 传输协议
 
-在 Claude Desktop 配置文件中添加：
+RegistryTools 支持多种 MCP 传输协议:
+
+| 协议 | 适用场景 | 配置方式 |
+|------|----------|----------|
+| **STDIO** | 本地 CLI 集成 (默认) | `registry-tools` |
+| **HTTP** | 远程服务部署 | `registry-tools --transport http` |
+
+#### STDIO 模式 (默认)
+
+适用于 Claude Desktop、本地脚本等本地集成场景。
+
+**Claude Desktop 配置**:
+
+在 Claude Desktop 配置文件中添加:
 
 **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
 **Windows**: `%APPDATA%/Claude/claude_desktop_config.json`
@@ -50,6 +63,68 @@ pip install Registry-Tools
   }
 }
 ```
+
+#### HTTP 模式 (远程部署)
+
+适用于远程服务、容器化部署、多客户端共享等场景。
+
+**启动 HTTP 服务器**:
+
+```bash
+# 使用默认参数 (127.0.0.1:8000)
+registry-tools --transport http
+
+# 自定义主机和端口
+registry-tools --transport http --host 0.0.0.0 --port 8000
+
+# 自定义路径
+registry-tools --transport http --port 8000 --path /api/mcp
+```
+
+**客户端连接示例**:
+
+```json
+{
+  "mcpServers": {
+    "RegistryTools": {
+      "url": "http://localhost:8000/mcp"
+    }
+  }
+}
+```
+
+### fastmcp.json 配置
+
+使用 `fastmcp.json` 进行声明式配置 (推荐):
+
+```bash
+# 使用配置文件启动
+fastmcp run fastmcp.json
+
+# 或直接运行 (自动检测当前目录的 fastmcp.json)
+fastmcp run
+```
+
+**fastmcp.json 示例**:
+
+```json
+{
+  "$schema": "https://gofastmcp.com/public/schemas/fastmcp.json/v1.json",
+  "source": {
+    "path": "RegistryTools/__main__.py",
+    "entrypoint": "main"
+  },
+  "deployment": {
+    "transport": "http",
+    "host": "0.0.0.0",
+    "port": 8000,
+    "path": "/mcp"
+  }
+}
+```
+
+详见: [fastmcp.json](fastmcp.json) (STDIO 默认配置)
+详见: [fastmcp.http.json](fastmcp.http.json) (HTTP 配置示例)
 
 ### 使用示例
 
@@ -192,13 +267,17 @@ ruff check RegistryTools/ tests/
 - ✅ BM25 搜索算法（支持中文分词）
 - ✅ JSON/SQLite 存储
 - ✅ MCP 工具和资源接口
-- ✅ 测试覆盖率 81%
+- ✅ STDIO 和 HTTP 传输协议支持
+- ✅ fastmcp.json 配置文件支持
+- ✅ 测试覆盖率 88%
 - ✅ 完整文档和使用示例
+- ✅ 性能优化（索引缓存、冷热工具分离）
 
 ### v0.2.0 (计划中)
-- ⏳ 性能优化（索引缓存）
-- ⏳ 冷热工具分离
-- ⏳ 集成测试覆盖
+- ⏳ Embedding 语义搜索
+- ⏳ 分布式工具注册
+- ⏳ 工具依赖管理
+- ⏳ Web UI 管理界面
 
 ---
 

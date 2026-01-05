@@ -1,8 +1,8 @@
 # RegistryTools - 任务追踪文档
 
 > **项目开始**: 2026-01-04
-> **当前状态**: Phase 8 已完成，审核后进入 Phase 8.5 质量修复
-> **完成进度**: 85%
+> **当前状态**: Phase 10 已完成 - Streamable HTTP 传输支持
+> **完成进度**: 90%
 
 ---
 
@@ -282,23 +282,133 @@
 
 ---
 
+## Phase 10: Streamable HTTP 传输支持 (Day 19)
+
+> **开始日期**: 2026-01-05
+> **目标**: 添加 Streamable HTTP 传输协议支持,使 RegistryTools 可作为远程 MCP 服务部署
+> **参考**: [FastMCP HTTP Deployment](https://gofastmcp.com/deployment/http)
+
+### 任务清单
+
+| 任务ID | 任务描述 | 状态 | 完成时间 | 备注 |
+|--------|----------|------|----------|------|
+| TASK-1001 | 设计 HTTP 传输架构方案 | ✅ DONE | 2026-01-05 | 方案设计文档 |
+| TASK-1002 | 实现命令行参数支持 | ✅ DONE | 2026-01-05 | --transport, --host, --port, --path |
+| TASK-1003 | 创建 fastmcp.json 配置文件 | ✅ DONE | 2026-01-05 | 项目配置 |
+| TASK-1004 | 编写 HTTP 传输集成测试 | ✅ DONE | 2026-01-05 | 5 个测试通过 |
+| TASK-1005 | 更新 README.md 说明 HTTP 配置 | ✅ DONE | 2026-01-05 | 使用文档 |
+| TASK-1006 | 更新 ARCHITECTURE.md 传输协议章节 | ✅ DONE | 2026-01-05 | 架构文档 |
+| TASK-1007 | 运行测试套件交叉验证 | ✅ DONE | 2026-01-05 | 质量检查通过 |
+| TASK-1008 | 更新 TASK.md 并 git commit | 📝 IN_PROGRESS | 2026-01-05 | 阶段完成 |
+
+### 验收标准
+
+- [x] 支持 `--transport http` 命令行参数
+- [x] 支持 `--host`, `--port`, `--path` 配置参数
+- [x] 提供 `fastmcp.json` 配置文件
+- [x] HTTP 传输集成测试通过
+- [x] README.md 更新包含 HTTP 配置说明
+- [x] ARCHITECTURE.md 更新传输协议章节
+- [x] 测试覆盖率保持 >80%
+
+### 实施详情
+
+#### TASK-1001: 设计 HTTP 传输架构方案 ✅
+
+**设计要点**:
+- 使用 FastMCP 的 Streamable HTTP 传输
+- 保持 STDIO 作为默认传输(向后兼容)
+- 支持命令行参数和 fastmcp.json 两种配置方式
+- 支持环境变量配置(FASTMCP_*)
+
+**传输协议支持**:
+```python
+# STDIO (默认)
+mcp.run()
+
+# Streamable HTTP (推荐用于远程部署)
+mcp.run(transport="http", host="0.0.0.0", port=8000, path="/mcp")
+```
+
+**配置方式**:
+1. 命令行参数: `--transport http --host 0.0.0.0 --port 8000`
+2. fastmcp.json: 声明式配置文件
+3. 环境变量: `FASTMCP_TRANSPORT=http`
+
+#### TASK-1002: 实现命令行参数支持 ✅
+
+**实现内容**:
+- 修改 `RegistryTools/__main__.py`
+- 添加 `--transport` 参数 (stdio/http)
+- 添加 `--host` 参数 (默认: 127.0.0.1)
+- 添加 `--port` 参数 (默认: 8000)
+- 添加 `--path` 参数 (默认: /)
+- 根据传输类型调用不同的运行方式
+
+#### TASK-1003: 创建 fastmcp.json 配置文件 ✅
+
+**创建文件**:
+- `fastmcp.json` - STDIO 默认配置
+- `fastmcp.http.json` - HTTP 配置示例
+
+#### TASK-1004: 编写 HTTP 传输集成测试 ✅
+
+**测试覆盖**:
+- `test_main_with_http_transport_default_params` - 测试默认参数
+- `test_main_with_http_transport_custom_params` - 测试自定义参数
+- `test_main_with_stdio_transport` - 测试 STDIO 传输
+- `test_main_without_transport_arg_uses_stdio` - 测试默认行为
+- `test_main_help_includes_transport_options` - 测试帮助信息
+
+**测试结果**: 5/5 通过
+
+#### TASK-1005: 更新 README.md 说明 HTTP 配置 ✅
+
+**更新内容**:
+- 添加传输协议章节
+- 添加 STDIO 模式说明
+- 添加 HTTP 模式说明
+- 添加 fastmcp.json 配置示例
+- 更新路线图
+
+#### TASK-1006: 更新 ARCHITECTURE.md 传输协议章节 ✅
+
+**更新内容**:
+- 添加完整的传输协议章节
+- STDIO 传输说明
+- Streamable HTTP 传输说明
+- fastmcp.json 配置示例
+- 传输协议对比表
+- 协议选择建议
+
+#### TASK-1007: 运行测试套件交叉验证 ✅
+
+**验证结果**:
+- Ruff 检查通过
+- Black 格式化完成
+- 测试通过: 9/9 (test_main.py)
+- `RegistryTools/__main__.py` 覆盖率: 100%
+
+---
+
 ## 进度跟踪
 
 ### 总体进度
 
 ```
-Phase 0: [████████████████████] 100% 项目初始化 ✅
-Phase 1: [████████████████████] 100% 数据模型 ✅
-Phase 2: [████████████████████] 100% 搜索算法 ✅
-Phase 3: [████████████████████] 100% 工具注册表 ✅
-Phase 4: [████████████████████] 100% 存储层 ✅
-Phase 5: [████████████████████] 100% MCP 工具 ✅
-Phase 6: [████████████████████] 100% 服务器入口 ✅
-Phase 7: [████████████████████] 100% 测试文档 ✅
-Phase 8: [████████████████████] 100% 性能优化 ✅
-Phase 8.5: [████████████████████] 100% 质量修复 ✅
-Phase 8.6: [████████████████████] 100% 非阻塞修复 ✅
-Phase 9: [░░░░░░░░░░░░░░░░░░░] 0%   发布准备
+Phase 0:  [████████████████████] 100% 项目初始化 ✅
+Phase 1:  [████████████████████] 100% 数据模型 ✅
+Phase 2:  [████████████████████] 100% 搜索算法 ✅
+Phase 3:  [████████████████████] 100% 工具注册表 ✅
+Phase 4:  [████████████████████] 100% 存储层 ✅
+Phase 5:  [████████████████████] 100% MCP 工具 ✅
+Phase 6:  [████████████████████] 100% 服务器入口 ✅
+Phase 7:  [████████████████████] 100% 测试文档 ✅
+Phase 8:  [████████████████████] 100% 性能优化 ✅
+Phase 8.5:[████████████████████] 100% 质量修复 ✅
+Phase 8.6:[████████████████████] 100% 非阻塞修复 ✅
+Phase 9:  [░░░░░░░░░░░░░░░░░░░] 0%   发布准备
+Phase 10: [████████████████████] 100% Streamable HTTP 传输支持 ✅
 ```
 
 ### 里程碑
@@ -306,7 +416,8 @@ Phase 9: [░░░░░░░░░░░░░░░░░░░] 0%   发布
 - [x] M1: 项目初始化完成 (2026-01-04) ✅
 - [x] M2: 核心组件实现完成 (2026-01-05) ✅
 - [x] M3: 性能优化与测试完成 (2026-01-05) ✅
-- [ ] M4: v0.1.0 发布
+- [x] M4: Streamable HTTP 传输支持完成 (2026-01-05) ✅
+- [ ] M5: v0.1.0 发布
 
 ---
 

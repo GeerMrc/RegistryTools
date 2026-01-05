@@ -137,6 +137,8 @@ dmypy.json
 *.db
 !data/.gitkeep
 !tools.json
+!fastmcp.json
+!fastmcp.*.json
 
 # Project specific
 *.egg
