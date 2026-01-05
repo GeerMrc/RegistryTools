@@ -197,7 +197,7 @@ def main():
         logger.info(f"API Key 认证: {'启用' if enable_auth else '禁用'}")
 
     # 导入并启动服务器
-    from registrytools.server import create_server, create_auth_middleware_for_server
+    from registrytools.server import create_auth_middleware_for_server, create_server
 
     logger.info("正在创建 MCP 服务器...")
 
@@ -232,10 +232,8 @@ def _handle_api_key_command(args: argparse.Namespace) -> None:
     Args:
         args: 命令行参数
     """
-    import json
 
     from registrytools.auth import APIKeyPermission, APIKeyScope, APIKeyStorage, generate_api_key
-    from registrytools.auth.models import APIKeyCreateRequest
 
     # 获取数据路径
     data_path_str = os.getenv("REGISTRYTOOLS_DATA_PATH") or args.data_path
@@ -261,12 +259,12 @@ def _handle_api_key_command(args: argparse.Namespace) -> None:
         )
         storage.save(api_key)
 
-        print(f"✓ API Key 创建成功:")
+        print("✓ API Key 创建成功:")
         print(f"  ID: {api_key.key_id}")
         print(f"  Name: {api_key.name}")
         print(f"  Permission: {api_key.permission.value}")
         print(f"  API Key: {api_key.api_key}")
-        print(f"\n重要: 请妥善保存 API Key，它只会显示这一次！")
+        print("\n重要: 请妥善保存 API Key，它只会显示这一次！")
 
     elif args.api_key_action == "list":
         # 列出 API Key

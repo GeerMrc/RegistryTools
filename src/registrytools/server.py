@@ -415,7 +415,7 @@ def create_auth_middleware_for_server(
     Returns:
         APIKeyAuthMiddleware: 认证中间件实例
     """
-    from registrytools.auth import APIKeyStorage, APIKeyAuthMiddleware
+    from registrytools.auth import APIKeyAuthMiddleware, APIKeyStorage
 
     api_key_storage = APIKeyStorage(data_path / "api_keys.db")
     return APIKeyAuthMiddleware(api_key_storage, header_name)
