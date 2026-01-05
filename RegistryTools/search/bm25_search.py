@@ -58,6 +58,12 @@ class BM25Search(SearchAlgorithm):
         """
         super().index(tools)
 
+        # 处理空列表情况
+        if not tools:
+            self._tokenized_docs = []
+            self._bm25 = None
+            return
+
         # 构建文档集合（名称 + 描述 + 标签）
         self._tokenized_docs = []
         for tool in tools:

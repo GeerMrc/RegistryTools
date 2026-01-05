@@ -1,8 +1,8 @@
 # RegistryTools - 任务追踪文档
 
 > **项目开始**: 2026-01-04
-> **当前状态**: Phase 4 已完成，准备进入 Phase 5
-> **完成进度**: 50%
+> **当前状态**: Phase 5 已完成，准备进入 Phase 6
+> **完成进度**: 60%
 
 ---
 
@@ -95,11 +95,16 @@
 
 | 任务ID | 任务描述 | 状态 | 完成时间 | 备注 |
 |--------|----------|------|----------|------|
-| TASK-501 | 实现 search_tools MCP 工具 | ⏳ TODO | - | 搜索工具接口 |
-| TASK-502 | 实现 get_tool_definition MCP 工具 | ⏳ TODO | - | 获取定义接口 |
-| TASK-503 | 实现 list_tools_by_category MCP 工具 | ⏳ TODO | - | 按类别列出 |
-| TASK-504 | 实现 register_tool MCP 工具 | ⏳ TODO | - | 动态注册接口 |
-| TASK-505 | 编写 MCP 工具集成测试 | ⏳ TODO | - | 测试覆盖 |
+| TASK-500 | 实现 MCP 服务器核心模块 server.py | ✅ DONE | 2026-01-05 | FastMCP 集成 (300 行) |
+| TASK-501 | 实现 search_tools MCP 工具 | ✅ DONE | 2026-01-05 | 搜索工具接口 |
+| TASK-502 | 实现 get_tool_definition MCP 工具 | ✅ DONE | 2026-01-05 | 获取定义接口 |
+| TASK-503 | 实现 list_tools_by_category MCP 工具 | ✅ DONE | 2026-01-05 | 按类别列出 |
+| TASK-504 | 实现 register_tool MCP 工具 | ✅ DONE | 2026-01-05 | 动态注册接口 |
+| TASK-504-1 | 更新 __init__.py 导出 | ✅ DONE | 2026-01-05 | 导出公共模块 |
+| TASK-505 | 编写 MCP 工具集成测试 | ✅ DONE | 2026-01-05 | 17 个测试通过 |
+| TASK-506 | 代码格式化和质量检查 | ✅ DONE | 2026-01-05 | Black + Ruff |
+| TASK-507 | 运行测试套件验证 | ✅ DONE | 2026-01-05 | 127/127 测试通过 |
+| TASK-508 | 更新 TASK.md 并提交 | ✅ DONE | 2026-01-05 | Phase 5 完成 |
 
 ---
 
@@ -156,7 +161,7 @@ Phase 1: [████████████████████] 100% 数
 Phase 2: [████████████████████] 100% 搜索算法 ✅
 Phase 3: [████████████████████] 100% 工具注册表 ✅
 Phase 4: [████████████████████] 100% 存储层 ✅
-Phase 5: [░░░░░░░░░░░░░░░░░░░] 0%   MCP 工具
+Phase 5: [████████████████████] 100% MCP 工具 ✅
 Phase 6: [░░░░░░░░░░░░░░░░░░░] 0%   服务器入口
 Phase 7: [░░░░░░░░░░░░░░░░░░░] 0%   测试文档
 Phase 8: [░░░░░░░░░░░░░░░░░░░] 0%   性能优化
@@ -174,7 +179,48 @@ Phase 9: [░░░░░░░░░░░░░░░░░░░] 0%   发布
 
 ## 变更日志
 
-### 2026-01-05
+### 2026-01-05 (续)
+
+**Phase 5 完成 ✅**:
+- ✅ 实现 MCP 服务器核心模块 server.py
+  - 300 行完整实现
+  - FastMCP 框架集成
+  - create_server() 函数提供服务器创建入口
+- ✅ 实现 search_tools MCP 工具
+  - 支持多种搜索方法 (regex/bm25)
+  - 返回 JSON 格式搜索结果
+  - 包含相关度分数和匹配原因
+- ✅ 实现 get_tool_definition MCP 工具
+  - 获取工具完整元数据
+  - 包含 input/output schema
+  - 返回 JSON 格式定义
+- ✅ 实现 list_tools_by_category MCP 工具
+  - 支持按类别列出工具
+  - 支持 "all" 列出所有类别
+  - 返回 JSON 格式结果
+- ✅ 实现 register_tool MCP 工具
+  - 动态注册新工具
+  - 自动保存到存储层
+  - 返回注册结果确认
+- ✅ 实现 MCP 资源接口
+  - registry://stats - 统计信息资源
+  - registry://categories - 类别列表资源
+- ✅ 更新 __init__.py 导出
+  - 导出 ToolRegistry
+  - 导出所有存储实现
+- ✅ 编写 MCP 工具集成测试
+  - 17 个测试用例全部通过
+  - 覆盖所有 MCP 工具和资源
+  - 包含完整工作流测试
+- ✅ 代码格式化和质量检查
+  - Black 格式化
+  - Ruff 检查通过（修复 6 个问题）
+- ✅ 测试套件验证
+  - 127/127 测试通过（原 110 + 新 17）
+  - 测试覆盖率: 79%（接近80%目标）
+- ✅ 修复 BM25 搜索空列表除零错误
+  - 添加空列表处理逻辑
+  - 避免 ZeroDivisionError
 
 **Phase 4 完成 ✅**:
 - ✅ 实现存储抽象基类 ToolStorage

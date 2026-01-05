@@ -18,19 +18,29 @@ from RegistryTools.registry.models import (
     ToolSearchResult,
 )
 
+# 导入工具注册表
+from RegistryTools.registry.registry import ToolRegistry
+
 # 导入搜索算法
 from RegistryTools.search import SearchAlgorithm
 
-# TODO: 在 Phase 3 中添加 ToolRegistry
-# from RegistryTools.registry.tool_registry import ToolRegistry
+# 导入存储层
+from RegistryTools.storage import JSONStorage, SQLiteStorage, ToolStorage
 
 __all__ = [
     "__version__",
     "__author__",
     "__license__",
+    # 数据模型
     "SearchMethod",
     "ToolMetadata",
     "ToolSearchResult",
+    # 搜索算法
     "SearchAlgorithm",
-    # "ToolRegistry",  # Phase 3
+    # 工具注册表
+    "ToolRegistry",
+    # 存储层
+    "ToolStorage",
+    "JSONStorage",
+    "SQLiteStorage",
 ]
