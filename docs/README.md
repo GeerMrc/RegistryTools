@@ -13,8 +13,11 @@
 | 文档 | 描述 |
 |------|------|
 | [README.md](../README.md) | 项目说明、快速开始和安装指南 |
+| [INSTALLATION.md](INSTALLATION.md) | 详细安装指南（多种安装方式） |
+| [USER_GUIDE.md](USER_GUIDE.md) | 用户使用指南（工具接口、搜索算法） |
 | [ARCHITECTURE.md](ARCHITECTURE.md) | 系统架构设计文档 |
 | [API.md](API.md) | API 接口文档 |
+| [CLAUDE_CONFIG.md](CLAUDE_CONFIG.md) | Claude Desktop/Cline/Cursor 配置指南 |
 
 ---
 
@@ -31,8 +34,14 @@
 
 | 文档 | 描述 |
 |------|------|
-| [TASK.md](TASK.md) | 项目任务追踪文档（Phase 0-9） |
+| [TASK.md](TASK.md) | 项目任务追踪文档（Phase 0-12） |
 | [CHANGELOG.md](CHANGELOG.md) | 版本变更日志 |
+
+### 发布部署
+
+| 文档 | 描述 |
+|------|------|
+| [PUBLISHING.md](PUBLISHING.md) | PyPI 发布指南和流程 |
 
 ---
 
@@ -44,12 +53,22 @@
 ### API 参考
 - **API.md**: 所有公共接口的完整文档
 
+### 安装与配置
+- **INSTALLATION.md**: 多种安装方式（uvx/pip/uv）和环境配置
+- **CLAUDE_CONFIG.md**: Claude Desktop/Cline/Cursor MCP 客户端配置
+
+### 用户指南
+- **USER_GUIDE.md**: 工具搜索接口、搜索算法、使用场景
+
 ### 开发指南
 - **DEVELOPMENT_WORKFLOW.md**: 9阶段开发流程规范
 - **CONTRIBUTING.md**: 如何贡献代码
 
+### 发布部署
+- **PUBLISHING.md**: PyPI 发布流程和验证步骤
+
 ### 项目管理
-- **TASK.md**: 任务追踪和进度
+- **TASK.md**: 任务追踪和进度（Phase 0-12）
 - **CHANGELOG.md**: 版本历史
 
 ---
@@ -61,11 +80,14 @@
 | 需求 | 查看文档 |
 |------|----------|
 | 了解项目 | [README.md](../README.md) |
-| 快速开始 | [README.md](../README.md) |
+| 快速开始 | [README.md](../README.md) / [INSTALLATION.md](INSTALLATION.md) |
+| 安装配置 | [INSTALLATION.md](INSTALLATION.md) / [CLAUDE_CONFIG.md](CLAUDE_CONFIG.md) |
+| 使用工具 | [USER_GUIDE.md](USER_GUIDE.md) |
 | 了解架构 | [ARCHITECTURE.md](ARCHITECTURE.md) |
 | 查看API | [API.md](API.md) |
 | 参与开发 | [DEVELOPMENT_WORKFLOW.md](DEVELOPMENT_WORKFLOW.md) |
 | 贡献代码 | [CONTRIBUTING.md](CONTRIBUTING.md) |
+| 发布版本 | [PUBLISHING.md](PUBLISHING.md) |
 | 查看任务 | [TASK.md](TASK.md) |
 | 查看变更 | [CHANGELOG.md](CHANGELOG.md) |
 
@@ -76,10 +98,14 @@
 | 文档 | 版本 | 状态 | 最后更新 |
 |------|------|------|----------|
 | README.md | v0.1.0 | ✅ 最新 | 2026-01-05 |
+| INSTALLATION.md | v1.0 | ✅ 新增 | 2026-01-05 |
+| USER_GUIDE.md | v1.0 | ✅ 新增 | 2026-01-05 |
+| CLAUDE_CONFIG.md | v1.0 | ✅ 新增 | 2026-01-05 |
 | ARCHITECTURE.md | v1.0 | ✅ 最新 | 2026-01-04 |
 | API.md | v0.1.0 | ✅ 最新 | 2026-01-05 |
 | DEVELOPMENT_WORKFLOW.md | v1.0 | ✅ 最新 | 2026-01-04 |
 | CONTRIBUTING.md | v1.0 | ✅ 最新 | 2026-01-04 |
+| PUBLISHING.md | v1.0 | ✅ 新增 | 2026-01-05 |
 | TASK.md | v0.1.0 | ⏳ 进行中 | 2026-01-05 |
 | CHANGELOG.md | v0.1.0 | ⏳ 待更新 | 2026-01-05 |
 
