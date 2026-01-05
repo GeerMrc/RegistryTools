@@ -1,5 +1,8 @@
 # RegistryTools
 
+> **版本**: v0.1.0
+> **更新日期**: 2026-01-05
+>
 > **独立 MCP Tool Registry Server** - 通用工具搜索与发现服务
 
 [![Python Version](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
@@ -125,6 +128,83 @@ fastmcp run
 
 详见: [fastmcp.json](fastmcp.json) (STDIO 默认配置)
 详见: [fastmcp.http.json](fastmcp.http.json) (HTTP 配置示例)
+
+### 环境变量配置
+
+RegistryTools 支持通过环境变量进行配置：
+
+| 环境变量 | 描述 | 默认值 |
+|---------|------|--------|
+| `REGISTRYTOOLS_DATA_PATH` | 数据目录路径 | `~/.RegistryTools` |
+| `REGISTRYTOOLS_TRANSPORT` | 传输协议 (stdio/http) | `stdio` |
+| `REGISTRYTOOLS_LOG_LEVEL` | 日志级别 (DEBUG/INFO/WARNING/ERROR) | `INFO` |
+| `REGISTRYTOOLS_ENABLE_AUTH` | 启用 API Key 认证 | `false` |
+
+**配置优先级**: 环境变量 > CLI 参数 > 默认值
+
+**示例**:
+```bash
+# 使用环境变量配置
+export REGISTRYTOOLS_DATA_PATH=/custom/path
+export REGISTRYTOOLS_TRANSPORT=http
+export REGISTRYTOOLS_LOG_LEVEL=DEBUG
+registry-tools
+```
+
+### 日志配置
+
+RegistryTools 使用 Python 标准库 `logging` 模块记录运行日志。
+
+**日志级别**:
+- `DEBUG`: 详细调试信息
+- `INFO`: 一般信息（默认）
+- `WARNING`: 警告信息
+- `ERROR`: 错误信息
+
+**配置方式**:
+```bash
+# 通过环境变量
+export REGISTRYTOOLS_LOG_LEVEL=DEBUG
+registry-tools
+
+# 或使用 CLI 参数
+registry-tools --log-level DEBUG
+```
+
+**日志格式**:
+```
+YYYY-MM-DD HH:MM:SS - registrytools - LEVEL - Message
+```
+
+### API Key 认证
+
+RegistryTools 支持可选的 API Key 认证功能，用于保护 HTTP 模式的服务访问。
+
+**启用认证**:
+```bash
+# 命令行参数
+registry-tools --transport http --enable-auth
+
+# 环境变量
+export REGISTRYTOOLS_ENABLE_AUTH=true
+registry-tools --transport http
+```
+
+**API Key 管理**:
+```bash
+# 创建 API Key
+registry-tools api-key create "My Key" --permission read
+
+# 列出 API Key
+registry-tools api-key list
+
+# 删除 API Key
+registry-tools api-key delete <key-id>
+```
+
+详细文档请参考:
+- [API 文档](docs/API.md#api-key-认证-phase-15)
+- [用户指南](docs/USER_GUIDE.md#api-key-认证-phase-15)
 
 ### 使用示例
 

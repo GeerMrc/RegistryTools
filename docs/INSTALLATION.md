@@ -1,6 +1,6 @@
 # RegistryTools 安装指南
 
-> **版本**: v1.0
+> **版本**: v0.1.0
 > **更新日期**: 2026-01-05
 > **项目**: RegistryTools - MCP Tool Registry Server
 
@@ -115,6 +115,46 @@ registry-tools
 
 ```bash
 registry-tools --transport http --host 0.0.0.0 --port 8000
+```
+
+### 日志配置
+
+RegistryTools 使用 Python 标准库 `logging` 模块记录运行日志。
+
+**日志级别**:
+- `DEBUG`: 详细调试信息
+- `INFO`: 一般信息（默认）
+- `WARNING`: 警告信息
+- `ERROR`: 错误信息
+
+**配置方式**:
+
+**方式 1: 命令行参数**
+
+```bash
+registry-tools --log-level DEBUG
+```
+
+**方式 2: 环境变量**
+
+```bash
+export REGISTRYTOOLS_LOG_LEVEL=DEBUG
+registry-tools
+```
+
+**日志格式**:
+```
+YYYY-MM-DD HH:MM:SS - registrytools - LEVEL - Message
+```
+
+**查看日志**:
+
+```bash
+# STDOUT 输出（默认）
+registry-tools
+
+# 重定向到文件
+registry-tools > registrytools.log 2>&1
 ```
 
 ### API Key 认证 (Phase 15)

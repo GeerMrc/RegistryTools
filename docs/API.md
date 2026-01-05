@@ -327,6 +327,56 @@ class ToolSearchResult(BaseModel):
 
 ---
 
+## 配置选项 (Phase 14.1 + Phase 14.2)
+
+### 环境变量
+
+RegistryTools 支持通过环境变量进行配置：
+
+| 环境变量 | 描述 | 默认值 |
+|---------|------|--------|
+| `REGISTRYTOOLS_DATA_PATH` | 数据目录路径 | `~/.RegistryTools` |
+| `REGISTRYTOOLS_TRANSPORT` | 传输协议 (stdio/http) | `stdio` |
+| `REGISTRYTOOLS_LOG_LEVEL` | 日志级别 (DEBUG/INFO/WARNING/ERROR) | `INFO` |
+| `REGISTRYTOOLS_ENABLE_AUTH` | 启用 API Key 认证 | `false` |
+
+**配置优先级**: 环境变量 > CLI 参数 > 默认值
+
+**示例**:
+```bash
+# 设置环境变量
+export REGISTRYTOOLS_DATA_PATH=/custom/path
+export REGISTRYTOOLS_LOG_LEVEL=DEBUG
+registry-tools
+```
+
+### 日志配置
+
+RegistryTools 使用 Python `logging` 模块记录运行日志。
+
+**日志级别**:
+- `DEBUG`: 详细调试信息
+- `INFO`: 一般信息（默认）
+- `WARNING`: 警告信息
+- `ERROR`: 错误信息
+
+**配置方式**:
+```bash
+# 环境变量
+export REGISTRYTOOLS_LOG_LEVEL=DEBUG
+registry-tools
+
+# CLI 参数
+registry-tools --log-level WARNING
+```
+
+**日志格式**:
+```
+YYYY-MM-DD HH:MM:SS - registrytools - LEVEL - Message
+```
+
+---
+
 ## Python API
 
 ### 创建服务器

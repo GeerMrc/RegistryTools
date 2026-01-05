@@ -1,6 +1,6 @@
 # RegistryTools 用户指南
 
-> **版本**: v1.1
+> **版本**: v0.1.0
 > **更新日期**: 2026-01-05
 > **项目**: RegistryTools - MCP Tool Registry Server
 
@@ -245,6 +245,155 @@ registry-tools --data-path /custom/path
   }
 }
 ```
+
+---
+
+## 环境变量配置 (Phase 14.1)
+
+RegistryTools 支持通过环境变量进行配置，提供灵活的配置方式。
+
+### 可用环境变量
+
+| 环境变量 | 描述 | 默认值 |
+|---------|------|--------|
+| `REGISTRYTOOLS_DATA_PATH` | 数据目录路径 | `~/.RegistryTools` |
+| `REGISTRYTOOLS_TRANSPORT` | 传输协议 (stdio/http) | `stdio` |
+| `REGISTRYTOOLS_LOG_LEVEL` | 日志级别 (DEBUG/INFO/WARNING/ERROR) | `INFO` |
+| `REGISTRYTOOLS_ENABLE_AUTH` | 启用 API Key 认证 | `false` |
+
+### 配置优先级
+
+**环境变量 > CLI 参数 > 默认值**
+
+这意味着如果同时设置了环境变量和 CLI 参数，环境变量将覆盖 CLI 参数。
+
+### 使用示例
+
+**设置数据目录**:
+```bash
+export REGISTRYTOOLS_DATA_PATH=/custom/path
+registry-tools
+```
+
+**使用 HTTP 传输**:
+```bash
+export REGISTRYTOOLS_TRANSPORT=http
+registry-tools --host 0.0.0.0 --port 8000
+```
+
+**设置日志级别**:
+```bash
+export REGISTRYTOOLS_LOG_LEVEL=DEBUG
+registry-tools
+```
+
+**启用认证**:
+```bash
+export REGISTRYTOOLS_ENABLE_AUTH=true
+registry-tools --transport http
+```
+
+**组合配置**:
+```bash
+export REGISTRYTOOLS_DATA_PATH=/data
+export REGISTRYTOOLS_TRANSPORT=http
+export REGISTRYTOOLS_LOG_LEVEL=INFO
+export REGISTRYTOOLS_ENABLE_AUTH=true
+registry-tools --host 0.0.0.0 --port 8000
+```
+
+### 在 MCP 客户端中使用
+
+**Claude Desktop 配置**:
+```json
+{
+  "mcpServers": {
+    "RegistryTools": {
+      "command": "uvx",
+      "args": ["Registry-Tools"],
+      "env": {
+        "REGISTRYTOOLS_DATA_PATH": "~/.RegistryTools",
+        "REGISTRYTOOLS_LOG_LEVEL": "DEBUG"
+      }
+    }
+  }
+}
+```
+
+---
+
+## 日志功能 (Phase 14.2)
+
+RegistryTools 使用 Python 标准库 `logging` 模块记录运行日志，便于调试和监控。
+
+### 日志级别
+
+| 级别 | 描述 | 使用场景 |
+|------|------|----------|
+| `DEBUG` | 详细调试信息 | 开发调试 |
+| `INFO` | 一般信息（默认） | 正常运行 |
+| `WARNING` | 警告信息 | 潜在问题 |
+| `ERROR` | 错误信息 | 错误发生 |
+
+### 配置日志级别
+
+**方式 1: 环境变量**（推荐）
+```bash
+export REGISTRYTOOLS_LOG_LEVEL=DEBUG
+registry-tools
+```
+
+**方式 2: CLI 参数**
+```bash
+registry-tools --log-level WARNING
+```
+
+### 日志格式
+
+```
+YYYY-MM-DD HH:MM:SS - registrytools - LEVEL - Message
+```
+
+**示例**:
+```
+2026-01-05 10:30:45 - registrytools - INFO - Starting RegistryTools server...
+2026-01-05 10:30:46 - registrytools - DEBUG - Loading tools from storage...
+2026-01-05 10:30:47 - registrytools - INFO - Server ready, serving 26 tools
+```
+
+### 查看日志
+
+**STDOUT 输出**（默认）:
+```bash
+# 日志直接输出到终端
+registry-tools
+```
+
+**重定向到文件**:
+```bash
+# 重定向所有输出
+registry-tools > registrytools.log 2>&1
+
+# 仅重定向日志
+registry-tools 2>&1 | tee registrytools.log
+```
+
+**过滤特定级别**:
+```bash
+# 仅查看错误
+registry-tools 2>&1 | grep ERROR
+```
+
+### 调试技巧
+
+1. **启用 DEBUG 日志**: 查看详细的运行信息
+   ```bash
+   export REGISTRYTOOLS_LOG_LEVEL=DEBUG
+   ```
+
+2. **检查工具加载**: 查看 DEBUG 日志中的工具加载信息
+
+3. **监控性能**: 使用时间戳分析操作耗时
 
 ---
 

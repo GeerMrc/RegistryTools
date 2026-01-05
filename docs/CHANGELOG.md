@@ -10,6 +10,47 @@
 ## [Unreleased]
 
 ### 新增
+- **Phase 15 API Key 认证功能** (2026-01-05)
+  - 实现 API Key 生成、存储、认证中间件
+  - 支持 READ/WRITE/ADMIN 三级权限
+  - 提供 api-key CLI 子命令管理 API Key
+  - API Key 格式: `rtk_<64-char-hex>`
+  - 支持 HTTP Header 认证 (X-API-Key / Authorization Bearer)
+
+- **Phase 14.2 日志功能** (2026-01-05)
+  - 实现 Python logging 模块集成
+  - 支持动态日志级别配置 (DEBUG/INFO/WARNING/ERROR)
+  - 日志格式: `YYYY-MM-DD HH:MM:SS - registrytools - LEVEL - Message`
+  - 支持 --log-level CLI 参数
+  - 支持 REGISTRYTOOLS_LOG_LEVEL 环境变量
+
+- **Phase 14.1 环境变量支持** (2026-01-05)
+  - 支持 REGISTRYTOOLS_DATA_PATH 环境变量
+  - 支持 REGISTRYTOOLS_TRANSPORT 环境变量
+  - 支持 REGISTRYTOOLS_LOG_LEVEL 环境变量
+  - 支持 REGISTRYTOOLS_ENABLE_AUTH 环境变量
+  - 配置优先级: 环境变量 > CLI 参数 > 默认值
+
+- **Phase 13 IDE 配置文档补充** (2026-01-05)
+  - 创建 docs/IDE_CONFIG.md
+  - 添加 Claude Desktop 配置方式 (STDIO/HTTP)
+  - 添加 Claude Code CLI 命令配置方式（推荐）
+  - 添加 Cursor 配置方式
+  - 添加 Continue.dev 和 Cline 配置方式
+  - 添加环境变量配置说明
+
+- **Phase 12 文档体系完善** (2026-01-05)
+  - 创建 docs/PUBLISHING.md 发布指南
+  - 创建 docs/INSTALLATION.md 安装指南
+  - 创建 docs/USER_GUIDE.md 用户指南
+  - 创建 docs/CLAUDE_CONFIG.md 配置指南
+
+- **Phase 10 Streamable HTTP 传输支持** (2026-01-05)
+  - 实现 --transport http CLI 参数
+  - 支持 --host, --port, --path 配置
+  - 创建 fastmcp.json 配置文件
+  - 支持 STDIO 和 Streamable HTTP 双模式
+
 - **Phase 11 项目结构标准化重构** (TASK-1101 至 TASK-1114)
   - 迁移到标准 Python `src/` 布局
   - 包名从 `RegistryTools` 改为小写 `registrytools` (PEP 8)

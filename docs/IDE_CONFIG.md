@@ -1,6 +1,6 @@
 # RegistryTools IDE 配置指南
 
-> **版本**: v1.0
+> **版本**: v0.1.0
 > **更新日期**: 2026-01-05
 > **适用对象**: Claude Desktop、Claude Code、Cursor、Continue.dev、Cline 等 MCP 客户端用户
 
@@ -83,7 +83,40 @@ RegistryTools 是一个独立的 MCP Tool Registry Server，提供通用的工�
 
 **带认证的 HTTP 配置**：
 
-> **注意**: RegistryTools 服务器端不直接实现认证功能。如需认证，建议使用反向代理（如 Nginx、Caddy）在服务器前进行认证处理。以下 `headers` 配置会被客户端发送到服务器，可由反向代理验证。
+RegistryTools 支持两种认证方式：
+
+**方式 1: 内置 API Key 认证（Phase 15，推荐）**
+
+RegistryTools 提供内置的 API Key 认证功能：
+
+```bash
+# 1. 启用认证启动服务
+registry-tools --transport http --port 8000 --enable-auth
+
+# 2. 创建 API Key
+registry-tools api-key create "My Client" --permission read
+
+# 3. 客户端使用 API Key
+```
+
+```json
+{
+  "mcpServers": {
+    "RegistryTools": {
+      "url": "http://localhost:8000/mcp",
+      "headers": {
+        "X-API-Key": "rtk_your_api_key_here"
+      }
+    }
+  }
+}
+```
+
+> **注意**: 这是 RegistryTools 内置的 API Key 认证，无需额外配置反向代理。详见 [用户指南 - API Key 认证](USER_GUIDE.md#api-key-认证-phase-15)。
+
+**方式 2: 反向代理认证（可选）**
+
+如果需要使用反向代理（如 Nginx、Caddy）进行认证：
 
 ```json
 {
@@ -161,13 +194,25 @@ claude mcp add --transport stdio RegistryTools -- registry-tools
 # 无认证
 claude mcp add --transport http RegistryTools-Remote http://localhost:8000/mcp
 
-# API Key 认证（通过反向代理验证）
+# 使用 RegistryTools 内置 API Key 认证（Phase 15，推荐）
+# 1. 先启用认证并创建 API Key
+registry-tools --transport http --enable-auth
+registry-tools api-key create "Claude Code" --permission read
+
+# 2. 添加服务器（使用 API Key）
 claude mcp add --transport http RegistryTools-Remote \
   http://localhost:8000/mcp \
-  --header "X-API-Key: your-key"
+  --header "X-API-Key: rtk_your_api_key_here"
+
+# 3. 或使用反向代理认证（可选）
+claude mcp add --transport http RegistryTools-Remote \
+  http://localhost:8000/mcp \
+  --header "X-API-Key: your-proxy-key"
 ```
 
-> **注意**: RegistryTools 服务器端不直接实现认证功能。`--header` 参数设置的 headers 会被客户端发送到服务器，建议使用反向代理（如 Nginx、Caddy）进行认证验证。
+> **认证说明**:
+> - **内置认证**: RegistryTools 提供内置的 API Key 认证功能（Phase 15），使用 `--enable-auth` 启用后，通过 `registry-tools api-key` 命令管理密钥。
+> - **反向代理**: 也可使用反向代理（如 Nginx、Caddy）进行认证，`--header` 参数设置的 headers 会被发送到反向代理验证。
 
 **管理命令**：
 ```bash
@@ -423,6 +468,7 @@ Cline 是另一个流行的 VSCode AI 助手。
 | `REGISTRYTOOLS_DATA_PATH` | `~/.RegistryTools` | 数据目录路径 |
 | `REGISTRYTOOLS_LOG_LEVEL` | `INFO` | 日志级别（DEBUG/INFO/WARNING/ERROR） |
 | `REGISTRYTOOLS_TRANSPORT` | `stdio` | 传输协议（stdio/http） |
+| `REGISTRYTOOLS_ENABLE_AUTH` | `false` | 启用 RegistryTools 内置 API Key 认证（Phase 15） |
 
 ### 混合配置（CLI 参数 + 环境变量）
 
