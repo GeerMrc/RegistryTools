@@ -1496,5 +1496,49 @@ Authorization: Bearer rtk_a1b2c3d4e5f6789012345678901234567890123456789012345678
 
 ---
 
+## Phase 16.1: 版本号完全统一 (Day 25.1)
+
+> **开始日期**: 2026-01-05
+> **目标**: 将内部开发文档版本号统一为 v0.1.0，确保所有文档版本号一致
+> **触发**: 用户要求所有文档（包括内部文档）版本号统一
+
+### 任务清单
+
+| 任务ID | 任务描述 | 状态 | 完成时间 | 备注 |
+|--------|----------|------|----------|------|
+| AUDIT-101 | 修改 ARCHITECTURE.md 版本号 v1.1 → v0.1.0 | ✅ DONE | 2026-01-05 | 架构文档 |
+| AUDIT-102 | 修改 DEVELOPMENT_WORKFLOW.md 版本号 v1.0 → v0.1.0 | ✅ DONE | 2026-01-05 | 开发流程规范 |
+| AUDIT-103 | 交叉验证所有文档版本号一致性 | ✅ DONE | 2026-01-05 | 全部为 v0.1.0 |
+| AUDIT-104 | 更新 TASK.md 并提交 | ✅ DONE | 2026-01-05 | Phase 16.1 完成 |
+
+### 修改详情
+
+**ARCHITECTURE.md**:
+- 第3行: `v1.1` → `v0.1.0`
+
+**DEVELOPMENT_WORKFLOW.md**:
+- 第3行: `v1.0` → `v0.1.0`
+
+### 验证结果
+
+- ✅ 所有文档版本号统一为 v0.1.0
+- ✅ README.md, docs/*.md 全部一致
+- ✅ 无例外版本号
+
+### 完成度
+
+**文档版本号统一**: 100%
+- README.md: v0.1.0 ✅
+- docs/ARCHITECTURE.md: v0.1.0 ✅
+- docs/DEVELOPMENT_WORKFLOW.md: v0.1.0 ✅
+- docs/API.md: v0.1.0 ✅
+- docs/INSTALLATION.md: v0.1.0 ✅
+- docs/USER_GUIDE.md: v0.1.0 ✅
+- docs/CLAUDE_CONFIG.md: v0.1.0 ✅
+- docs/IDE_CONFIG.md: v0.1.0 ✅
+- docs/PUBLISHING.md: v0.1.0 ✅
+
+---
+
 **项目维护者**: Maric
-**文档版本**: v1.0
+**文档版本**: v0.1.0

@@ -1,6 +1,6 @@
 # RegistryTools 开发流程规范
 
-> **版本**: v1.0
+> **版本**: v0.1.0
 > **更新日期**: 2026-01-04
 > **项目**: RegistryTools - MCP Tool Registry Server
 
