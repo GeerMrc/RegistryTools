@@ -191,7 +191,7 @@ register_tool(
   "mcpServers": {
     "RegistryTools": {
       "command": "uvx",
-      "args": ["Registry-Tools"]
+      "args": ["Registry_Tools"]
     }
   }
 }
@@ -240,7 +240,7 @@ registry-tools --data-path /custom/path
   "mcpServers": {
     "RegistryTools": {
       "command": "uvx",
-      "args": ["Registry-Tools", "--data-path", "/custom/path"]
+      "args": ["Registry_Tools", "--data-path", "/custom/path"]
     }
   }
 }
@@ -310,7 +310,7 @@ registry-tools --host 0.0.0.0 --port 8000
   "mcpServers": {
     "RegistryTools": {
       "command": "uvx",
-      "args": ["Registry-Tools"],
+      "args": ["Registry_Tools"],
       "env": {
         "REGISTRYTOOLS_DATA_PATH": "~/.RegistryTools",
         "REGISTRYTOOLS_LOG_LEVEL": "DEBUG"

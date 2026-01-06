@@ -35,10 +35,10 @@ def create_mcp_package():
         "author": "Maric",
         "license": "MIT",
         "python": ">=3.10",
-        "install_command": "pip install Registry-Tools",
+        "install_command": "pip install Registry_Tools",
         "mcp_config": {
             "command": "uvx",
-            "args": ["Registry-Tools", "--data-path", "~/.RegistryTools"]
+            "args": ["Registry_Tools", "--data-path", "~/.RegistryTools"]
         }
     }
 
@@ -54,12 +54,12 @@ def create_mcp_package():
 
 ### 使用 uvx (推荐)
 ```bash
-uvx Registry-Tools
+uvx Registry_Tools
 ```
 
 ### 使用 pip
 ```bash
-pip install Registry-Tools
+pip install Registry_Tools
 ```
 
 ## Claude Desktop 配置
@@ -71,7 +71,7 @@ pip install Registry-Tools
   "mcpServers": {
     "RegistryTools": {
       "command": "uvx",
-      "args": ["Registry-Tools", "--data-path", "~/.RegistryTools"]
+      "args": ["Registry_Tools", "--data-path", "~/.RegistryTools"]
     }
   }
 }

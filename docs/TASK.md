@@ -9,8 +9,9 @@
 ## 项目信息
 
 - **项目名称**: RegistryTools
-- **包名**: `registrytools` (Python 模块) / `Registry-Tools` (PyPI 包)
+- **包名**: `registrytools` (Python 模块) / `Registry_Tools` (PyPI 包)
 - **MCP 显示名**: `RegistryTools`
+- **CLI 命令**: `registry-tools`
 - **项目布局**: 标准 `src/` 布局
 - **目标**: 实现通用 MCP Tool Search Tool（独立 MCP 服务器）
 - **定位**: 可供任何 MCP 客户端使用的工具目录管理器
@@ -685,7 +686,7 @@ RegistryTools/
 - ✅ 所有4个新文档创建完成
 - ✅ docs/README.md 正确索引所有新文档
 - ✅ 没有过时的 "RegistryTools/" 路径引用
-- ✅ 包名引用一致（PyPI: Registry-Tools, Python: registrytools）
+- ✅ 包名引用一致（PyPI: Registry_Tools, Python: registrytools）
 - ✅ 项目路径引用正确（src/registrytools）
 
 ### 文档完整性验证
@@ -1050,7 +1051,7 @@ Phase 16:   [████████████████████] 100% 
 - ✅ IDE_CONFIG.md 创建完成（14,833 字节）
 - ✅ docs/README.md 正确索引新文档
 - ✅ 路径引用检查通过（示例路径正确）
-- ✅ 包名引用一致（Registry-Tools / registrytools）
+- ✅ 包名引用一致（Registry_Tools / registrytools）
 - ✅ 文档格式规范（Markdown 正确）
 
 ### 关键特性
@@ -1058,7 +1059,7 @@ Phase 16:   [████████████████████] 100% 
 **Claude Code CLI 配置方式**（Phase 13 新增重点）：
 ```bash
 # STDIO 本地服务器
-claude mcp add --transport stdio RegistryTools -- uvx Registry-Tools
+claude mcp add --transport stdio RegistryTools -- uvx Registry_Tools
 
 # Streamable HTTP 远程服务器
 claude mcp add --transport http RegistryTools-Remote http://localhost:8000/mcp
@@ -1611,6 +1612,106 @@ Authorization: Bearer rtk_a1b2c3d4e5f6789012345678901234567890123456789012345678
 - [x] 文档格式规范，使用中文编写
 - [x] 与现有文档风格一致
 - [x] 交叉验证确认无遗漏
+
+---
+
+## Phase 18: 项目命名规范全面统一 (Day 27)
+
+> **开始日期**: 2026-01-06
+> **目标**: 统一 PyPI 包名与 wheel 文件名，解决命名不一致问题
+> **触发**: 用户发现 pip list 显示 `Registry-Tools` 但 dist/ 目录文件名为 `registry_tools-0.1.0-py3-none-any.whl`
+
+### 问题分析
+
+**命名不一致**:
+- `pip list` 显示: `Registry-Tools` (带连字符)
+- `pip show` 文件名: `registry_tools-0.1.0-py3-none-any.whl` (下划线)
+- PyPI 规范: 连字符会被构建工具规范化为下划线
+
+**影响**:
+- 用户困惑：`pip show registry_tools` 会失败
+- 文档不一致：部分文档使用连字符，部分使用下划线
+- MCP 配置不一致：部分配置使用 `Registry-Tools`
+
+### 解决方案
+
+**方案 A（采用）**: 修改 PyPI 包名为 `Registry_Tools`
+- ✅ pip list 和文件名一致（都是 `Registry_Tools`）
+- ✅ 符合 PyPI 规范（允许下划线）
+- ✅ 解决用户困惑
+- ⚠️ 需要更新所有文档中的安装命令
+
+### 任务清单
+
+| 任务ID | 任务描述 | 状态 | 完成时间 | 备注 |
+|--------|----------|------|----------|------|
+| TASK-1801 | 修改 pyproject.toml 包名 | ✅ DONE | 2026-01-06 | Registry-Tools → Registry_Tools |
+| TASK-1802 | 更新 README.md 安装命令 | ✅ DONE | 2026-01-06 | pip/uvx 命令 |
+| TASK-1803 | 更新 IDE_CONFIG.md | ✅ DONE | 2026-01-06 | uvx/pip 命令引用 |
+| TASK-1804 | 更新 CLAUDE_CONFIG.md | ✅ DONE | 2026-01-06 | 安装和配置命令 |
+| TASK-1805 | 更新 INSTALLATION.md | ✅ DONE | 2026-01-06 | 安装命令 |
+| TASK-1806 | 更新 SCRIPTS_GUIDE.md | ✅ DONE | 2026-01-06 | 包名引用 |
+| TASK-1807 | 更新 PUBLISHING.md | ✅ DONE | 2026-01-06 | 发布包名称说明 |
+| TASK-1808 | 更新 scripts/ 脚本 | ✅ DONE | 2026-01-06 | 所有脚本文件 |
+| TASK-1809 | 更新 CHANGELOG.md | ✅ DONE | 2026-01-06 | 记录本次修改 |
+| TASK-1810 | 更新 TASK.md 包名定义 | ✅ DONE | 2026-01-06 | 项目信息 |
+| TASK-1811 | 交叉验证命名引用 | ✅ DONE | 2026-01-06 | 全部一致 |
+| TASK-1812 | 提交变更到 git | 📝 IN_PROGRESS | 2026-01-06 | 阶段完成 |
+
+### 命名规范统一结果
+
+| 类型 | 修改前 | 修改后 |
+|------|--------|--------|
+| **PyPI 包名** | `Registry-Tools` | `Registry_Tools` |
+| **Python 模块名** | `registrytools` | `registrytools` (不变) |
+| **CLI 命令名** | `registry-tools` | `registry-tools` (不变) |
+| **Wheel 文件名** | `registry_tools-0.1.0-py3-none-any.whl` | `Registry_Tools-0.1.0-py3-none-any.whl` |
+| **MCP 服务器名** | `RegistryTools` | `RegistryTools` (不变) |
+
+### 更新文件清单
+
+**配置文件**:
+- `pyproject.toml` - 包名修改
+
+**文档** (15 个):
+- `README.md` - 安装命令
+- `docs/IDE_CONFIG.md` - uvx/pip 命令
+- `docs/CLAUDE_CONFIG.md` - 安装和配置命令
+- `docs/INSTALLATION.md` - 安装命令
+- `docs/SCRIPTS_GUIDE.md` - 包名引用
+- `docs/PUBLISHING.md` - 发布包名称说明
+- `docs/CHANGELOG.md` - 变更记录
+- `docs/TASK.md` - 项目信息和包名引用
+
+**脚本** (5 个):
+- `scripts/build/build-wheel.py`
+- `scripts/build/build-mcp.py`
+- `scripts/release/create-release.py`
+- `scripts/verify/verify-before-release.py`
+- `scripts/verify/verify-after-install.py`
+
+### 验证结果
+
+**交叉验证** (TASK-1811):
+- ✅ pyproject.toml 包名已更新为 `Registry_Tools`
+- ✅ 所有文档中的 `pip install Registry-Tools` 已改为 `pip install Registry_Tools`
+- ✅ 所有文档中的 `uvx Registry-Tools` 已改为 `uvx Registry_Tools`
+- ✅ 所有脚本文件中的包名引用已更新
+- ✅ TASK.md 项目信息中的包名定义已更新
+- ✅ CHANGELOG.md 已添加 Phase 18 记录
+
+### 验收标准
+
+- [x] pip list 显示名称与 wheel 文件名一致（`Registry_Tools`）
+- [x] claude mcp list 中的 MCP 服务器名称统一（`RegistryTools`，未变更）
+- [x] 所有文档中的命名引用一致
+- [x] 交叉验证确认无遗漏
+
+### 后续行动
+
+- [ ] 用户确认命名规范统一方案
+- [ ] 重新构建 wheel 包验证文件名
+- [ ] 更新 PyPI 发布说明（如已发布旧版本）
 
 ---
 

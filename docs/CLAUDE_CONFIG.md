@@ -27,7 +27,7 @@
   "mcpServers": {
     "RegistryTools": {
       "command": "uvx",
-      "args": ["Registry-Tools", "--data-path", "~/.RegistryTools"]
+      "args": ["Registry_Tools", "--data-path", "~/.RegistryTools"]
     }
   }
 }
@@ -55,7 +55,7 @@
     "RegistryTools": {
       "command": "uvx",
       "args": [
-        "Registry-Tools",
+        "Registry_Tools",
         "--data-path", "~/.RegistryTools",
         "--transport", "stdio"
       ],
@@ -84,7 +84,7 @@
   "mcpServers": {
     "RegistryTools": {
       "command": "uvx",
-      "args": ["Registry-Tools"]
+      "args": ["Registry_Tools"]
     }
   }
 }
@@ -105,7 +105,7 @@
 3. 添加新服务器：
    - 名称: `RegistryTools`
    - 命令: `uvx`
-   - 参数: `["Registry-Tools"]`
+   - 参数: `["Registry_Tools"]`
 
 ### 方法 2: 使用 fastmcp.json
 
@@ -144,7 +144,7 @@
   "mcpServers": {
     "RegistryTools": {
       "command": "uvx",
-      "args": ["Registry-Tools"],
+      "args": ["Registry_Tools"],
       "env": {
         "REGISTRYTOOLS_DATA_PATH": "/custom/data/path",
         "REGISTRYTOOLS_LOG_LEVEL": "DEBUG"
@@ -192,7 +192,7 @@ Claude 应该会调用 `search_tools` 工具并返回结果。
 
 **解决方案**:
 1. 安装 uv: `pip install uv`
-2. 或使用 pip 安装: `pip install Registry-Tools`
+2. 或使用 pip 安装: `pip install Registry_Tools`
 3. 配置中使用完整 Python 路径
 
 ### Q: 工具调用无响应
@@ -216,7 +216,7 @@ Claude 应该会调用 `search_tools` 工具并返回结果。
     "RegistryTools-Custom": {
       "command": "uvx",
       "args": [
-        "Registry-Tools",
+        "Registry_Tools",
         "--data-path", "/path/to/custom/tools"
       ]
     }
@@ -233,11 +233,11 @@ Claude 应该会调用 `search_tools` 工具并返回结果。
   "mcpServers": {
     "RegistryTools-GitHub": {
       "command": "uvx",
-      "args": ["Registry-Tools", "--data-path", "~/.RegistryTools-github"]
+      "args": ["Registry_Tools", "--data-path", "~/.RegistryTools-github"]
     },
     "RegistryTools-GitLab": {
       "command": "uvx",
-      "args": ["Registry-Tools", "--data-path", "~/.RegistryTools-gitlab"]
+      "args": ["Registry_Tools", "--data-path", "~/.RegistryTools-gitlab"]
     }
   }
 }

@@ -29,10 +29,10 @@ RegistryTools 是一个独立的 MCP Tool Registry Server，提供通用的工�
 
 ```bash
 # 使用 uvx (推荐)
-uvx Registry-Tools
+uvx Registry_Tools
 
 # 或使用 pip
-pip install Registry-Tools
+pip install Registry_Tools
 ```
 
 ### 传输协议
@@ -61,7 +61,7 @@ RegistryTools 支持多种 MCP 传输协议:
   "mcpServers": {
     "RegistryTools": {
       "command": "uvx",
-      "args": ["Registry-Tools", "--data-path", "~/.RegistryTools"]
+      "args": ["Registry_Tools", "--data-path", "~/.RegistryTools"]
     }
   }
 }

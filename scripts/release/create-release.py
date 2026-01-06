@@ -64,7 +64,7 @@ Release Date: {datetime.now().strftime('%Y-%m-%d')}
 ## 安装
 
 ```bash
-pip install Registry-Tools=={version}
+pip install Registry_Tools=={version}
 ```
 
 ## 变更内容
@@ -86,7 +86,7 @@ python scripts/verify/verify-after-install.py
   "mcpServers": {{
     "RegistryTools": {{
       "command": "uvx",
-      "args": ["Registry-Tools=={version}", "--data-path", "~/.RegistryTools"]
+      "args": ["Registry_Tools=={version}", "--data-path", "~/.RegistryTools"]
     }}
   }}
 }}
@@ -108,7 +108,7 @@ def create_release_package(version: str):
     print(f"📦 创建发布包 v{version}...")
 
     dist_dir = Path("dist")
-    release_dir = dist_dir / f"RegistryTools-{version}"
+    release_dir = dist_dir / f"Registry_Tools-{version}"
     release_dir.mkdir(parents=True, exist_ok=True)
 
     # 复制文件
@@ -138,7 +138,7 @@ def create_release_package(version: str):
                     ignore=shutil.ignore_patterns("__pycache__", "*.pyc"))
 
     # 创建压缩包
-    archive_name = f"RegistryTools-{version}"
+    archive_name = f"Registry_Tools-{version}"
     archive_path = dist_dir / f"{archive_name}.tar.gz"
 
     if archive_path.exists():
@@ -146,7 +146,7 @@ def create_release_package(version: str):
 
     shutil.make_archive(str(archive_path.with_suffix("")), "gztar",
                        root_dir=dist_dir,
-                       base_dir=f"RegistryTools-{version}")
+                       base_dir=f"Registry_Tools-{version}")
 
     print(f"  ✓ 发布包已创建: {archive_path.name}")
 
@@ -210,7 +210,7 @@ def main():
     print("✅ 发布包创建完成!")
     print("=" * 60)
     print(f"\n📂 输出文件:")
-    print(f"  - dist/RegistryTools-{version}.tar.gz")
+    print(f"  - dist/Registry_Tools-{version}.tar.gz")
     print(f"  - dist/release-notes/v{version}.md")
     print(f"\n📝 下一步:")
     print(f"  1. 检查发布内容: ls -la dist/")

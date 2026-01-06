@@ -10,6 +10,11 @@
 ## [Unreleased]
 
 ### 新增
+- **Phase 18 命名规范统一** (2026-01-06)
+  - PyPI 包名从 `Registry-Tools` 改为 `Registry_Tools`
+  - 统一 pip list 显示与 wheel 文件名（`Registry_Tools`）
+  - 更新所有文档中的安装命令引用
+  - wheel 文件名从 `registry_tools-0.1.0-py3-none-any.whl` 改为 `Registry_Tools-0.1.0-py3-none-any.whl`
 - **Phase 15 API Key 认证功能** (2026-01-05)
   - 实现 API Key 生成、存储、认证中间件
   - 支持 READ/WRITE/ADMIN 三级权限

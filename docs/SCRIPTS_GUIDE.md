@@ -99,10 +99,10 @@ python scripts/build/build-mcp.py
   "author": "Maric",
   "license": "MIT",
   "python": ">=3.10",
-  "install_command": "pip install Registry-Tools",
+  "install_command": "pip install Registry_Tools",
   "mcp_config": {
     "command": "uvx",
-    "args": ["Registry-Tools", "--data-path", "~/.RegistryTools"]
+    "args": ["Registry_Tools", "--data-path", "~/.RegistryTools"]
   }
 }
 ```
@@ -208,7 +208,7 @@ python scripts/verify/verify-after-install.py
 3. 运行基本功能测试
 
 **依赖**:
-- 包已安装 (`pip install Registry-Tools`)
+- 包已安装 (`pip install Registry_Tools`)
 
 ---
 
@@ -276,7 +276,7 @@ Release Date: 2026-01-06
 ## 安装
 
 ```bash
-pip install Registry-Tools==0.1.0
+pip install Registry_Tools==0.1.0
 ```
 
 ## 变更内容
@@ -298,7 +298,7 @@ python scripts/verify/verify-after-install.py
   "mcpServers": {
     "RegistryTools": {
       "command": "uvx",
-      "args": ["Registry-Tools==0.1.0", "--data-path", "~/.RegistryTools"]
+      "args": ["Registry_Tools==0.1.0", "--data-path", "~/.RegistryTools"]
     }
   }
 }
@@ -340,7 +340,7 @@ git push origin v0.1.0
 python -m twine upload dist/*
 
 # 7. 安装后验证
-pip install Registry-Tools==0.1.0
+pip install Registry_Tools==0.1.0
 python scripts/verify/verify-after-install.py
 ```
 
