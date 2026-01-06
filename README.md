@@ -202,6 +202,57 @@ claude mcp add --scope user --transport stdio RegistryTools -- uvx Registry_Tool
 }
 ```
 
+#### 方式 3：JSON 配置命令 (add-json)
+
+使用 `claude mcp add-json` 命令直接通过 JSON 配置添加 MCP 服务器：
+
+**STDIO 本地服务器**：
+```bash
+# 基础配置（使用 uvx）
+claude mcp add-json "RegistryTools" '{"command": "uvx", "args": ["Registry_Tools"]}' --scope user
+
+# 带环境变量
+claude mcp add-json "RegistryTools" '{
+  "command": "uvx",
+  "args": ["Registry_Tools"],
+  "env": {
+    "REGISTRYTOOLS_DATA_PATH": "~/.RegistryTools",
+    "REGISTRYTOOLS_LOG_LEVEL": "INFO"
+  }
+}' --scope user
+
+# 使用 pip 安装版本
+claude mcp add-json "RegistryTools" '{"command": "registry-tools"}' --scope user
+```
+
+**Streamable HTTP 远程服务器**：
+```bash
+# 无认证
+claude mcp add-json "RegistryTools-Remote" '{
+  "url": "http://localhost:8000/mcp"
+}' --scope user
+
+# 使用 API Key 认证
+claude mcp add-json "RegistryTools-Remote" '{
+  "url": "http://localhost:8000/mcp",
+  "headers": {
+    "X-API-Key": "rtk_your_api_key_here"
+  }
+}' --scope user
+```
+
+**配置范围**：
+```bash
+# 项目级配置（可版本控制）
+claude mcp add-json "RegistryTools" '{...}' --scope project
+
+# 用户级配置（跨项目使用，默认）
+claude mcp add-json "RegistryTools" '{...}' --scope user
+
+# 本地级配置（项目特定，gitignored）
+claude mcp add-json "RegistryTools" '{...}' --scope local
+```
+
 ### 环境变量配置
 
 RegistryTools 支持通过环境变量进行配置：
