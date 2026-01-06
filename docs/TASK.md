@@ -1,7 +1,7 @@
 # RegistryTools - 任务追踪文档
 
 > **项目开始**: 2026-01-04
-> **当前状态**: Phase 19.1 已完成 - 补充 claude mcp add-json 配置方式 ✅
+> **当前状态**: Phase 18.2 已完成 - 项目命名规范完全统一 ✅
 > **完成进度**: 100%
 
 ---
@@ -1940,5 +1940,116 @@ claude mcp add-json "RegistryTools-Remote" '{
 - [x] README.md 已添加 `claude mcp add-json` 配置方式
 - [x] 配置示例格式正确，符合 Claude Code CLI 规范
 - [x] 与现有配置方式并列说明
+
+---
+
+## Phase 18.2: 项目命名规范完全统一 (Day 27.2)
+
+> **开始日期**: 2026-01-06
+> **目标**: 统一 PyPI 包名为 `registry-tools`，完全符合 Python/PyPI 命名规范
+> **触发**: 用户发现 pip list 显示名称与文档引用不一致
+
+### 问题分析
+
+**命名不一致问题**:
+- `pyproject.toml` 配置: `Registry_Tools`
+- `uv pip list` 显示: `registry-tools` (自动规范化)
+- `dist/*.whl` 文件名: `registry_tools-0.1.0-py3-none-any.whl`
+- 文档引用: `Registry_Tools`
+
+**根本原因**:
+根据 [Python 官方规范 - Names and normalization](https://packaging.python.org/en/latest/specifications/name-normalization/)，包名会自动规范化为小写+连字符格式。
+
+### 任务清单
+
+| 任务ID | 任务描述 | 状态 | 完成时间 | 备注 |
+|--------|----------|------|----------|------|
+| NAMING-001 | 分析 Python/PyPI 包命名规范最佳实践 | ✅ DONE | 2026-01-06 | 官方规范研究 |
+| NAMING-002 | 确定统一的命名方案 | ✅ DONE | 2026-01-06 | registry-tools |
+| NAMING-003 | 修改 pyproject.toml 包名为 registry-tools | ✅ DONE | 2026-01-06 | 配置文件 |
+| NAMING-004 | 更新 README.md 中所有包名引用 | ✅ DONE | 2026-01-06 | 主文档 |
+| NAMING-005 | 更新 docs/ 中所有文档的包名引用 | ✅ DONE | 2026-01-06 | 10个文档 |
+| NAMING-006 | 更新 scripts/ 脚本中的包名引用 | ✅ DONE | 2026-01-06 | 2个脚本 |
+| NAMING-007 | 更新 TASK.md 项目信息中的包名定义 | ✅ DONE | 2026-01-06 | 任务追踪 |
+| NAMING-008 | 清理旧 dist/ 目录并重新构建验证 | ✅ DONE | 2026-01-06 | 构建验证 |
+| NAMING-009 | 交叉验证所有文档命名一致性 | ✅ DONE | 2026-01-06 | 质量检查 |
+| NAMING-010 | 更新 CHANGELOG.md 记录本次修改 | ✅ DONE | 2026-01-06 | 变更记录 |
+
+### 命名规范统一结果
+
+| 类型 | 修改前 | 修改后 |
+|------|--------|--------|
+| **PyPI 包名** | `Registry_Tools` | `registry-tools` |
+| **Python 模块名** | `registrytools` | `registrytools` (不变) |
+| **CLI 命令名** | `registry-tools` | `registry-tools` (不变) |
+| **Wheel 文件名** | `registry_tools-0.1.0-py3-none-any.whl` | `registry_tools-0.1.0-py3-none-any.whl` (不变) |
+| **MCP 服务器名** | `RegistryTools` | `RegistryTools` (不变) |
+
+### 更新文件清单
+
+**配置文件** (1):
+- `pyproject.toml` - 包名修改
+
+**文档** (9):
+- `README.md` - 安装命令
+- `docs/ARCHITECTURE.md` - 配置示例
+- `docs/CHANGELOG.md` - 添加 Phase 18.2 记录
+- `docs/CLAUDE_CONFIG.md` - 安装和配置命令
+- `docs/IDE_CONFIG.md` - uvx/pip 命令
+- `docs/INSTALLATION.md` - 安装命令
+- `docs/PUBLISHING.md` - 发布包名称说明
+- `docs/SCRIPTS_GUIDE.md` - 包名引用
+- `docs/TASK.md` - 项目信息
+- `docs/USER_GUIDE.md` - 使用说明
+
+**脚本** (2):
+- `scripts/build/build-mcp.py`
+- `scripts/release/create-release.py`
+
+### 验证结果
+
+**交叉验证** (NAMING-009):
+- ✅ pyproject.toml 包名已更新为 `registry-tools`
+- ✅ 所有文档中的安装命令已改为 `pip install registry-tools`
+- ✅ 所有文档中的 `uvx Registry_Tools` 已改为 `uvx registry-tools`
+- ✅ 所有脚本文件中的包名引用已更新
+- ✅ TASK.md 项目信息中的包名定义已更新
+- ✅ CHANGELOG.md 已添加 Phase 18.2 记录
+
+**构建验证** (NAMING-008):
+```bash
+=== 命名一致性验证 ===
+pyproject.toml: registry-tools
+wheel 文件: registry_tools-0.1.0-py3-none-any.whl
+METADATA Name: registry-tools
+```
+
+### 最终效果
+
+```bash
+# 安装命令
+pip install registry-tools  ✅
+uvx registry-tools         ✅
+
+# pip list 显示
+registry-tools        0.1.0  ✅
+
+# wheel 文件名
+registry_tools-0.1.0-py3-none-any.whl  ✅
+```
+
+### 参考资料
+
+- [Names and normalization - Python Packaging User Guide](https://packaging.python.org/en/latest/specifications/name-normalization/)
+- [PEP 508 – Dependency specification for Python Software](https://peps.python.org/pep-0508/)
+
+### Git 提交
+
+```
+commit b37b66f
+refactor(naming): unify package name to registry-tools per PEP 508
+
+13 files changed, 96 insertions(+), 91 deletions(-)
+```
 
 ---
