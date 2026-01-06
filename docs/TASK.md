@@ -1540,5 +1540,79 @@ Authorization: Bearer rtk_a1b2c3d4e5f6789012345678901234567890123456789012345678
 
 ---
 
+## Phase 17: scripts/ 目录使用说明文档编写 (Day 26)
+
+> **开始日期**: 2026-01-06
+> **目标**: 为 scripts/ 目录编写规范完整的使用说明文档
+> **触发**: 用户需求 - 补充脚本工具使用文档
+
+### 任务清单
+
+| 任务ID | 任务描述 | 状态 | 完成时间 | 备注 |
+|--------|----------|------|----------|------|
+| TASK-1701 | 创建 scripts/README.md | ✅ DONE | 2026-01-06 | scripts/ 目录使用说明 |
+| TASK-1702 | 创建 docs/SCRIPTS_GUIDE.md | ✅ DONE | 2026-01-06 | 脚本工具完整使用指南 |
+| TASK-1703 | 更新 docs/README.md 索引 | ✅ DONE | 2026-01-06 | 添加 SCRIPTS_GUIDE.md |
+| TASK-1704 | 交叉验证文档完整性 | ✅ DONE | 2026-01-06 | 格式和内容验证 |
+| TASK-1705 | 更新 TASK.md 并提交 | 📝 IN_PROGRESS | 2026-01-06 | 阶段完成 |
+
+### 新增文档
+
+| 文档 | 位置 | 行数 | 版本 |
+|------|------|------|------|
+| **scripts/README.md** | `scripts/README.md` | 102 行 | v0.1.0 |
+| **SCRIPTS_GUIDE.md** | `docs/SCRIPTS_GUIDE.md` | 461 行 | v0.1.0 |
+
+### 文档内容
+
+**scripts/README.md** (TASK-1701):
+- 概述和目录结构
+- 快速开始指南
+- 脚本功能表格（build/verify/release）
+- 详细文档链接
+- 依赖要求说明
+
+**docs/SCRIPTS_GUIDE.md** (TASK-1702):
+- 第一部分：构建脚本 (build/)
+  - build-wheel.py - 构建 Wheel 包
+  - build-mcp.py - 构建 MCP 安装包
+- 第二部分：验证脚本 (verify/)
+  - verify-before-release.py - 发布前验证
+  - verify-after-install.py - 安装后验证
+- 第三部分：发布脚本 (release/)
+  - create-release.py - 创建发布包
+- 第四部分：完整工作流程
+- 第五部分：故障排除
+- 第六部分：开发指南
+- 附录：环境变量、相关文档、外部工具
+
+### 文档更新
+
+**docs/README.md** (TASK-1703):
+- 发布部署章节添加 SCRIPTS_GUIDE.md
+- 文档分类添加脚本工具说明
+- 快速导航添加"使用脚本"链接
+- 文档状态表添加 SCRIPTS_GUIDE.md 记录
+
+### 验证结果
+
+**交叉验证** (TASK-1704):
+- ✅ scripts/README.md 创建成功 (102 行)
+- ✅ docs/SCRIPTS_GUIDE.md 创建成功 (461 行)
+- ✅ docs/README.md 索引更新完成
+- ✅ 文档格式规范（Markdown 正确）
+- ✅ 文档风格与现有文档一致
+- ✅ 中文编写，符合规范
+
+### 验收标准
+
+- [x] scripts/README.md 创建完成，包含所有脚本的用法说明
+- [x] docs/SCRIPTS_GUIDE.md 创建完成，包含详细的脚本使用指南
+- [x] 文档格式规范，使用中文编写
+- [x] 与现有文档风格一致
+- [x] 交叉验证确认无遗漏
+
+---
+
 **项目维护者**: Maric
 **文档版本**: v0.1.0

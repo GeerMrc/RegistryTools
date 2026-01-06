@@ -42,6 +42,7 @@
 | 文档 | 描述 |
 |------|------|
 | [PUBLISHING.md](PUBLISHING.md) | PyPI 发布指南和流程 |
+| [SCRIPTS_GUIDE.md](SCRIPTS_GUIDE.md) | scripts/ 目录脚本工具完整使用指南 |
 
 ---
 
@@ -67,6 +68,7 @@
 
 ### 发布部署
 - **PUBLISHING.md**: PyPI 发布流程和验证步骤
+- **SCRIPTS_GUIDE.md**: scripts/ 目录脚本工具完整使用指南（构建、验证、发布）
 
 ### 项目管理
 - **TASK.md**: 任务追踪和进度（Phase 0-12）
@@ -89,6 +91,7 @@
 | 参与开发 | [DEVELOPMENT_WORKFLOW.md](DEVELOPMENT_WORKFLOW.md) |
 | 贡献代码 | [CONTRIBUTING.md](CONTRIBUTING.md) |
 | 发布版本 | [PUBLISHING.md](PUBLISHING.md) |
+| 使用脚本 | [SCRIPTS_GUIDE.md](SCRIPTS_GUIDE.md) |
 | 查看任务 | [TASK.md](TASK.md) |
 | 查看变更 | [CHANGELOG.md](CHANGELOG.md) |
 
@@ -108,6 +111,7 @@
 | DEVELOPMENT_WORKFLOW.md | v1.0 | ✅ 最新 | 2026-01-04 |
 | CONTRIBUTING.md | v1.0 | ✅ 最新 | 2026-01-04 |
 | PUBLISHING.md | v1.0 | ✅ 新增 | 2026-01-05 |
+| SCRIPTS_GUIDE.md | v0.1.0 | ✅ 新增 | 2026-01-06 |
 | TASK.md | v0.1.0 | ⏳ 进行中 | 2026-01-05 |
 | CHANGELOG.md | v0.1.0 | ⏳ 待更新 | 2026-01-05 |
 
