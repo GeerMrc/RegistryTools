@@ -1,7 +1,7 @@
 # RegistryTools - 任务追踪文档
 
 > **项目开始**: 2026-01-04
-> **当前状态**: Phase 16 已完成 - 文档与代码一致性全面审核 ✅
+> **当前状态**: Phase 19 已完成 - 文档整合与 Claude Code MCP 配置补充 ✅
 > **完成进度**: 100%
 
 ---
@@ -728,6 +728,8 @@ Phase 13:   [████████████████████] 100% 
 Phase 14:   [████████████████████] 100% 功能审计与实现验证 ✅
 Phase 15:   [████████████████████] 100% API Key 认证功能实现 ✅
 Phase 16:   [████████████████████] 100% 文档与代码一致性全面审核 ✅
+Phase 18:   [████████████████████] 100% 项目命名规范全面统一 ✅
+Phase 19:   [████████████████████] 100% 文档整合与 Claude Code MCP 配置补充 ✅
 ```
 
 ### 里程碑
@@ -742,7 +744,9 @@ Phase 16:   [████████████████████] 100% 
 - [x] M4.8: 功能审计与实现验证完成 (2026-01-05) ✅
 - [x] M4.9: API Key 认证功能实现完成 (2026-01-05) ✅
 - [x] M5: 文档与代码一致性全面审核完成 (2026-01-05) ✅
-- [ ] M6: v0.1.0 发布
+- [x] M6: 项目命名规范全面统一完成 (2026-01-06) ✅
+- [x] M7: 文档整合与 Claude Code MCP 配置补充完成 (2026-01-06) ✅
+- [ ] M8: v0.1.0 发布
 
 ---
 
@@ -1717,3 +1721,127 @@ Authorization: Bearer rtk_a1b2c3d4e5f6789012345678901234567890123456789012345678
 
 **项目维护者**: Maric
 **文档版本**: v0.1.0
+
+---
+
+## Phase 19: 文档整合与 Claude Code MCP 配置补充 (Day 28)
+
+> **开始日期**: 2026-01-06
+> **目标**: 全面梳理项目功能与配置，补充 Claude Code CLI 配置方式到相关文档
+> **触发**: 用户要求补充 CLAUDE_CONFIG.md 和 README.md 中缺失的 Claude Code CLI 配置方式
+
+### 任务清单
+
+| 任务ID | 任务描述 | 状态 | 完成时间 | 备注 |
+|--------|----------|------|----------|------|
+| TASK-1901 | 全面梳理项目核心信息 | ✅ DONE | 2026-01-06 | 项目名称/功能/配置参数 |
+| TASK-1902 | 审核文档与实际功能一致性 | ✅ DONE | 2026-01-06 | 配置参数/环境变量/CLI参数 |
+| TASK-1903 | 补充 CLAUDE_CONFIG.md 添加 Claude Code CLI 配置 | ✅ DONE | 2026-01-06 | 新增 CLI 命令配置方式 |
+| TASK-1904 | 补充 README.md 添加 Claude Code CLI 配置 | ✅ DONE | 2026-01-06 | 新增 CLI 命令配置方式 |
+| TASK-1905 | 交叉验证文档完整性 | ✅ DONE | 2026-01-06 | 配置方式完整性检查 |
+| TASK-1906 | 更新 TASK.md 并提交 | 📝 IN_PROGRESS | 2026-01-06 | 阶段完成 |
+
+### 项目核心信息梳理结果
+
+**项目基本信息**:
+- **项目名称**: RegistryTools
+- **PyPI 包名**: `Registry_Tools`
+- **Python 模块名**: `registrytools`
+- **CLI 命令名**: `registry-tools`
+- **MCP 服务器名**: `RegistryTools`
+- **版本**: v0.1.0
+- **维护者**: Maric
+
+**安装方式**:
+1. **uvx (推荐)**: `uvx Registry_Tools`
+2. **pip**: `pip install Registry_Tools`
+3. **uv**: `uv pip install Registry_Tools`
+
+**CLI 参数支持**:
+- `--data-path`: 数据目录路径
+- `--transport`: 传输协议 (stdio/http)
+- `--host`: HTTP 主机地址 (默认: 127.0.0.1)
+- `--port`: HTTP 端口 (默认: 8000)
+- `--path`: HTTP 路径 (默认: /)
+- `--enable-auth`: 启用 API Key 认证 (仅 HTTP 模式)
+- `--version`: 显示版本信息
+- `api-key` 子命令: create/list/delete
+
+**环境变量支持**:
+- `REGISTRYTOOLS_DATA_PATH`: 默认 `~/.RegistryTools`
+- `REGISTRYTOOLS_TRANSPORT`: 默认 `stdio`
+- `REGISTRYTOOLS_LOG_LEVEL`: 默认 `INFO`
+- `REGISTRYTOOLS_ENABLE_AUTH`: 默认 `false`
+
+**功能实现状态**:
+- ✅ 工具注册表 (ToolRegistry)
+- ✅ 搜索算法 (Regex, BM25)
+- ✅ 存储层 (JSONStorage, SQLiteStorage)
+- ✅ MCP 工具接口 (search_tools, get_tool_definition, list_tools_by_category, register_tool)
+- ✅ HTTP/STDIO 传输协议
+- ✅ 冷热工具分离 (HOT/WARM/COLD)
+- ✅ 环境变量支持
+- ✅ 日志功能
+- ✅ API Key 认证 (Phase 15)
+
+### 文档一致性审核结果
+
+**配置方式覆盖情况**:
+
+| 配置方式 | IDE_CONFIG.md | CLAUDE_CONFIG.md | README.md | 状态 |
+|---------|--------------|-----------------|-----------|------|
+| Claude Desktop STDIO | ✅ | ✅ | ✅ | 完整 |
+| Claude Desktop HTTP | ✅ | ✅ | ✅ | 完整 |
+| Claude Code CLI | ✅ 完整 | ✅ **新增** | ✅ **新增** | 完整 |
+| 配置文件 (JSON) | ✅ | ✅ | ✅ | 完整 |
+
+**关键发现**:
+1. ✅ `claude mcp add-json` 命令不存在（官方 Claude Code CLI 中无此命令）
+2. ✅ 现有命令为 `claude mcp add`（已完整文档化）
+3. ✅ IDE_CONFIG.md 已包含完整的 Claude Code CLI 配置说明
+4. ✅ CLAUDE_CONFIG.md 和 README.md 已补充 Claude Code CLI 配置
+
+### 修改详情
+
+**CLAUDE_CONFIG.md 修改**:
+- 更新日期: 2026-01-05 → 2026-01-06
+- 新增 "Claude Code (VSCode) 配置" 章节
+- 包含 CLI 命令方式（推荐）
+- 包含配置文件方式
+- 覆盖 STDIO 和 HTTP 配置
+- 包含 API Key 认证配置
+- 包含管理命令和配置范围说明
+
+**README.md 修改**:
+- 新增 "Claude Code (VSCode) 配置" 章节
+- 包含 CLI 命令方式（推荐）
+- 包含配置文件方式
+- 覆盖 STDIO 和 HTTP 配置
+- 包含 API Key 认证配置
+- 包含管理命令和配置范围说明
+
+### 验证结果
+
+**交叉验证** (TASK-1905):
+- ✅ CLAUDE_CONFIG.md 已添加 Claude Code CLI 配置（79 行新增）
+- ✅ README.md 已添加 Claude Code CLI 配置（73 行新增）
+- ✅ 所有配置方式文档完整
+- ✅ 版本号统一为 v0.1.0
+- ✅ PyPI 包名统一为 `Registry_Tools`
+- ✅ CLI 命令格式正确（`claude mcp add`）
+
+**文档一致性**:
+- ✅ 三个主要配置文档（IDE_CONFIG.md, CLAUDE_CONFIG.md, README.md）配置方式一致
+- ✅ 环境变量名称一致
+- ✅ 包名引用一致（Registry_Tools / registrytools）
+- ✅ 版本号一致（v0.1.0）
+
+### 验收标准
+
+- [x] CLAUDE_CONFIG.md 已添加 Claude Code CLI 配置方式
+- [x] README.md 已添加 Claude Code CLI 配置方式
+- [x] 所有文档配置方式完整一致
+- [x] 交叉验证确认无遗漏
+- [x] 文档格式规范，使用中文编写
+
+---

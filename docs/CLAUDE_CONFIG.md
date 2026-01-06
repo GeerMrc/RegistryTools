@@ -1,10 +1,85 @@
 # RegistryTools - Claude Code 配置指南
 
 > **版本**: v0.1.0
-> **更新日期**: 2026-01-05
+> **更新日期**: 2026-01-06
 > **项目**: RegistryTools - MCP Tool Registry Server
 
-本文档描述如何在 Claude Code 中配置和使用 RegistryTools。
+本文档描述如何在 Claude Code 和 Claude Desktop 中配置和使用 RegistryTools。
+
+---
+
+## Claude Code (VSCode) 配置
+
+Claude Code 是 Anthropic 官方的 VSCode AI 助手，支持通过 MCP 协议集成 RegistryTools。
+
+### 方式 1：CLI 命令（推荐）
+
+使用 Claude Code CLI 命令快速配置，一行命令完成：
+
+**STDIO 本地服务器**：
+```bash
+# 基础配置（使用 uvx）
+claude mcp add --transport stdio RegistryTools -- uvx Registry_Tools
+
+# 带环境变量
+claude mcp add --transport stdio RegistryTools \
+  --env REGISTRYTOOLS_LOG_LEVEL=INFO \
+  -- uvx Registry_Tools
+
+# 使用 pip 安装版本
+claude mcp add --transport stdio RegistryTools -- registry-tools
+```
+
+**Streamable HTTP 远程服务器**：
+```bash
+# 无认证
+claude mcp add --transport http RegistryTools-Remote http://localhost:8000/mcp
+
+# 使用 RegistryTools 内置 API Key 认证（Phase 15，推荐）
+# 1. 先启用认证并创建 API Key
+registry-tools --transport http --enable-auth
+registry-tools api-key create "Claude Code" --permission read
+
+# 2. 添加服务器（使用 API Key）
+claude mcp add --transport http RegistryTools-Remote \
+  http://localhost:8000/mcp \
+  --header "X-API-Key: rtk_your_api_key_here"
+```
+
+**管理命令**：
+```bash
+claude mcp list              # 列出所有服务器
+claude mcp get RegistryTools  # 查看详情
+claude mcp remove RegistryTools  # 删除服务器
+```
+
+**配置范围**：
+```bash
+# 项目级配置（可版本控制）
+claude mcp add --scope project --transport stdio RegistryTools -- uvx Registry_Tools
+
+# 用户级配置（跨项目使用）
+claude mcp add --scope user --transport stdio RegistryTools -- uvx Registry_Tools
+```
+
+### 方式 2：配置文件
+
+创建 `.claude/config.json`（项目级）或 `~/.claude/config.json`（用户级）：
+
+```json
+{
+  "mcpServers": {
+    "RegistryTools": {
+      "command": "uvx",
+      "args": ["Registry_Tools"],
+      "env": {
+        "REGISTRYTOOLS_DATA_PATH": "~/.RegistryTools",
+        "REGISTRYTOOLS_LOG_LEVEL": "INFO"
+      }
+    }
+  }
+}
+```
 
 ---
 
