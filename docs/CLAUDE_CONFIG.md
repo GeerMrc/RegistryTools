@@ -16,7 +16,24 @@ Claude Code 是 Anthropic 官方的 VSCode AI 助手，支持通过 MCP 协议�
 
 使用 Claude Code CLI 命令快速配置，一行命令完成：
 
+> **重要提示**:
+> - **本地开发环境**: 使用 `pip install -e .` 安装后，使用 `registry-tools` 命令
+> - **PyPI 发布后**: 可以使用 `uvx registry-tools` 无需安装
+
 **STDIO 本地服务器**：
+
+**本地开发环境配置** (推荐用于开发):
+```bash
+# 基础配置
+claude mcp add --transport stdio RegistryTools -- registry-tools
+
+# 带环境变量
+claude mcp add --transport stdio RegistryTools \
+  --env REGISTRYTOOLS_LOG_LEVEL=INFO \
+  -- registry-tools
+```
+
+**PyPI 发布后配置** (推荐用于生产):
 ```bash
 # 基础配置（使用 uvx）
 claude mcp add --transport stdio RegistryTools -- uvx registry-tools
@@ -25,9 +42,6 @@ claude mcp add --transport stdio RegistryTools -- uvx registry-tools
 claude mcp add --transport stdio RegistryTools \
   --env REGISTRYTOOLS_LOG_LEVEL=INFO \
   -- uvx registry-tools
-
-# 使用 pip 安装版本
-claude mcp add --transport stdio RegistryTools -- registry-tools
 ```
 
 **Streamable HTTP 远程服务器**：
@@ -56,9 +70,15 @@ claude mcp remove RegistryTools  # 删除服务器
 **配置范围**：
 ```bash
 # 项目级配置（可版本控制）
+# 本地开发环境
+claude mcp add --scope project --transport stdio RegistryTools -- registry-tools
+# PyPI 发布后
 claude mcp add --scope project --transport stdio RegistryTools -- uvx registry-tools
 
 # 用户级配置（跨项目使用）
+# 本地开发环境
+claude mcp add --scope user --transport stdio RegistryTools -- registry-tools
+# PyPI 发布后
 claude mcp add --scope user --transport stdio RegistryTools -- uvx registry-tools
 ```
 
@@ -66,6 +86,22 @@ claude mcp add --scope user --transport stdio RegistryTools -- uvx registry-tool
 
 创建 `.claude/config.json`（项目级）或 `~/.claude/config.json`（用户级）：
 
+**本地开发环境配置** (推荐用于开发):
+```json
+{
+  "mcpServers": {
+    "RegistryTools": {
+      "command": "registry-tools",
+      "env": {
+        "REGISTRYTOOLS_DATA_PATH": "~/.RegistryTools",
+        "REGISTRYTOOLS_LOG_LEVEL": "INFO"
+      }
+    }
+  }
+}
+```
+
+**PyPI 发布后配置** (推荐用于生产):
 ```json
 {
   "mcpServers": {
@@ -86,6 +122,23 @@ claude mcp add --scope user --transport stdio RegistryTools -- uvx registry-tool
 使用 `claude mcp add-json` 命令直接通过 JSON 配置添加 MCP 服务器：
 
 **STDIO 本地服务器**：
+
+**本地开发环境配置** (推荐用于开发):
+```bash
+# 基础配置
+claude mcp add-json "RegistryTools" '{"command": "registry-tools"}' --scope user
+
+# 带环境变量
+claude mcp add-json "RegistryTools" '{
+  "command": "registry-tools",
+  "env": {
+    "REGISTRYTOOLS_DATA_PATH": "~/.RegistryTools",
+    "REGISTRYTOOLS_LOG_LEVEL": "INFO"
+  }
+}' --scope user
+```
+
+**PyPI 发布后配置** (推荐用于生产):
 ```bash
 # 基础配置（使用 uvx）
 claude mcp add-json "RegistryTools" '{"command": "uvx", "args": ["registry-tools"]}' --scope user
@@ -99,9 +152,6 @@ claude mcp add-json "RegistryTools" '{
     "REGISTRYTOOLS_LOG_LEVEL": "INFO"
   }
 }' --scope user
-
-# 使用 pip 安装版本
-claude mcp add-json "RegistryTools" '{"command": "registry-tools"}' --scope user
 ```
 
 **Streamable HTTP 远程服务器**：
@@ -148,6 +198,19 @@ claude mcp add-json "RegistryTools" '{...}' --scope local
 
 推荐使用 STDIO 模式进行本地集成：
 
+**本地开发环境配置** (推荐用于开发):
+```json
+{
+  "mcpServers": {
+    "RegistryTools": {
+      "command": "registry-tools",
+      "args": ["--data-path", "~/.RegistryTools"]
+    }
+  }
+}
+```
+
+**PyPI 发布后配置** (推荐用于生产):
 ```json
 {
   "mcpServers": {
@@ -175,6 +238,24 @@ claude mcp add-json "RegistryTools" '{...}' --scope local
 
 ### 完整配置示例
 
+**本地开发环境配置** (推荐用于开发):
+```json
+{
+  "mcpServers": {
+    "RegistryTools": {
+      "command": "registry-tools",
+      "args": [
+        "--data-path", "~/.RegistryTools"
+      ],
+      "env": {
+        "REGISTRYTOOLS_LOG_LEVEL": "INFO"
+      }
+    }
+  }
+}
+```
+
+**PyPI 发布后配置** (推荐用于生产):
 ```json
 {
   "mcpServers": {
@@ -182,16 +263,11 @@ claude mcp add-json "RegistryTools" '{...}' --scope local
       "command": "uvx",
       "args": [
         "registry-tools",
-        "--data-path", "~/.RegistryTools",
-        "--transport", "stdio"
+        "--data-path", "~/.RegistryTools"
       ],
       "env": {
         "REGISTRYTOOLS_LOG_LEVEL": "INFO"
       }
-    },
-    "filesystem": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/path/to/allowed/files"]
     }
   }
 }
@@ -205,6 +281,18 @@ claude mcp add-json "RegistryTools" '{...}' --scope local
 
 在项目根目录创建 `.cline/settings.json`：
 
+**本地开发环境配置** (推荐用于开发):
+```json
+{
+  "mcpServers": {
+    "RegistryTools": {
+      "command": "registry-tools"
+    }
+  }
+}
+```
+
+**PyPI 发布后配置** (推荐用于生产):
 ```json
 {
   "mcpServers": {
@@ -229,6 +317,12 @@ claude mcp add-json "RegistryTools" '{...}' --scope local
 1. 打开 Cursor 设置
 2. 导航到 MCP Servers
 3. 添加新服务器：
+
+**本地开发环境配置** (推荐用于开发):
+   - 名称: `RegistryTools`
+   - 命令: `registry-tools`
+
+**PyPI 发布后配置** (推荐用于生产):
    - 名称: `RegistryTools`
    - 命令: `uvx`
    - 参数: `["registry-tools"]`
@@ -265,6 +359,22 @@ claude mcp add-json "RegistryTools" '{...}' --scope local
 
 ### 配置示例
 
+**本地开发环境配置** (推荐用于开发):
+```json
+{
+  "mcpServers": {
+    "RegistryTools": {
+      "command": "registry-tools",
+      "env": {
+        "REGISTRYTOOLS_DATA_PATH": "/custom/data/path",
+        "REGISTRYTOOLS_LOG_LEVEL": "DEBUG"
+      }
+    }
+  }
+}
+```
+
+**PyPI 发布后配置** (推荐用于生产):
 ```json
 {
   "mcpServers": {
@@ -314,12 +424,19 @@ Claude 应该会调用 `search_tools` 工具并返回结果。
 3. 重启 Claude Desktop
 4. 查看 Claude Desktop 日志
 
-### Q: uvx 命令不可用
+### Q: uvx 命令不可用或连接失败
 
-**解决方案**:
-1. 安装 uv: `pip install uv`
-2. 或使用 pip 安装: `pip install registry-tools`
-3. 配置中使用完整 Python 路径
+**问题原因**: `uvx registry-tools` 需要包已发布到 PyPI 才能工作。
+
+**本地开发环境解决方案**:
+1. 使用 `pip install -e .` 安装本地开发版本
+2. 配置中使用 `registry-tools` 命令而非 `uvx`
+3. 或使用 `python -m registrytools`
+
+**生产环境解决方案** (PyPI 发布后):
+1. 确保已安装 uv: `pip install uv`
+2. 使用 `uvx registry-tools` 无需手动安装
+3. 或使用 `pip install registry-tools` 然后 `registry-tools` 命令
 
 ### Q: 工具调用无响应
 

@@ -10,6 +10,12 @@
 ## [Unreleased]
 
 ### 新增
+- **Phase 18.3 配置文档本地/PyPI差异化说明** (2026-01-06)
+  - 所有配置文档添加本地开发环境 vs PyPI 发布后的配置区分
+  - 解决 `uvx registry-tools` 在本地开发环境无法连接的问题
+  - 更新 README.md、CLAUDE_CONFIG.md、IDE_CONFIG.md、INSTALLATION.md
+  - 新增故障排除章节，说明 uvx 连接失败的原因和解决方案
+  - 所有配置示例明确标注"本地开发环境配置"和"PyPI 发布后配置"
 - **Phase 18.2 命名规范完全统一** (2026-01-06)
   - PyPI 包名从 `Registry_Tools` 改为 `registry-tools`（符合 Python 最佳实践）
   - 统一所有文档中的安装命令引用（`pip install registry-tools`）

@@ -41,6 +41,23 @@ RegistryTools 是一个独立的 MCP Tool Registry Server，提供通用的工�
 
 ### 基础 STDIO 配置（推荐）
 
+> **重要提示**:
+> - **本地开发环境**: 使用 `pip install -e .` 安装后，使用 `registry-tools` 命令
+> - **PyPI 发布后**: 可以使用 `uvx registry-tools` 无需安装
+
+**本地开发环境配置** (推荐用于开发):
+```json
+{
+  "mcpServers": {
+    "RegistryTools": {
+      "command": "registry-tools",
+      "args": ["--data-path", "~/.RegistryTools"]
+    }
+  }
+}
+```
+
+**PyPI 发布后配置** (推荐用于生产):
 ```json
 {
   "mcpServers": {
@@ -54,6 +71,22 @@ RegistryTools 是一个独立的 MCP Tool Registry Server，提供通用的工�
 
 ### STDIO + 环境变量配置
 
+**本地开发环境配置** (推荐用于开发):
+```json
+{
+  "mcpServers": {
+    "RegistryTools": {
+      "command": "registry-tools",
+      "env": {
+        "REGISTRYTOOLS_DATA_PATH": "~/.RegistryTools",
+        "REGISTRYTOOLS_LOG_LEVEL": "INFO"
+      }
+    }
+  }
+}
+```
+
+**PyPI 发布后配置** (推荐用于生产):
 ```json
 {
   "mcpServers": {
@@ -148,6 +181,25 @@ registry-tools api-key create "My Client" --permission read
 
 ### 多实例配置（本地 + 远程）
 
+**本地开发环境配置** (推荐用于开发):
+```json
+{
+  "mcpServers": {
+    "RegistryTools-Local": {
+      "command": "registry-tools",
+      "args": ["--data-path", "~/.RegistryTools"],
+      "env": {
+        "REGISTRYTOOLS_LOG_LEVEL": "DEBUG"
+      }
+    },
+    "RegistryTools-Remote": {
+      "url": "http://localhost:8000/mcp"
+    }
+  }
+}
+```
+
+**PyPI 发布后配置** (推荐用于生产):
 ```json
 {
   "mcpServers": {
@@ -173,9 +225,24 @@ Claude Code 是 Anthropic 官方的 VSCode AI 助手，支持通过 MCP 协议�
 
 ### 方式 1：CLI 命令（推荐）
 
-使用 Claude Code CLI 命令快速配置，一行命令完成：
+> **重要提示**:
+> - **本地开发环境**: 使用 `pip install -e .` 安装后，使用 `registry-tools` 命令
+> - **PyPI 发布后**: 可以使用 `uvx registry-tools` 无需安装
 
 **STDIO 本地服务器**：
+
+**本地开发环境配置** (推荐用于开发):
+```bash
+# 基础配置
+claude mcp add --transport stdio RegistryTools -- registry-tools
+
+# 带环境变量
+claude mcp add --transport stdio RegistryTools \
+  --env REGISTRYTOOLS_LOG_LEVEL=INFO \
+  -- registry-tools
+```
+
+**PyPI 发布后配置** (推荐用于生产):
 ```bash
 # 基础配置（使用 uvx）
 claude mcp add --transport stdio RegistryTools -- uvx registry-tools
@@ -184,9 +251,6 @@ claude mcp add --transport stdio RegistryTools -- uvx registry-tools
 claude mcp add --transport stdio RegistryTools \
   --env REGISTRYTOOLS_LOG_LEVEL=INFO \
   -- uvx registry-tools
-
-# 使用 pip 安装版本
-claude mcp add --transport stdio RegistryTools -- registry-tools
 ```
 
 **Streamable HTTP 远程服务器**：

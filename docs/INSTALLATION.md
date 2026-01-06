@@ -17,23 +17,13 @@
 
 ## 安装方法
 
-### 方法 1: 使用 uvx (推荐)
+> **重要提示**:
+> - **本地开发环境**: 从源码使用 `pip install -e .` 安装
+> - **PyPI 发布后**: 可以使用 `pip install registry-tools` 或 `uvx registry-tools`
 
-[uvx](https://github.com/astral-sh/uv) 是运行 Python 工具的最简单方式：
+### 方法 1: 本地开发环境安装（当前）
 
-```bash
-uvx registry-tools
-```
-
-### 方法 2: 使用 pip
-
-#### 从 PyPI 安装
-
-```bash
-pip install registry-tools
-```
-
-#### 从源码安装
+从源码以可编辑模式安装：
 
 ```bash
 # 克隆仓库
@@ -44,11 +34,38 @@ cd RegistryTools
 pip install -e .
 ```
 
-### 方法 3: 使用 uv
+安装后可以直接使用命令：
+```bash
+registry-tools --version
+```
+
+### 方法 2: 从 PyPI 安装（发布后）
+
+> **注意**: 此方法仅在包发布到 PyPI 后可用
 
 ```bash
+# 使用 pip 安装
+pip install registry-tools
+
+# 或使用 uv 安装
 uv pip install registry-tools
+
+# 或使用 uvx（无需安装）
+uvx registry-tools
 ```
+
+### 方法 3: 使用 uvx（发布后推荐）
+
+[uvx](https://github.com/astral-sh/uv) 是运行 Python 工具的最简单方式：
+
+```bash
+uvx registry-tools
+```
+
+**优势**:
+- 无需手动安装包
+- 自动使用最新版本
+- 隔离的运行环境
 
 ---
 
@@ -222,6 +239,23 @@ registry-tools api-key delete <key-id>
 
 #### STDIO 模式配置
 
+> **重要提示**:
+> - **本地开发环境**: 使用 `pip install -e .` 安装后，使用 `registry-tools` 命令
+> - **PyPI 发布后**: 可以使用 `uvx registry-tools` 无需安装
+
+**本地开发环境配置** (推荐用于开发):
+```json
+{
+  "mcpServers": {
+    "RegistryTools": {
+      "command": "registry-tools",
+      "args": ["--data-path", "~/.RegistryTools"]
+    }
+  }
+}
+```
+
+**PyPI 发布后配置** (推荐用于生产):
 ```json
 {
   "mcpServers": {
@@ -281,6 +315,22 @@ registry-tools api-key delete <key-id>
 
 在 `.cline/settings.json` 中配置：
 
+> **重要提示**:
+> - **本地开发环境**: 使用 `pip install -e .` 安装后，使用 `registry-tools` 命令
+> - **PyPI 发布后**: 可以使用 `uvx registry-tools` 无需安装
+
+**本地开发环境配置** (推荐用于开发):
+```json
+{
+  "mcpServers": {
+    "RegistryTools": {
+      "command": "registry-tools"
+    }
+  }
+}
+```
+
+**PyPI 发布后配置** (推荐用于生产):
 ```json
 {
   "mcpServers": {
@@ -295,6 +345,17 @@ registry-tools api-key delete <key-id>
 ### Cursor
 
 在 Cursor 设置中添加 MCP 服务器配置，或在项目中使用 `fastmcp.json`。
+
+> **重要提示**:
+> - **本地开发环境**: 使用 `pip install -e .` 安装后，使用 `registry-tools` 命令
+> - **PyPI 发布后**: 可以使用 `uvx registry-tools` 无需安装
+
+**本地开发环境配置** (推荐用于开发):
+- 命令: `registry-tools`
+
+**PyPI 发布后配置** (推荐用于生产):
+- 命令: `uvx`
+- 参数: `["registry-tools"]`
 
 ---
 
@@ -399,6 +460,41 @@ ruff check src/registrytools tests/
 ---
 
 ## 故障排除
+
+### 问题: uvx 命令无法连接
+
+**问题原因**: `uvx registry-tools` 需要包已发布到 PyPI 才能工作。
+
+**本地开发环境解决方案**:
+```bash
+# 1. 使用 pip install -e . 安装本地开发版本
+pip install -e .
+
+# 2. 配置中使用 registry-tools 命令而非 uvx
+# Claude Desktop
+{
+  "mcpServers": {
+    "RegistryTools": {
+      "command": "registry-tools"
+    }
+  }
+}
+
+# Claude Code CLI
+claude mcp add --transport stdio RegistryTools -- registry-tools
+```
+
+**生产环境解决方案** (PyPI 发布后):
+```bash
+# 1. 确保已安装 uv
+pip install uv
+
+# 2. 使用 uvx 无需手动安装
+uvx registry-tools
+
+# 或使用 pip 安装
+pip install registry-tools
+```
 
 ### 问题: 安装后命令不可用
 
