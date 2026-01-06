@@ -58,7 +58,7 @@ RegistryTools - Wheel 包构建
 ... 构建输出 ...
 
 📋 生成的包:
-  - Registry_Tools-0.1.0-py3-none-any.whl (45.2 KB)
+  - registry-tools-0.1.0-py3-none-any.whl (45.2 KB)
 
 ============================================================
 ✅ 构建完成!
@@ -70,7 +70,7 @@ RegistryTools - Wheel 包构建
 - `build` 包 (`pip install build`)
 
 **输出位置**:
-- `dist/Registry_Tools-<version>-py3-none-any.whl`
+- `dist/registry-tools-<version>-py3-none-any.whl`
 
 ---
 
@@ -99,10 +99,10 @@ python scripts/build/build-mcp.py
   "author": "Maric",
   "license": "MIT",
   "python": ">=3.10",
-  "install_command": "pip install Registry_Tools",
+  "install_command": "pip install registry-tools",
   "mcp_config": {
     "command": "uvx",
-    "args": ["Registry_Tools", "--data-path", "~/.RegistryTools"]
+    "args": ["registry-tools", "--data-path", "~/.RegistryTools"]
   }
 }
 ```
@@ -208,7 +208,7 @@ python scripts/verify/verify-after-install.py
 3. 运行基本功能测试
 
 **依赖**:
-- 包已安装 (`pip install Registry_Tools`)
+- 包已安装 (`pip install registry-tools`)
 
 ---
 
@@ -276,7 +276,7 @@ Release Date: 2026-01-06
 ## 安装
 
 ```bash
-pip install Registry_Tools==0.1.0
+pip install registry-tools==0.1.0
 ```
 
 ## 变更内容
@@ -298,7 +298,7 @@ python scripts/verify/verify-after-install.py
   "mcpServers": {
     "RegistryTools": {
       "command": "uvx",
-      "args": ["Registry_Tools==0.1.0", "--data-path", "~/.RegistryTools"]
+      "args": ["registry-tools==0.1.0", "--data-path", "~/.RegistryTools"]
     }
   }
 }
@@ -340,7 +340,7 @@ git push origin v0.1.0
 python -m twine upload dist/*
 
 # 7. 安装后验证
-pip install Registry_Tools==0.1.0
+pip install registry-tools==0.1.0
 python scripts/verify/verify-after-install.py
 ```
 

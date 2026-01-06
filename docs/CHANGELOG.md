@@ -10,6 +10,11 @@
 ## [Unreleased]
 
 ### 新增
+- **Phase 18.2 命名规范完全统一** (2026-01-06)
+  - PyPI 包名从 `Registry_Tools` 改为 `registry-tools`（符合 Python 最佳实践）
+  - 统一所有文档中的安装命令引用（`pip install registry-tools`）
+  - wheel 文件名自动规范化为 `registry_tools-0.1.0-py3-none-any.whl`
+  - pip list 显示统一为 `registry-tools`
 - **Phase 18 命名规范统一** (2026-01-06)
   - PyPI 包名从 `Registry-Tools` 改为 `Registry_Tools`
   - 统一 pip list 显示与 wheel 文件名（`Registry_Tools`）

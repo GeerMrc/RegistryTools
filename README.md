@@ -29,10 +29,10 @@ RegistryTools 是一个独立的 MCP Tool Registry Server，提供通用的工�
 
 ```bash
 # 使用 uvx (推荐)
-uvx Registry_Tools
+uvx registry-tools
 
 # 或使用 pip
-pip install Registry_Tools
+pip install registry-tools
 ```
 
 ### 传输协议
@@ -61,7 +61,7 @@ RegistryTools 支持多种 MCP 传输协议:
   "mcpServers": {
     "RegistryTools": {
       "command": "uvx",
-      "args": ["Registry_Tools", "--data-path", "~/.RegistryTools"]
+      "args": ["registry-tools", "--data-path", "~/.RegistryTools"]
     }
   }
 }
@@ -140,12 +140,12 @@ Claude Code 是 Anthropic 官方的 VSCode AI 助手，支持通过 MCP 协议�
 **STDIO 本地服务器**：
 ```bash
 # 基础配置（使用 uvx）
-claude mcp add --transport stdio RegistryTools -- uvx Registry_Tools
+claude mcp add --transport stdio RegistryTools -- uvx registry-tools
 
 # 带环境变量
 claude mcp add --transport stdio RegistryTools \
   --env REGISTRYTOOLS_LOG_LEVEL=INFO \
-  -- uvx Registry_Tools
+  -- uvx registry-tools
 
 # 使用 pip 安装版本
 claude mcp add --transport stdio RegistryTools -- registry-tools
@@ -177,10 +177,10 @@ claude mcp remove RegistryTools  # 删除服务器
 **配置范围**：
 ```bash
 # 项目级配置（可版本控制）
-claude mcp add --scope project --transport stdio RegistryTools -- uvx Registry_Tools
+claude mcp add --scope project --transport stdio RegistryTools -- uvx registry-tools
 
 # 用户级配置（跨项目使用）
-claude mcp add --scope user --transport stdio RegistryTools -- uvx Registry_Tools
+claude mcp add --scope user --transport stdio RegistryTools -- uvx registry-tools
 ```
 
 #### 方式 2：配置文件
@@ -192,7 +192,7 @@ claude mcp add --scope user --transport stdio RegistryTools -- uvx Registry_Tool
   "mcpServers": {
     "RegistryTools": {
       "command": "uvx",
-      "args": ["Registry_Tools"],
+      "args": ["registry-tools"],
       "env": {
         "REGISTRYTOOLS_DATA_PATH": "~/.RegistryTools",
         "REGISTRYTOOLS_LOG_LEVEL": "INFO"
@@ -209,12 +209,12 @@ claude mcp add --scope user --transport stdio RegistryTools -- uvx Registry_Tool
 **STDIO 本地服务器**：
 ```bash
 # 基础配置（使用 uvx）
-claude mcp add-json "RegistryTools" '{"command": "uvx", "args": ["Registry_Tools"]}' --scope user
+claude mcp add-json "RegistryTools" '{"command": "uvx", "args": ["registry-tools"]}' --scope user
 
 # 带环境变量
 claude mcp add-json "RegistryTools" '{
   "command": "uvx",
-  "args": ["Registry_Tools"],
+  "args": ["registry-tools"],
   "env": {
     "REGISTRYTOOLS_DATA_PATH": "~/.RegistryTools",
     "REGISTRYTOOLS_LOG_LEVEL": "INFO"

@@ -46,7 +46,7 @@ RegistryTools 是一个独立的 MCP Tool Registry Server，提供通用的工�
   "mcpServers": {
     "RegistryTools": {
       "command": "uvx",
-      "args": ["Registry_Tools", "--data-path", "~/.RegistryTools"]
+      "args": ["registry-tools", "--data-path", "~/.RegistryTools"]
     }
   }
 }
@@ -59,7 +59,7 @@ RegistryTools 是一个独立的 MCP Tool Registry Server，提供通用的工�
   "mcpServers": {
     "RegistryTools": {
       "command": "uvx",
-      "args": ["Registry_Tools"],
+      "args": ["registry-tools"],
       "env": {
         "REGISTRYTOOLS_DATA_PATH": "~/.RegistryTools",
         "REGISTRYTOOLS_LOG_LEVEL": "INFO"
@@ -133,7 +133,7 @@ registry-tools api-key create "My Client" --permission read
 
 ### 使用 pip 安装版本
 
-如果使用 `pip install Registry_Tools` 安装：
+如果使用 `pip install registry-tools` 安装：
 
 ```json
 {
@@ -153,7 +153,7 @@ registry-tools api-key create "My Client" --permission read
   "mcpServers": {
     "RegistryTools-Local": {
       "command": "uvx",
-      "args": ["Registry_Tools", "--data-path", "~/.RegistryTools"],
+      "args": ["registry-tools", "--data-path", "~/.RegistryTools"],
       "env": {
         "REGISTRYTOOLS_LOG_LEVEL": "DEBUG"
       }
@@ -178,12 +178,12 @@ Claude Code 是 Anthropic 官方的 VSCode AI 助手，支持通过 MCP 协议�
 **STDIO 本地服务器**：
 ```bash
 # 基础配置（使用 uvx）
-claude mcp add --transport stdio RegistryTools -- uvx Registry_Tools
+claude mcp add --transport stdio RegistryTools -- uvx registry-tools
 
 # 带环境变量
 claude mcp add --transport stdio RegistryTools \
   --env REGISTRYTOOLS_LOG_LEVEL=INFO \
-  -- uvx Registry_Tools
+  -- uvx registry-tools
 
 # 使用 pip 安装版本
 claude mcp add --transport stdio RegistryTools -- registry-tools
@@ -231,7 +231,7 @@ claude mcp remove RegistryTools  # 删除服务器
   "mcpServers": {
     "RegistryTools": {
       "command": "uvx",
-      "args": ["Registry_Tools"],
+      "args": ["registry-tools"],
       "env": {
         "REGISTRYTOOLS_DATA_PATH": "~/.RegistryTools",
         "REGISTRYTOOLS_LOG_LEVEL": "INFO"
@@ -272,10 +272,10 @@ claude mcp remove RegistryTools  # 删除服务器
 **配置范围示例**：
 ```bash
 # 项目级配置（可版本控制）
-claude mcp add --scope project --transport stdio RegistryTools -- uvx Registry_Tools
+claude mcp add --scope project --transport stdio RegistryTools -- uvx registry-tools
 
 # 用户级配置（跨项目使用）
-claude mcp add --scope user --transport stdio RegistryTools -- uvx Registry_Tools
+claude mcp add --scope user --transport stdio RegistryTools -- uvx registry-tools
 ```
 
 ---
@@ -297,7 +297,7 @@ Cursor 是基于 AI 的代码编辑器，完全支持 MCP 协议。
 3. 添加新服务器：
    - **名称**: `RegistryTools`
    - **命令**: `uvx`
-   - **参数**: `["Registry_Tools"]`
+   - **参数**: `["registry-tools"]`
 
 ### 方法 2：通过 fastmcp.json
 
@@ -325,7 +325,7 @@ Cursor 是基于 AI 的代码编辑器，完全支持 MCP 协议。
   "mcpServers": {
     "RegistryTools": {
       "command": "uvx",
-      "args": ["Registry_Tools"],
+      "args": ["registry-tools"],
       "env": {
         "REGISTRYTOOLS_DATA_PATH": "~/.RegistryTools",
         "REGISTRYTOOLS_LOG_LEVEL": "INFO"
@@ -369,7 +369,7 @@ Continue.dev 是 VSCode 的 AI 编程助手扩展。
   "mcpServers": {
     "RegistryTools": {
       "command": "uvx",
-      "args": ["Registry_Tools"]
+      "args": ["registry-tools"]
     }
   }
 }
@@ -382,7 +382,7 @@ Continue.dev 是 VSCode 的 AI 编程助手扩展。
   "mcpServers": {
     "RegistryTools": {
       "command": "uvx",
-      "args": ["Registry_Tools"],
+      "args": ["registry-tools"],
       "env": {
         "REGISTRYTOOLS_DATA_PATH": "~/.RegistryTools",
         "REGISTRYTOOLS_LOG_LEVEL": "INFO"
@@ -410,7 +410,7 @@ Cline 是另一个流行的 VSCode AI 助手。
   "mcpServers": {
     "RegistryTools": {
       "command": "uvx",
-      "args": ["Registry_Tools"],
+      "args": ["registry-tools"],
       "env": {
         "REGISTRYTOOLS_DATA_PATH": "~/.RegistryTools"
       }
@@ -450,7 +450,7 @@ Cline 是另一个流行的 VSCode AI 助手。
   "mcpServers": {
     "RegistryTools": {
       "command": "uvx",
-      "args": ["Registry_Tools"],
+      "args": ["registry-tools"],
       "env": {
         "REGISTRYTOOLS_DATA_PATH": "~/.RegistryTools",
         "REGISTRYTOOLS_LOG_LEVEL": "INFO",
@@ -478,7 +478,7 @@ Cline 是另一个流行的 VSCode AI 助手。
     "RegistryTools": {
       "command": "uvx",
       "args": [
-        "Registry_Tools",
+        "registry-tools",
         "--data-path",
         "/custom/path"
       ],
@@ -503,7 +503,7 @@ Cline 是另一个流行的 VSCode AI 助手。
   "mcpServers": {
     "RegistryTools-Local": {
       "command": "uvx",
-      "args": ["Registry_Tools"],
+      "args": ["registry-tools"],
       "env": {
         "REGISTRYTOOLS_LOG_LEVEL": "DEBUG"
       }
@@ -522,11 +522,11 @@ Cline 是另一个流行的 VSCode AI 助手。
   "mcpServers": {
     "RegistryTools-GitHub": {
       "command": "uvx",
-      "args": ["Registry_Tools", "--data-path", "~/.RegistryTools-github"]
+      "args": ["registry-tools", "--data-path", "~/.RegistryTools-github"]
     },
     "RegistryTools-GitLab": {
       "command": "uvx",
-      "args": ["Registry_Tools", "--data-path", "~/.RegistryTools-gitlab"]
+      "args": ["registry-tools", "--data-path", "~/.RegistryTools-gitlab"]
     }
   }
 }
@@ -549,7 +549,7 @@ cat ~/.claude/config.json | python -m json.tool
 
 ```bash
 # 使用 uvx 测试
-uvx Registry_Tools --version
+uvx registry-tools --version
 
 # 使用 pip 安装版本测试
 registry-tools --version
@@ -592,7 +592,7 @@ Claude 应该会调用 `search_tools` 工具并返回结果。
 2. 验证 `command` 和 `args` 是否正确
 3. 检查 RegistryTools 是否已安装：
    ```bash
-   uvx Registry_Tools --version
+   uvx registry-tools --version
    ```
 4. 查看 IDE 日志获取详细错误信息
 
@@ -600,7 +600,7 @@ Claude 应该会调用 `search_tools` 工具并返回结果。
 
 **解决方案**:
 1. 安装 uv: `pip install uv`
-2. 或使用 pip 安装: `pip install Registry_Tools`
+2. 或使用 pip 安装: `pip install registry-tools`
 3. 配置中使用完整 Python 路径
 
 ### 问题 3: 工具调用无响应

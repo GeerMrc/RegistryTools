@@ -125,7 +125,7 @@ registry-tools --transport stdio
   "mcpServers": {
     "RegistryTools": {
       "command": "uvx",
-      "args": ["Registry_Tools"]
+      "args": ["registry-tools"]
     }
   }
 }

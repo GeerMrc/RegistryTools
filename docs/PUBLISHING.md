@@ -62,7 +62,7 @@ mypy src/registrytools
 
 ```toml
 [project]
-name = "Registry_Tools"
+name = "registry-tools"
 version = "0.2.0"  # 更新版本号
 ```
 
@@ -106,8 +106,8 @@ python -m build
 ```
 
 这将生成：
-- `dist/Registry_Tools-{version}.tar.gz` (源码包)
-- `dist/Registry_Tools-{version}-py3-none-any.whl` (Wheel 包)
+- `dist/registry-tools-{version}.tar.gz` (源码包)
+- `dist/registry-tools-{version}-py3-none-any.whl` (Wheel 包)
 
 ### 3. 验证构建包
 
@@ -145,7 +145,7 @@ twine upload --repository testpypi dist/*
 ### 2. 从 TestPyPI 安装测试
 
 ```bash
-pip install --index-url https://test.pypi.org/simple/ Registry_Tools
+pip install --index-url https://test.pypi.org/simple/ registry-tools
 ```
 
 验证安装是否成功：
@@ -158,7 +158,7 @@ registry-tools --help
 ### 3. 清理 TestPyPI 测试环境
 
 ```bash
-pip uninstall -y Registry_Tools
+pip uninstall -y registry-tools
 ```
 
 ---
@@ -176,7 +176,7 @@ twine upload dist/*
 从 PyPI 安装：
 
 ```bash
-pip install Registry_Tools
+pip install registry-tools
 ```
 
 验证功能：
@@ -205,10 +205,10 @@ registry-tools --help
 
 ```bash
 # 使用 uvx 测试
-uvx Registry_Tools --version
+uvx registry-tools --version
 
 # 或使用 pip 安装测试
-pip install Registry_Tools
+pip install registry-tools
 registry-tools --help
 ```
 
@@ -223,7 +223,7 @@ registry-tools --help
   "mcpServers": {
     "RegistryTools": {
       "command": "uvx",
-      "args": ["Registry_Tools", "--data-path", "~/.RegistryTools"]
+      "args": ["registry-tools", "--data-path", "~/.RegistryTools"]
     }
   }
 }

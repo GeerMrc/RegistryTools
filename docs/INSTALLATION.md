@@ -22,7 +22,7 @@
 [uvx](https://github.com/astral-sh/uv) 是运行 Python 工具的最简单方式：
 
 ```bash
-uvx Registry_Tools
+uvx registry-tools
 ```
 
 ### 方法 2: 使用 pip
@@ -30,7 +30,7 @@ uvx Registry_Tools
 #### 从 PyPI 安装
 
 ```bash
-pip install Registry_Tools
+pip install registry-tools
 ```
 
 #### 从源码安装
@@ -47,7 +47,7 @@ pip install -e .
 ### 方法 3: 使用 uv
 
 ```bash
-uv pip install Registry_Tools
+uv pip install registry-tools
 ```
 
 ---
@@ -227,7 +227,7 @@ registry-tools api-key delete <key-id>
   "mcpServers": {
     "RegistryTools": {
       "command": "uvx",
-      "args": ["Registry_Tools", "--data-path", "~/.RegistryTools"]
+      "args": ["registry-tools", "--data-path", "~/.RegistryTools"]
     }
   }
 }
@@ -286,7 +286,7 @@ registry-tools api-key delete <key-id>
   "mcpServers": {
     "RegistryTools": {
       "command": "uvx",
-      "args": ["Registry_Tools"]
+      "args": ["registry-tools"]
     }
   }
 }
@@ -308,7 +308,7 @@ FROM python:3.12-slim
 WORKDIR /app
 
 # 安装 RegistryTools
-RUN pip install Registry_Tools
+RUN pip install registry-tools
 
 # 暴露 HTTP 端口
 EXPOSE 8000
@@ -443,7 +443,7 @@ registry-tools --version
 ## 卸载
 
 ```bash
-pip uninstall Registry_Tools
+pip uninstall registry-tools
 ```
 
 如果使用 uvx 安装，无需卸载，uvx 会自动管理版本。
@@ -454,10 +454,10 @@ pip uninstall Registry_Tools
 
 ```bash
 # 使用 pip
-pip install --upgrade Registry_Tools
+pip install --upgrade registry-tools
 
 # 使用 uv
-uv pip install --upgrade Registry_Tools
+uv pip install --upgrade registry-tools
 ```
 
 ---

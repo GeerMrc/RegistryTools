@@ -1,5 +1,5 @@
 [project]
-name = "Registry_Tools"
+name = "registry-tools"
 version = "0.1.0"
 description = "A universal MCP Tool Registry Server with search capabilities"
 readme = "README.md"

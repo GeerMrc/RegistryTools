@@ -19,12 +19,12 @@ Claude Code 是 Anthropic 官方的 VSCode AI 助手，支持通过 MCP 协议�
 **STDIO 本地服务器**：
 ```bash
 # 基础配置（使用 uvx）
-claude mcp add --transport stdio RegistryTools -- uvx Registry_Tools
+claude mcp add --transport stdio RegistryTools -- uvx registry-tools
 
 # 带环境变量
 claude mcp add --transport stdio RegistryTools \
   --env REGISTRYTOOLS_LOG_LEVEL=INFO \
-  -- uvx Registry_Tools
+  -- uvx registry-tools
 
 # 使用 pip 安装版本
 claude mcp add --transport stdio RegistryTools -- registry-tools
@@ -56,10 +56,10 @@ claude mcp remove RegistryTools  # 删除服务器
 **配置范围**：
 ```bash
 # 项目级配置（可版本控制）
-claude mcp add --scope project --transport stdio RegistryTools -- uvx Registry_Tools
+claude mcp add --scope project --transport stdio RegistryTools -- uvx registry-tools
 
 # 用户级配置（跨项目使用）
-claude mcp add --scope user --transport stdio RegistryTools -- uvx Registry_Tools
+claude mcp add --scope user --transport stdio RegistryTools -- uvx registry-tools
 ```
 
 ### 方式 2：配置文件
@@ -71,7 +71,7 @@ claude mcp add --scope user --transport stdio RegistryTools -- uvx Registry_Tool
   "mcpServers": {
     "RegistryTools": {
       "command": "uvx",
-      "args": ["Registry_Tools"],
+      "args": ["registry-tools"],
       "env": {
         "REGISTRYTOOLS_DATA_PATH": "~/.RegistryTools",
         "REGISTRYTOOLS_LOG_LEVEL": "INFO"
@@ -88,12 +88,12 @@ claude mcp add --scope user --transport stdio RegistryTools -- uvx Registry_Tool
 **STDIO 本地服务器**：
 ```bash
 # 基础配置（使用 uvx）
-claude mcp add-json "RegistryTools" '{"command": "uvx", "args": ["Registry_Tools"]}' --scope user
+claude mcp add-json "RegistryTools" '{"command": "uvx", "args": ["registry-tools"]}' --scope user
 
 # 带环境变量
 claude mcp add-json "RegistryTools" '{
   "command": "uvx",
-  "args": ["Registry_Tools"],
+  "args": ["registry-tools"],
   "env": {
     "REGISTRYTOOLS_DATA_PATH": "~/.RegistryTools",
     "REGISTRYTOOLS_LOG_LEVEL": "INFO"
@@ -153,7 +153,7 @@ claude mcp add-json "RegistryTools" '{...}' --scope local
   "mcpServers": {
     "RegistryTools": {
       "command": "uvx",
-      "args": ["Registry_Tools", "--data-path", "~/.RegistryTools"]
+      "args": ["registry-tools", "--data-path", "~/.RegistryTools"]
     }
   }
 }
@@ -181,7 +181,7 @@ claude mcp add-json "RegistryTools" '{...}' --scope local
     "RegistryTools": {
       "command": "uvx",
       "args": [
-        "Registry_Tools",
+        "registry-tools",
         "--data-path", "~/.RegistryTools",
         "--transport", "stdio"
       ],
@@ -210,7 +210,7 @@ claude mcp add-json "RegistryTools" '{...}' --scope local
   "mcpServers": {
     "RegistryTools": {
       "command": "uvx",
-      "args": ["Registry_Tools"]
+      "args": ["registry-tools"]
     }
   }
 }
@@ -231,7 +231,7 @@ claude mcp add-json "RegistryTools" '{...}' --scope local
 3. 添加新服务器：
    - 名称: `RegistryTools`
    - 命令: `uvx`
-   - 参数: `["Registry_Tools"]`
+   - 参数: `["registry-tools"]`
 
 ### 方法 2: 使用 fastmcp.json
 
@@ -270,7 +270,7 @@ claude mcp add-json "RegistryTools" '{...}' --scope local
   "mcpServers": {
     "RegistryTools": {
       "command": "uvx",
-      "args": ["Registry_Tools"],
+      "args": ["registry-tools"],
       "env": {
         "REGISTRYTOOLS_DATA_PATH": "/custom/data/path",
         "REGISTRYTOOLS_LOG_LEVEL": "DEBUG"
@@ -318,7 +318,7 @@ Claude 应该会调用 `search_tools` 工具并返回结果。
 
 **解决方案**:
 1. 安装 uv: `pip install uv`
-2. 或使用 pip 安装: `pip install Registry_Tools`
+2. 或使用 pip 安装: `pip install registry-tools`
 3. 配置中使用完整 Python 路径
 
 ### Q: 工具调用无响应
@@ -342,7 +342,7 @@ Claude 应该会调用 `search_tools` 工具并返回结果。
     "RegistryTools-Custom": {
       "command": "uvx",
       "args": [
-        "Registry_Tools",
+        "registry-tools",
         "--data-path", "/path/to/custom/tools"
       ]
     }
@@ -359,11 +359,11 @@ Claude 应该会调用 `search_tools` 工具并返回结果。
   "mcpServers": {
     "RegistryTools-GitHub": {
       "command": "uvx",
-      "args": ["Registry_Tools", "--data-path", "~/.RegistryTools-github"]
+      "args": ["registry-tools", "--data-path", "~/.RegistryTools-github"]
     },
     "RegistryTools-GitLab": {
       "command": "uvx",
-      "args": ["Registry_Tools", "--data-path", "~/.RegistryTools-gitlab"]
+      "args": ["registry-tools", "--data-path", "~/.RegistryTools-gitlab"]
     }
   }
 }

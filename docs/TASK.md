@@ -9,7 +9,7 @@
 ## 项目信息
 
 - **项目名称**: RegistryTools
-- **包名**: `registrytools` (Python 模块) / `Registry_Tools` (PyPI 包)
+- **包名**: `registrytools` (Python 模块) / `registry-tools` (PyPI 包)
 - **MCP 显示名**: `RegistryTools`
 - **CLI 命令**: `registry-tools`
 - **项目布局**: 标准 `src/` 布局
