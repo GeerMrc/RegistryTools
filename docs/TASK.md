@@ -2071,6 +2071,12 @@ refactor(naming): unify package name to registry-tools per PEP 508
 | TASK-2005 | 创建 GitHub 远程仓库 | ✅ DONE | 2026-01-07 | GeerMrc/RegistryTools |
 | TASK-2006 | 构建最新 wheel 包 | ✅ DONE | 2026-01-07 | registry_tools-0.1.0 |
 | TASK-2007 | 推送代码和 Release | 📝 PENDING | - | 需要用户手动完成 |
+| TASK-2201 | 验证 pytest-benchmark 依赖状态 | ✅ DONE | 2026-01-07 | v5.2.3 已安装 |
+| TASK-2202 | 验证 pytest-cov 依赖状态 | ✅ DONE | 2026-01-07 | v7.0.0 已安装 |
+| TASK-2203 | 确认 pytest 插件正确注册 | ✅ DONE | 2026-01-07 | 所有插件已加载 |
+| TASK-2204 | 运行完整测试套件 | ✅ DONE | 2026-01-07 | 311 passed |
+| TASK-2205 | 确认所有测试通过 | ✅ DONE | 2026-01-07 | 包括14个性能测试 |
+| TASK-2206 | 更新 CHANGELOG.md | ✅ DONE | 2026-01-07 | 记录验证结果 |
 
 ### 实施详情
 
@@ -2247,5 +2253,93 @@ data_path = Path(data_path_str).expanduser()
 **集成测试**: 9 passed
 **代码质量**: ruff + black 通过
 **构建验证**: wheel 包构建成功
+
+---
+
+## Phase 22: pytest 配置验证与性能测试确认 (Day 30)
+
+> **开始日期**: 2026-01-07
+> **目标**: 验证 pytest-benchmark 依赖正常工作，确认所有测试通过
+> **触发**: 之前报告 14 个性能测试错误
+
+### 问题分析
+
+**原始问题**: 运行测试时报 14 个性能测试错误，提示需要 pytest-benchmark 插件
+
+**根本原因**: 使用 `-o addopts=""` 覆盖 pytest 配置时影响了 pytest-benchmark 和 pytest-cov 的正常工作
+
+**解决方案**: 使用默认 pytest 配置直接运行测试，所有依赖正常工作
+
+### 任务清单
+
+| 任务ID | 任务描述 | 状态 | 完成时间 | 备注 |
+|--------|----------|------|----------|------|
+| TASK-2201 | 验证 pytest-benchmark 依赖状态 | ✅ DONE | 2026-01-07 | v5.2.3 已安装 |
+| TASK-2202 | 验证 pytest-cov 依赖状态 | ✅ DONE | 2026-01-07 | v7.0.0 已安装 |
+| TASK-2203 | 确认 pytest 插件正确注册 | ✅ DONE | 2026-01-07 | 所有插件已加载 |
+| TASK-2204 | 运行完整测试套件 | ✅ DONE | 2026-01-07 | 311 passed |
+| TASK-2205 | 确认所有测试通过 | ✅ DONE | 2026-01-07 | 包括14个性能测试 |
+| TASK-2206 | 更新 CHANGELOG.md | ✅ DONE | 2026-01-07 | 记录验证结果 |
+
+### 实施详情
+
+**TASK-2201: 验证 pytest-benchmark 依赖状态**
+```bash
+$ pip show pytest-benchmark
+Name: pytest-benchmark
+Version: 5.2.3
+Summary: A ``pytest`` fixture for benchmarking code
+```
+
+**TASK-2202: 验证 pytest-cov 依赖状态**
+```bash
+$ pip show pytest-cov
+Name: pytest-cov
+Version: 7.0.0
+Summary: Pytest plugin for measuring coverage
+```
+
+**TASK-2203: 确认 pytest 插件正确注册**
+```bash
+$ python -m pytest --trace-config | grep -E "(cov|benchmark)"
+PLUGIN registered: <module 'pytest_cov.plugin' ...>
+PLUGIN registered: <module 'pytest_benchmark.plugin' ...>
+plugins: anyio-4.7.0, asyncio-1.3.0, cov-7.0.0, benchmark-5.2.3
+```
+
+**TASK-2204: 运行完整测试套件**
+```bash
+$ python -m pytest tests/ -v
+================== 311 passed, 1 warning in 72.00s ===================
+```
+
+**TASK-2205: 测试结果详情**
+- 功能测试: 297 passed
+- 性能测试: 14 passed
+- 覆盖率: 86%
+- 测试时间: 72 秒
+
+**性能基准结果**:
+- `test_upgrade_check_performance`: 275.85 ns (基准)
+- `test_hot_warm_search_faster_than_full_search`: 311.38 μs
+- `test_classification_performance`: 1.19 ms
+- `test_layered_index_build_performance`: 14.45 ms
+
+### 验证结果
+
+**依赖状态**:
+- ✅ pytest-benchmark v5.2.3 正确安装
+- ✅ pytest-cov v7.0.0 正确安装
+- ✅ 所有 pytest 插件正确注册
+
+**测试结果**:
+- ✅ 所有 311 个测试通过
+- ✅ 14 个性能测试正常运行
+- ✅ 测试覆盖率 86%
+- ✅ 无错误，仅 1 个警告（jieba DeprecationWarning）
+
+### 结论
+
+pytest 配置正常工作，之前报告的 14 个性能测试错误是因为使用了 `-o addopts=""` 覆盖 pytest 配置导致的。使用默认配置运行测试，所有功能正常。
 
 ---
