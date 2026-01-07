@@ -2161,3 +2161,91 @@ uvx registry-tools
 - ⏳ 等待用户推送代码和创建 Release
 
 ---
+
+## Phase 21: MCP 配置参数完善与 v0.1.0 发布准备 (Day 30)
+
+> **开始日期**: 2026-01-07
+> **目标**: 修复 expanduser bug、完善配置参数文档、准备 v0.1.0 发布
+> **触发**: 用户报告 MCP 配置连接失败问题
+
+### 问题分析
+
+**原始问题**: 用户使用 `claude mcp add-json` 配置时添加 `description` 和 `priority` 参数导致连接失败
+
+**根本原因**: `src/registrytools/__main__.py` 在处理 `REGISTRYTOOLS_DATA_PATH` 环境变量时，没有使用 `expanduser()` 展开波浪号（`~`）
+
+### 任务清单
+
+| 任务ID | 任务描述 | 状态 | 完成时间 | 备注 |
+|--------|----------|------|----------|------|
+| TASK-2101 | 修复 expanduser bug - main 函数 | ✅ DONE | 2026-01-07 | __main__.py:172 |
+| TASK-2102 | 修复 expanduser bug - API Key 函数 | ✅ DONE | 2026-01-07 | __main__.py:241 |
+| TASK-2103 | 更新 CLAUDE_CONFIG.md | ✅ DONE | 2026-01-07 | description/priority + 路径说明 |
+| TASK-2104 | 更新 IDE_CONFIG.md | ✅ DONE | 2026-01-07 | 路径配置说明 |
+| TASK-2105 | 更新 README.md | ✅ DONE | 2026-01-07 | 路径配置说明 |
+| TASK-2107 | 运行单元测试 | ✅ DONE | 2026-01-07 | 311 passed |
+| TASK-2108 | 运行集成测试 | ✅ DONE | 2026-01-07 | 9 passed |
+| TASK-2109 | 代码质量检查 | ✅ DONE | 2026-01-07 | ruff + black |
+| TASK-2110 | 构建 wheel 包 | ✅ DONE | 2026-01-07 | registry_tools-0.1.0 |
+| TASK-2111 | 更新 TASK.md | ✅ DONE | 2026-01-07 | 本记录 |
+| TASK-2112 | 更新 CHANGELOG.md | 📝 PENDING | - | 变更记录 |
+| TASK-2113 | Git commit - bug 修复 | 📝 PENDING | - | 代码提交 |
+| TASK-2114 | Git commit - 文档 | 📝 PENDING | - | 文档提交 |
+| TASK-2115 | 交叉验证 | 📝 PENDING | - | 提交确认 |
+| TASK-2116 | 创建 v0.1.0 tag | 📝 PENDING | - | 最终版本 |
+
+### 代码修复详情
+
+**修复位置 1**: `src/registrytools/__main__.py:172`
+```python
+# 修改前
+data_path = Path(data_path_str)
+
+# 修改后
+data_path = Path(data_path_str).expanduser()
+```
+
+**修复位置 2**: `src/registrytools/__main__.py:241`
+```python
+# 修改前
+data_path = Path(data_path_str)
+
+# 修改后
+data_path = Path(data_path_str).expanduser()
+```
+
+### 文档更新详情
+
+**CLAUDE_CONFIG.md**:
+- 新增 "MCP 配置参数说明" 章节
+- 说明 `description` 和 `priority` 参数
+- 新增 "路径配置说明" 章节
+- 更新日期: 2026-01-07
+
+**IDE_CONFIG.md**:
+- 新增 "路径配置说明" 章节
+- 更新日期: 2026-01-07
+
+**README.md**:
+- 新增 "路径配置说明" 章节（环境变量配置）
+- 完整的路径格式对比表
+
+### 路径配置说明
+
+| 路径格式 | 示例 | 说明 | 推荐度 |
+|----------|------|------|--------|
+| **波浪号** | `~/.RegistryTools` | RegistryTools 会自动展开 `~` 为用户主目录 | ✅ 推荐 |
+| **$HOME 变量** | `$HOME/.RegistryTools` | 由 shell 展开环境变量 | ✅ 推荐 |
+| **绝对路径** | `/home/user/.RegistryTools` | 完整路径，无歧义 | ✅ 推荐 |
+| **相对路径** | `./.RegistryTools` | 相对于当前工作目录 | ⚠️ 谨慎使用 |
+
+> **版本说明**: RegistryTools v0.1.0 及以上版本已修复波浪号（`~`）展开问题，可直接使用 `~/.RegistryTools` 格式。
+
+### 验证结果
+
+**单元测试**: 311 passed, 覆盖率 86%
+**集成测试**: 9 passed
+**代码质量**: ruff + black 通过
+**构建验证**: wheel 包构建成功
+
+---

@@ -1,8 +1,31 @@
 # RegistryTools - Claude Code 配置指南
 
 > **版本**: v0.1.0
-> **更新日期**: 2026-01-06
+> **更新日期**: 2026-01-07
 > **项目**: RegistryTools - MCP Tool Registry Server
+
+> **⚠️ PyPI 发布状态**: **RegistryTools 尚未发布到 PyPI**
+>
+> **当前安装方式**: 仅支持从源码本地安装
+>
+> ```bash
+> # 本地安装（推荐）
+> pip install -e .
+> # 或使用 uv
+> uv pip install -e .
+> ```
+>
+> **配置命令选择**:
+> - ✅ **本地安装后**: 使用 `registry-tools` 命令（见下方配置）
+> - ❌ **不可用**: `uvx registry-tools`（仅在 PyPI 发布后可用）
+>
+> **配置示例**:
+> ```json
+> {
+>   "command": "registry-tools",
+>   "env": { "REGISTRYTOOLS_DATA_PATH": "~/.RegistryTools" }
+> }
+> ```
 
 本文档描述如何在 Claude Code 和 Claude Desktop 中配置和使用 RegistryTools。
 
@@ -181,6 +204,31 @@ claude mcp add-json "RegistryTools" '{...}' --scope user
 # 本地级配置（项目特定，gitignored）
 claude mcp add-json "RegistryTools" '{...}' --scope local
 ```
+
+### MCP 配置参数说明
+
+Claude Code MCP 配置支持以下可选参数：
+
+| 参数 | 类型 | 描述 | 示例 |
+|------|------|------|------|
+| `description` | string | MCP 服务器描述信息 | `"统一的 MCP 工具注册与搜索服务"` |
+| `priority` | number | 服务器优先级（数字越小优先级越高） | `10` |
+
+**完整配置示例**：
+```bash
+claude mcp add-json "RegistryTools" '{
+  "command": "uvx",
+  "args": ["registry-tools"],
+  "env": {
+    "REGISTRYTOOLS_DATA_PATH": "$HOME/.RegistryTools",
+    "REGISTRYTOOLS_LOG_LEVEL": "INFO"
+  },
+  "description": "统一的 MCP 工具注册与搜索服务，用于发现和筛选可用工具",
+  "priority": 10
+}' --scope user
+```
+
+> **注意**: `description` 和 `priority` 是 Claude Code 的元数据字段，用于在 MCP 服务器列表中显示和排序，不会传递给 MCP 服务器进程。
 
 ---
 
@@ -389,6 +437,45 @@ claude mcp add-json "RegistryTools" '{...}' --scope local
   }
 }
 ```
+
+### 路径配置说明
+
+**重要**: `REGISTRYTOOLS_DATA_PATH` 环境变量支持多种路径格式：
+
+| 路径格式 | 示例 | 说明 | 推荐度 |
+|----------|------|------|--------|
+| **波浪号** | `~/.RegistryTools` | RegistryTools 会自动展开 `~` 为用户主目录 | ✅ 推荐 |
+| **$HOME 变量** | `$HOME/.RegistryTools` | 由 shell 展开环境变量 | ✅ 推荐 |
+| **绝对路径** | `/home/user/.RegistryTools` | 完整路径，无歧义 | ✅ 推荐 |
+| **相对路径** | `./.RegistryTools` | 相对于当前工作目录 | ⚠️ 谨慎使用 |
+
+**配置示例对比**：
+
+```json
+{
+  "mcpServers": {
+    "RegistryTools": {
+      "command": "uvx",
+      "args": ["registry-tools"],
+      "env": {
+        // ✅ 推荐：波浪号格式（RegistryTools v0.1.0+ 自动展开）
+        "REGISTRYTOOLS_DATA_PATH": "~/.RegistryTools",
+
+        // ✅ 推荐：使用 $HOME 环境变量
+        "REGISTRYTOOLS_DATA_PATH": "$HOME/.RegistryTools",
+
+        // ✅ 推荐：使用绝对路径
+        "REGISTRYTOOLS_DATA_PATH": "/home/user/.RegistryTools",
+
+        // ⚠️ 谨慎：相对路径（依赖于工作目录）
+        "REGISTRYTOOLS_DATA_PATH": "./.RegistryTools-dev"
+      }
+    }
+  }
+}
+```
+
+> **版本说明**: RegistryTools v0.1.0 及以上版本已修复波浪号（`~`）展开问题，可直接使用 `~/.RegistryTools` 格式。
 
 ---
 
