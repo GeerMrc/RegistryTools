@@ -2053,3 +2053,111 @@ refactor(naming): unify package name to registry-tools per PEP 508
 ```
 
 ---
+
+## Phase 20: 项目发布准备 (Day 29)
+
+> **开始日期**: 2026-01-07
+> **目标**: 清理临时文件、git commit、打 Tag、创建 GitHub 仓库、发布 Release
+> **触发**: 用户要求完成项目发布准备工作
+
+### 任务清单
+
+| 任务ID | 任务描述 | 状态 | 完成时间 | 备注 |
+|--------|----------|------|----------|------|
+| TASK-2001 | 清理测试过程产生的临时性相关文件 | ✅ DONE | 2026-01-07 | .gitignore 已配置 |
+| TASK-2002 | 交叉验证清理结果 | ✅ DONE | 2026-01-07 | 仓库状态干净 |
+| TASK-2003 | git commit 当前项目环境快照 | ✅ DONE | 2026-01-07 | commit ef95146 |
+| TASK-2004 | 创建版本号 Tag（v0.1.0） | ✅ DONE | 2026-01-07 | Tag 在 1da896b |
+| TASK-2005 | 创建 GitHub 远程仓库 | ✅ DONE | 2026-01-07 | GeerMrc/RegistryTools |
+| TASK-2006 | 构建最新 wheel 包 | ✅ DONE | 2026-01-07 | registry_tools-0.1.0 |
+| TASK-2007 | 推送代码和 Release | 📝 PENDING | - | 需要用户手动完成 |
+
+### 实施详情
+
+**TASK-2001: 清理临时文件**
+- .gitignore 已正确配置忽略所有测试临时文件
+- 添加 `.deepthinking/` 到忽略列表（Thinking MCP 数据）
+
+**TASK-2002: 交叉验证**
+- git status 确认仓库状态干净
+- 临时文件已被 .gitignore 忽略
+
+**TASK-2003: git commit**
+- 提交 .gitignore 修改（ef95146）
+- 提交信息遵循 Conventional Commits 规范
+
+**TASK-2004: 创建 Tag**
+- 在 Phase 18.3 提交（1da896b）上创建 v0.1.0 Tag
+- 这是项目 v0.1.0 版本的最后一个 Phase
+
+**TASK-2005: 创建 GitHub 仓库**
+- 仓库 URL: https://github.com/GeerMrc/RegistryTools
+- 默认分支: main
+- 仓库描述: MCP Tool Registry Server - 通用工具搜索与发现服务
+
+**TASK-2006: 构建 wheel 包**
+- 构建产物: `registry_tools-0.1.0-py3-none-any.whl`
+- 源包: `registry_tools-0.1.0.tar.gz`
+
+### 待完成操作（需要用户手动执行）
+
+**TASK-2007: 推送代码和创建 Release**
+
+```bash
+# 1. 推送代码到远程仓库
+git push -u origin master
+git push origin v0.1.0
+
+# 2. 创建 GitHub Release（方式 1: gh CLI）
+gh release create v0.1.0 \
+  --title "v0.1.0 - RegistryTools MCP Tool Registry Server" \
+  --notes "## RegistryTools v0.1.0
+
+> **发布日期**: 2026-01-07
+> **MCP Tool Registry Server** - 通用工具搜索与发现服务
+
+### 功能特性
+
+- **工具注册表**: 完整的工具元数据管理和索引
+- **搜索算法**: Regex 精确匹配 + BM25 关键词搜索（支持中文分词）
+- **存储层**: JSON 文件存储 + SQLite 数据库存储
+- **MCP 接口**: 完整的 MCP 工具和资源接口
+- **传输协议**: STDIO 和 Streamable HTTP 双模式支持
+- **API Key 认证**: 可选的 HTTP 模式认证保护
+- **冷热工具分离**: 三层温度分类（HOT/WARM/COLD）优化性能
+
+### 安装
+
+\`\`\`bash
+# 本地开发环境
+pip install -e .
+
+# 从 PyPI 安装（发布后）
+pip install registry-tools
+
+# 使用 uvx（推荐）
+uvx registry-tools
+\`\`\`
+
+### 配置
+
+详见 [README.md](https://github.com/GeerMrc/RegistryTools/blob/master/README.md)
+" \
+  dist/registry_tools-0.1.0-py3-none-any.whl dist/registry_tools-0.1.0.tar.gz
+
+# 3. 或通过 GitHub Web UI 创建 Release
+# 访问: https://github.com/GeerMrc/RegistryTools/releases/new
+# 选择 Tag: v0.1.0
+# 上传文件: dist/registry_tools-0.1.0-py3-none-any.whl
+# 上传文件: dist/registry_tools-0.1.0.tar.gz
+```
+
+### 验证结果
+
+- ✅ 仓库状态干净（git status）
+- ✅ Git Tag 已创建（v0.1.0）
+- ✅ GitHub 仓库已创建（GeerMrc/RegistryTools）
+- ✅ wheel 包已构建成功
+- ⏳ 等待用户推送代码和创建 Release
+
+---
