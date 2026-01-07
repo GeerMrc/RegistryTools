@@ -87,6 +87,11 @@
   - server.py 测试覆盖率: 46% → 97%
 
 ### 修复
+- **pytest 配置问题验证** (TASK-2101 至 TASK-2105, 2026-01-07)
+  - 验证 pytest-benchmark 和 pytest-cov 依赖正确安装
+  - 确认所有 311 个测试通过（包括 14 个性能测试）
+  - 测试覆盖率保持 86%
+  - 性能基准测试正常运行
 - **Pydantic V2 废弃警告** (TASK-854)
   - 移除 `json_encoders` 配置
   - 使用 `field_serializer` 替代
