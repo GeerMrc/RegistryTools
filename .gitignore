@@ -149,3 +149,6 @@ dist/
 
 # Thinking MCP data
 .deepthinking/
+
+# Symlinks to user home directory
+$HOME/
