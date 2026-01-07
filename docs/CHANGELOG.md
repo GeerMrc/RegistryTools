@@ -10,6 +10,12 @@
 ## [Unreleased]
 
 ### 新增
+- **Phase 21 MCP 配置参数完善** (2026-01-07)
+  - 修复 expanduser bug：环境变量 `REGISTRYTOOLS_DATA_PATH` 现在支持波浪号（`~`）自动展开
+  - 新增 MCP 配置参数说明文档（`description` 和 `priority` 参数）
+  - 新增路径配置说明章节（波浪号、$HOME、绝对路径、相对路径对比）
+  - 更新 CLAUDE_CONFIG.md、IDE_CONFIG.md、README.md
+  - 完善配置示例，解决用户使用 `claude mcp add-json` 配置连接失败问题
 - **Phase 18.3 配置文档本地/PyPI差异化说明** (2026-01-06)
   - 所有配置文档添加本地开发环境 vs PyPI 发布后的配置区分
   - 解决 `uvx registry-tools` 在本地开发环境无法连接的问题

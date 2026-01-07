@@ -333,6 +333,41 @@ RegistryTools 支持通过环境变量进行配置：
 
 **配置优先级**: 环境变量 > CLI 参数 > 默认值
 
+#### 路径配置说明
+
+**重要**: `REGISTRYTOOLS_DATA_PATH` 环境变量支持多种路径格式：
+
+| 路径格式 | 示例 | 说明 | 推荐度 |
+|----------|------|------|--------|
+| **波浪号** | `~/.RegistryTools` | RegistryTools 会自动展开 `~` 为用户主目录 | ✅ 推荐 |
+| **$HOME 变量** | `$HOME/.RegistryTools` | 由 shell 展开环境变量 | ✅ 推荐 |
+| **绝对路径** | `/home/user/.RegistryTools` | 完整路径，无歧义 | ✅ 推荐 |
+| **相对路径** | `./.RegistryTools` | 相对于当前工作目录 | ⚠️ 谨慎使用 |
+
+**配置示例**:
+```json
+{
+  "mcpServers": {
+    "RegistryTools": {
+      "command": "uvx",
+      "args": ["registry-tools"],
+      "env": {
+        // ✅ 推荐：波浪号格式（RegistryTools v0.1.0+ 自动展开）
+        "REGISTRYTOOLS_DATA_PATH": "~/.RegistryTools",
+
+        // ✅ 推荐：使用 $HOME 环境变量
+        // "REGISTRYTOOLS_DATA_PATH": "$HOME/.RegistryTools",
+
+        // ✅ 推荐：使用绝对路径
+        // "REGISTRYTOOLS_DATA_PATH": "/home/user/.RegistryTools"
+      }
+    }
+  }
+}
+```
+
+> **版本说明**: RegistryTools v0.1.0 及以上版本已修复波浪号（`~`）展开问题，可直接使用 `~/.RegistryTools` 格式。
+
 **示例**:
 ```bash
 # 使用环境变量配置
