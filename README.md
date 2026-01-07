@@ -23,6 +23,26 @@ RegistryTools 是一个独立的 MCP Tool Registry Server，提供通用的工�
 
 ---
 
+> **⚠️ PyPI 发布状态**
+>
+> **RegistryTools 目前尚未发布到 PyPI**，仅支持从源码本地安装。
+>
+> | 安装方式 | 命令 | 配置命令 |
+> |----------|------|----------|
+> | **本地安装**（当前） | `pip install -e .` 或 `uv pip install -e .` | `registry-tools` ✅ |
+> | **PyPI 安装**（不可用） | `pip install registry-tools` | - |
+> | **uvx 运行**（不可用） | `uvx registry-tools` | - ❌ |
+>
+> **MCP 配置示例**（本地安装后）:
+> ```json
+> {
+>   "command": "registry-tools",
+>   "env": { "REGISTRYTOOLS_DATA_PATH": "~/.RegistryTools" }
+> }
+> ```
+
+---
+
 ## 快速开始
 
 ### 安装
