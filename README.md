@@ -541,6 +541,33 @@ ruff check src/registrytools/ tests/
 
 ---
 
+## 相关文档
+
+### 用户文档
+- [INSTALLATION.md](docs/INSTALLATION.md) - 安装指南
+- [USER_GUIDE.md](docs/USER_GUIDE.md) - 用户使用指南
+- [CONFIGURATION.md](docs/CONFIGURATION.md) - 配置参数说明
+- [TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) - 故障排除
+- [BEST_PRACTICES.md](docs/BEST_PRACTICES.md) - 最佳实践
+
+### 技术文档
+- [API.md](docs/API.md) - API 参考文档
+- [ARCHITECTURE.md](docs/ARCHITECTURE.md) - 架构设计
+- [CLAUDE_CONFIG.md](docs/CLAUDE_CONFIG.md) - Claude 配置指南
+- [IDE_CONFIG.md](docs/IDE_CONFIG.md) - IDE 配置指南
+
+### 开发文档
+- [CONTRIBUTING.md](docs/CONTRIBUTING.md) - 贡献指南
+- [PUBLISHING.md](docs/PUBLISHING.md) - PyPI 发布指南
+- [DEVELOPMENT_WORKFLOW.md](docs/DEVELOPMENT_WORKFLOW.md) - 开发流程规范
+- [SCRIPTS_GUIDE.md](docs/SCRIPTS_GUIDE.md) - 脚本工具指南
+
+### 项目管理
+- [TASK.md](docs/TASK.md) - 项目任务追踪
+- [CHANGELOG.md](docs/CHANGELOG.md) - 变更日志
+
+---
+
 ## 许可证
 
 MIT License - 详见 [LICENSE](LICENSE) 文件

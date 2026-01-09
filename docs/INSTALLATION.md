@@ -573,5 +573,24 @@ uv pip install --upgrade registry-tools
 
 ---
 
+## 相关文档
+
+### 配置指南
+- [CONFIGURATION.md](CONFIGURATION.md) - 配置参数完整说明
+- [CLAUDE_CONFIG.md](CLAUDE_CONFIG.md) - Claude Desktop 配置指南
+- [IDE_CONFIG.md](IDE_CONFIG.md) - IDE (VS Code/Cursor) 配置指南
+
+### 使用指南
+- [USER_GUIDE.md](USER_GUIDE.md) - 用户使用指南
+- [API.md](API.md) - API 参考文档
+- [BEST_PRACTICES.md](BEST_PRACTICES.md) - 最佳实践
+
+### 支持文档
+- [TROUBLESHOOTING.md](TROUBLESHOOTING.md) - 故障排除
+- [PUBLISHING.md](PUBLISHING.md) - PyPI 发布指南
+- [CHANGELOG.md](CHANGELOG.md) - 变更日志
+
+---
+
 **维护者**: Maric
 **文档版本**: v1.0

@@ -635,5 +635,24 @@ class APIKey(BaseModel):
 
 ---
 
+## 相关文档
+
+### 核心文档
+- [USER_GUIDE.md](USER_GUIDE.md) - 用户使用指南
+- [ARCHITECTURE.md](ARCHITECTURE.md) - 架构设计文档
+- [CONFIGURATION.md](CONFIGURATION.md) - 配置参数说明
+
+### 配置指南
+- [CLAUDE_CONFIG.md](CLAUDE_CONFIG.md) - Claude Desktop 配置
+- [IDE_CONFIG.md](IDE_CONFIG.md) - IDE (VS Code/Cursor) 配置
+- [INSTALLATION.md](INSTALLATION.md) - 安装指南
+
+### 支持文档
+- [TROUBLESHOOTING.md](TROUBLESHOOTING.md) - 故障排除
+- [BEST_PRACTICES.md](BEST_PRACTICES.md) - 最佳实践
+- [CHANGELOG.md](CHANGELOG.md) - 变更日志
+
+---
+
 **维护者**: Maric
 **文档版本**: v0.1.0
