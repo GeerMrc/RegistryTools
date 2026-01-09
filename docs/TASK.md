@@ -2393,7 +2393,7 @@ pytest 配置正常工作，之前报告的 14 个性能测试错误是因为使
 | TASK-2312 | 统一 PyPI 发布状态标注 | ✅ DONE | 2026-01-09 | P2 - 9 个文档统一标注 |
 | TASK-2313 | 创建 BEST_PRACTICES.md | ✅ DONE | 2026-01-09 | P2 - 最佳实践 |
 | TASK-2314 | 创建 TROUBLESHOOTING.md | ✅ DONE | 2026-01-09 | P2 - 故障排除 |
-| TASK-2315 | 统一文档版本号管理 | 📝 TODO | - | P3 - VERSION.md |
+| TASK-2315 | 统一文档版本号管理 | ✅ DONE | 2026-01-09 | P3 - 所有文档统一 v0.1.0 |
 | TASK-2316 | 完善文档交叉引用 | 📝 TODO | - | P3 - 相关文档链接 |
 | TASK-2317 | 统一 Python 导入路径 | 📝 TODO | - | P3 - 代码示例 |
 | TASK-2318 | 统一文档表格格式 | 📝 TODO | - | P3 - ARCHITECTURE.md |

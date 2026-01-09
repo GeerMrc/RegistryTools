@@ -1,6 +1,10 @@
 # 项目目录结构重构分析
 
-> 分析RegistryTools到src的完整重构方案
+> **版本**: v0.1.0
+> **更新日期**: 2026-01-05
+> **项目**: RegistryTools - MCP Tool Registry Server
+>
+> 分析 RegistryTools 到 src 的完整重构方案
 
 ## 会话信息
 
