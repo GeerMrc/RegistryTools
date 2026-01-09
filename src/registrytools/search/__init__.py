@@ -9,10 +9,12 @@ License: MIT
 
 from registrytools.search.base import SearchAlgorithm
 from registrytools.search.bm25_search import BM25Search
+from registrytools.search.embedding_search import EmbeddingSearch
 from registrytools.search.regex_search import RegexSearch
 
 __all__ = [
     "SearchAlgorithm",
     "RegexSearch",
     "BM25Search",
+    "EmbeddingSearch",
 ]

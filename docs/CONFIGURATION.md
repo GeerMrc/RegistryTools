@@ -550,15 +550,19 @@ print(f"冷工具数: {stats.get('cold_tools', 0)}")
 | 方法 | 适用场景 | 速度 | 准确率 |
 |------|----------|------|--------|
 | `regex` | 已知工具名称，精确匹配 | 最快 | 高 |
-| `bm25` | 语义搜索，自然语言查询 | 快 | 高 |
+| `bm25` | 关键词搜索，支持中文分词 | 快 | 高 |
+| `embedding` | 语义搜索，理解查询意图 | 慢 | 高 |
 
 **示例**:
 ```python
 # 精确查找（已知工具名称）
 search_tools("github.*pull", "regex", 10)
 
-# 语义搜索（自然语言）
-search_tools("如何在 GitHub 上创建 PR", "bm25", 5)
+# 关键词搜索（分词匹配）
+search_tools("github pull request", "bm25", 5)
+
+# 语义搜索（理解意图）
+search_tools("如何在 GitHub 上创建 PR", "embedding", 5)
 ```
 
 #### 调整搜索结果数量

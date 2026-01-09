@@ -169,7 +169,9 @@ def main():
     # 数据路径
     data_path_str = os.getenv("REGISTRYTOOLS_DATA_PATH") or args.data_path
     if data_path_str:
-        data_path = Path(data_path_str).expanduser()
+        # 先展开环境变量（如 $HOME），再展开 ~
+        expanded = os.path.expandvars(data_path_str)
+        data_path = Path(expanded).expanduser()
     else:
         data_path = Path.home() / ".RegistryTools"
 
@@ -238,7 +240,9 @@ def _handle_api_key_command(args: argparse.Namespace) -> None:
     # 获取数据路径
     data_path_str = os.getenv("REGISTRYTOOLS_DATA_PATH") or args.data_path
     if data_path_str:
-        data_path = Path(data_path_str).expanduser()
+        # 先展开环境变量（如 $HOME），再展开 ~
+        expanded = os.path.expandvars(data_path_str)
+        data_path = Path(expanded).expanduser()
     else:
         data_path = Path.home() / ".RegistryTools"
 

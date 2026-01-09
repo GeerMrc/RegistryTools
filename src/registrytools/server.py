@@ -17,6 +17,7 @@ from fastmcp import FastMCP
 from registrytools.registry.models import SearchMethod, ToolMetadata
 from registrytools.registry.registry import ToolRegistry
 from registrytools.search.bm25_search import BM25Search
+from registrytools.search.embedding_search import EmbeddingSearch
 from registrytools.search.regex_search import RegexSearch
 from registrytools.storage.base import ToolStorage
 from registrytools.storage.json_storage import JSONStorage
@@ -326,6 +327,7 @@ def create_server(
     # 注册搜索算法
     registry.register_searcher(SearchMethod.REGEX, RegexSearch(case_sensitive=False))
     registry.register_searcher(SearchMethod.BM25, BM25Search())
+    registry.register_searcher(SearchMethod.EMBEDDING, EmbeddingSearch())
 
     # 重建搜索索引
     registry.rebuild_indexes()
@@ -386,6 +388,7 @@ def create_server_with_sqlite(
     # 注册搜索算法
     registry.register_searcher(SearchMethod.REGEX, RegexSearch(case_sensitive=False))
     registry.register_searcher(SearchMethod.BM25, BM25Search())
+    registry.register_searcher(SearchMethod.EMBEDDING, EmbeddingSearch())
 
     # 重建搜索索引
     registry.rebuild_indexes()
