@@ -2390,7 +2390,7 @@ pytest 配置正常工作，之前报告的 14 个性能测试错误是因为使
 | TASK-2309 | 消除环境变量配置重复内容 | ✅ DONE | 2026-01-09 | P2 - 多文档重复 |
 | TASK-2310 | 优化 README 与 INSTALLATION 重复 | ✅ DONE | 2026-01-09 | P2 - 内容重复 |
 | TASK-2311 | 移除不存在的 --log-level 参数 | ✅ DONE | 2026-01-09 | P2 - 文档误导 |
-| TASK-2312 | 统一 PyPI 发布状态标注 | 📝 TODO | - | P2 - 重复警告 |
+| TASK-2312 | 统一 PyPI 发布状态标注 | ✅ DONE | 2026-01-09 | P2 - 9 个文档统一标注 |
 | TASK-2313 | 创建 BEST_PRACTICES.md | ✅ DONE | 2026-01-09 | P2 - 最佳实践 |
 | TASK-2314 | 创建 TROUBLESHOOTING.md | ✅ DONE | 2026-01-09 | P2 - 故障排除 |
 | TASK-2315 | 统一文档版本号管理 | 📝 TODO | - | P3 - VERSION.md |
