@@ -168,23 +168,16 @@ RegistryTools 使用 Python 标准库 `logging` 模块记录运行日志。
 
 **配置方式**:
 
-**方式 1: 命令行参数**
-
-```bash
-registry-tools --log-level DEBUG
-```
-
-**方式 2: 环境变量**
+日志级别通过环境变量配置：
 
 ```bash
 export REGISTRYTOOLS_LOG_LEVEL=DEBUG
 registry-tools
 ```
 
-**日志格式**:
-```
-YYYY-MM-DD HH:MM:SS - registrytools - LEVEL - Message
-```
+**注意**: 日志级别仅支持通过环境变量 `REGISTRYTOOLS_LOG_LEVEL` 配置，不支持 CLI 参数。
+
+**详细配置**: 参见 [配置指南 - 日志配置](CONFIGURATION.md#日志配置)
 
 **查看日志**:
 

@@ -340,103 +340,37 @@ claude mcp add-json "RegistryTools" '{...}' --scope user
 claude mcp add-json "RegistryTools" '{...}' --scope local
 ```
 
-### 环境变量配置
+### 配置选项
 
-RegistryTools 支持通过环境变量进行配置：
+RegistryTools 支持灵活的配置方式。完整配置说明请参见 [配置指南](docs/CONFIGURATION.md)。
 
-| 环境变量 | 描述 | 默认值 |
-|---------|------|--------|
-| `REGISTRYTOOLS_DATA_PATH` | 数据目录路径 | `~/.RegistryTools` |
-| `REGISTRYTOOLS_TRANSPORT` | 传输协议 (stdio/http) | `stdio` |
-| `REGISTRYTOOLS_LOG_LEVEL` | 日志级别 (DEBUG/INFO/WARNING/ERROR) | `INFO` |
-| `REGISTRYTOOLS_ENABLE_AUTH` | 启用 API Key 认证 | `false` |
+**常用环境变量**:
+- `REGISTRYTOOLS_DATA_PATH` - 数据目录路径（默认: `~/.RegistryTools`）
+- `REGISTRYTOOLS_TRANSPORT` - 传输协议（默认: `stdio`）
+- `REGISTRYTOOLS_LOG_LEVEL` - 日志级别（默认: `INFO`）
+- `REGISTRYTOOLS_ENABLE_AUTH` - 启用 API Key 认证（默认: `false`）
+
+**快速示例**:
+```bash
+# 自定义数据路径
+export REGISTRYTOOLS_DATA_PATH=/custom/path
+registry-tools
+
+# HTTP 模式 + 认证
+export REGISTRYTOOLS_TRANSPORT=http
+export REGISTRYTOOLS_ENABLE_AUTH=true
+registry-tools --host 0.0.0.0 --port 8000
+```
 
 **配置优先级**: 环境变量 > CLI 参数 > 默认值
 
-#### 路径配置说明
+**详细配置**: 参见 [配置指南](docs/CONFIGURATION.md)
 
-**重要**: `REGISTRYTOOLS_DATA_PATH` 环境变量支持多种路径格式：
+---
 
-| 路径格式 | 示例 | 说明 | 推荐度 |
-|----------|------|------|--------|
-| **波浪号** | `~/.RegistryTools` | RegistryTools 会自动展开 `~` 为用户主目录 | ✅ 推荐 |
-| **$HOME 变量** | `$HOME/.RegistryTools` | 由 shell 展开环境变量 | ✅ 推荐 |
-| **绝对路径** | `/home/user/.RegistryTools` | 完整路径，无歧义 | ✅ 推荐 |
-| **相对路径** | `./.RegistryTools` | 相对于当前工作目录 | ⚠️ 谨慎使用 |
-
-**配置示例**:
-```json
-{
-  "mcpServers": {
-    "RegistryTools": {
-      "command": "uvx",
-      "args": ["registry-tools"],
-      "env": {
-        // ✅ 推荐：波浪号格式（RegistryTools v0.1.0+ 自动展开）
-        "REGISTRYTOOLS_DATA_PATH": "~/.RegistryTools",
-
-        // ✅ 推荐：使用 $HOME 环境变量
-        // "REGISTRYTOOLS_DATA_PATH": "$HOME/.RegistryTools",
-
-        // ✅ 推荐：使用绝对路径
-        // "REGISTRYTOOLS_DATA_PATH": "/home/user/.RegistryTools"
-      }
-    }
-  }
-}
-```
-
-> **版本说明**: RegistryTools v0.1.0 及以上版本已修复波浪号（`~`）展开问题，可直接使用 `~/.RegistryTools` 格式。
-
-**示例**:
-```bash
-# 使用环境变量配置
-export REGISTRYTOOLS_DATA_PATH=/custom/path
-export REGISTRYTOOLS_TRANSPORT=http
-export REGISTRYTOOLS_LOG_LEVEL=DEBUG
-registry-tools
-```
-
-### 日志配置
-
-RegistryTools 使用 Python 标准库 `logging` 模块记录运行日志。
-
-**日志级别**:
-- `DEBUG`: 详细调试信息
-- `INFO`: 一般信息（默认）
-- `WARNING`: 警告信息
-- `ERROR`: 错误信息
-
-**配置方式**:
-```bash
-# 通过环境变量
-export REGISTRYTOOLS_LOG_LEVEL=DEBUG
-registry-tools
-
-# 或使用 CLI 参数
-registry-tools --log-level DEBUG
-```
-
-**日志格式**:
-```
-YYYY-MM-DD HH:MM:SS - registrytools - LEVEL - Message
-```
+## 高级功能
 
 ### API Key 认证
-
-RegistryTools 支持可选的 API Key 认证功能，用于保护 HTTP 模式的服务访问。
-
-**启用认证**:
-```bash
-# 命令行参数
-registry-tools --transport http --enable-auth
-
-# 环境变量
-export REGISTRYTOOLS_ENABLE_AUTH=true
-registry-tools --transport http
-```
-
-**API Key 管理**:
 ```bash
 # 创建 API Key
 registry-tools api-key create "My Key" --permission read

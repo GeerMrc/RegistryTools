@@ -31,7 +31,7 @@ RegistryTools 是一个独立的 MCP Tool Registry Server，提供通用的工�
 #### 参数
 
 - `query` (string): 搜索查询
-- `method` (string): 搜索方法，可选值：`regex`、`bm25`
+- `search_method` (string): 搜索方法，可选值：`regex`、`bm25`
 - `limit` (integer): 返回结果数量，默认 10
 
 #### 示例
@@ -248,156 +248,31 @@ registry-tools --data-path /custom/path
 
 ---
 
-## 环境变量配置 (Phase 14.1)
+## 配置选项
 
-RegistryTools 支持通过环境变量进行配置，提供灵活的配置方式。
+完整的环境变量、CLI 参数和性能调优配置请参见 [配置指南](CONFIGURATION.md)。
 
-### 可用环境变量
+### 快速参考
 
-| 环境变量 | 描述 | 默认值 |
-|---------|------|--------|
-| `REGISTRYTOOLS_DATA_PATH` | 数据目录路径 | `~/.RegistryTools` |
-| `REGISTRYTOOLS_TRANSPORT` | 传输协议 (stdio/http) | `stdio` |
-| `REGISTRYTOOLS_LOG_LEVEL` | 日志级别 (DEBUG/INFO/WARNING/ERROR) | `INFO` |
-| `REGISTRYTOOLS_ENABLE_AUTH` | 启用 API Key 认证 | `false` |
+**常用环境变量**:
+- `REGISTRYTOOLS_DATA_PATH` - 数据目录路径（默认: `~/.RegistryTools`）
+- `REGISTRYTOOLS_TRANSPORT` - 传输协议（默认: `stdio`）
+- `REGISTRYTOOLS_LOG_LEVEL` - 日志级别（默认: `INFO`）
+- `REGISTRYTOOLS_ENABLE_AUTH` - 启用 API Key 认证（默认: `false`）
 
-### 配置优先级
+**配置优先级**: 环境变量 > CLI 参数 > 默认值
 
-**环境变量 > CLI 参数 > 默认值**
-
-这意味着如果同时设置了环境变量和 CLI 参数，环境变量将覆盖 CLI 参数。
-
-### 使用示例
-
-**设置数据目录**:
-```bash
-export REGISTRYTOOLS_DATA_PATH=/custom/path
-registry-tools
-```
-
-**使用 HTTP 传输**:
-```bash
-export REGISTRYTOOLS_TRANSPORT=http
-registry-tools --host 0.0.0.0 --port 8000
-```
-
-**设置日志级别**:
-```bash
-export REGISTRYTOOLS_LOG_LEVEL=DEBUG
-registry-tools
-```
-
-**启用认证**:
-```bash
-export REGISTRYTOOLS_ENABLE_AUTH=true
-registry-tools --transport http
-```
-
-**组合配置**:
-```bash
-export REGISTRYTOOLS_DATA_PATH=/data
-export REGISTRYTOOLS_TRANSPORT=http
-export REGISTRYTOOLS_LOG_LEVEL=INFO
-export REGISTRYTOOLS_ENABLE_AUTH=true
-registry-tools --host 0.0.0.0 --port 8000
-```
-
-### 在 MCP 客户端中使用
-
-**Claude Desktop 配置**:
-```json
-{
-  "mcpServers": {
-    "RegistryTools": {
-      "command": "uvx",
-      "args": ["registry-tools"],
-      "env": {
-        "REGISTRYTOOLS_DATA_PATH": "~/.RegistryTools",
-        "REGISTRYTOOLS_LOG_LEVEL": "DEBUG"
-      }
-    }
-  }
-}
-```
+**详细配置**:
+- 环境变量配置 → [配置指南 - 环境变量配置](CONFIGURATION.md#环境变量配置)
+- CLI 参数配置 → [配置指南 - CLI 参数配置](CONFIGURATION.md#cli-参数配置)
+- 日志配置 → [配置指南 - 日志配置](CONFIGURATION.md#日志配置)
+- API Key 认证 → [配置指南 - API Key 认证配置](CONFIGURATION.md#api-key-认证配置)
+- 冷热工具分离 → [配置指南 - 冷热工具分离配置](CONFIGURATION.md#冷热工具分离配置)
+- 性能调优 → [配置指南 - 性能调优配置](CONFIGURATION.md#性能调优配置)
 
 ---
 
-## 日志功能 (Phase 14.2)
-
-RegistryTools 使用 Python 标准库 `logging` 模块记录运行日志，便于调试和监控。
-
-### 日志级别
-
-| 级别 | 描述 | 使用场景 |
-|------|------|----------|
-| `DEBUG` | 详细调试信息 | 开发调试 |
-| `INFO` | 一般信息（默认） | 正常运行 |
-| `WARNING` | 警告信息 | 潜在问题 |
-| `ERROR` | 错误信息 | 错误发生 |
-
-### 配置日志级别
-
-**方式 1: 环境变量**（推荐）
-```bash
-export REGISTRYTOOLS_LOG_LEVEL=DEBUG
-registry-tools
-```
-
-**方式 2: CLI 参数**
-```bash
-registry-tools --log-level WARNING
-```
-
-### 日志格式
-
-```
-YYYY-MM-DD HH:MM:SS - registrytools - LEVEL - Message
-```
-
-**示例**:
-```
-2026-01-05 10:30:45 - registrytools - INFO - Starting RegistryTools server...
-2026-01-05 10:30:46 - registrytools - DEBUG - Loading tools from storage...
-2026-01-05 10:30:47 - registrytools - INFO - Server ready, serving 26 tools
-```
-
-### 查看日志
-
-**STDOUT 输出**（默认）:
-```bash
-# 日志直接输出到终端
-registry-tools
-```
-
-**重定向到文件**:
-```bash
-# 重定向所有输出
-registry-tools > registrytools.log 2>&1
-
-# 仅重定向日志
-registry-tools 2>&1 | tee registrytools.log
-```
-
-**过滤特定级别**:
-```bash
-# 仅查看错误
-registry-tools 2>&1 | grep ERROR
-```
-
-### 调试技巧
-
-1. **启用 DEBUG 日志**: 查看详细的运行信息
-   ```bash
-   export REGISTRYTOOLS_LOG_LEVEL=DEBUG
-   ```
-
-2. **检查工具加载**: 查看 DEBUG 日志中的工具加载信息
-
-3. **监控性能**: 使用时间戳分析操作耗时
-
----
-
-## API Key 认证 (Phase 15)
+## API Key 认证
 
 ### 概述
 
@@ -487,7 +362,7 @@ registry-tools api-key delete <key-id>
 curl -X POST http://localhost:8000/mcp/tools/search_tools \
   -H "Content-Type: application/json" \
   -H "X-API-Key: rtk_a1b2c3d4e5f6789012345678901234567890123456789012345678901234" \
-  -d '{"query": "github", "method": "bm25", "limit": 5}'
+  -d '{"query": "github", "search_method": "bm25", "limit": 5}'
 ```
 
 **方法 2: Authorization Bearer Token**
@@ -496,7 +371,7 @@ curl -X POST http://localhost:8000/mcp/tools/search_tools \
 curl -X POST http://localhost:8000/mcp/tools/search_tools \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer rtk_a1b2c3d4e5f6789012345678901234567890123456789012345678901234" \
-  -d '{"query": "github", "method": "bm25", "limit": 5}'
+  -d '{"query": "github", "search_method": "bm25", "limit": 5}'
 ```
 
 #### 在 Claude Desktop 中使用

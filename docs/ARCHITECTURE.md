@@ -325,9 +325,18 @@ class ToolMetadata(BaseModel):
     category: Optional[str] = None          # 类别
     use_frequency: int = 0                  # 使用频率
     last_used: Optional[datetime] = None    # 最后使用时间
+    temperature: ToolTemperature = ToolTemperature.COLD  # 工具温度级别
     input_schema: Optional[dict] = None     # 输入 Schema
     output_schema: Optional[dict] = None    # 输出 Schema
 ```
+
+**temperature 字段说明**:
+
+| 值 | 使用频率 | 描述 |
+|----|---------|------|
+| `HOT` | ≥ 10 次 | 热工具，启动时预加载到内存 |
+| `WARM` | 3-9 次 | 温工具，按需加载并缓存 |
+| `COLD` | < 3 次 | 冷工具，延迟加载（默认） |
 
 ### ToolSearchResult
 

@@ -309,9 +309,18 @@ class ToolMetadata(BaseModel):
     category: Optional[str] = None          # 类别
     use_frequency: int = 0                  # 使用频率
     last_used: Optional[datetime] = None    # 最后使用时间
+    temperature: ToolTemperature = ToolTemperature.COLD  # 工具温度级别
     input_schema: Optional[dict] = None     # 输入 Schema
     output_schema: Optional[dict] = None    # 输出 Schema
 ```
+
+**temperature 字段说明**:
+
+| 值 | 使用频率 | 描述 |
+|----|---------|------|
+| `HOT` | ≥ 10 次 | 热工具，启动时预加载到内存 |
+| `WARM` | 3-9 次 | 温工具，按需加载并缓存 |
+| `COLD` | < 3 次 | 冷工具，延迟加载（默认） |
 
 ### ToolSearchResult
 
@@ -327,53 +336,27 @@ class ToolSearchResult(BaseModel):
 
 ---
 
-## 配置选项 (Phase 14.1 + Phase 14.2)
+## 配置选项
 
-### 环境变量
+完整的环境变量、CLI 参数和性能调优配置请参见 [配置指南](CONFIGURATION.md)。
 
-RegistryTools 支持通过环境变量进行配置：
+### 快速参考
 
-| 环境变量 | 描述 | 默认值 |
-|---------|------|--------|
-| `REGISTRYTOOLS_DATA_PATH` | 数据目录路径 | `~/.RegistryTools` |
-| `REGISTRYTOOLS_TRANSPORT` | 传输协议 (stdio/http) | `stdio` |
-| `REGISTRYTOOLS_LOG_LEVEL` | 日志级别 (DEBUG/INFO/WARNING/ERROR) | `INFO` |
-| `REGISTRYTOOLS_ENABLE_AUTH` | 启用 API Key 认证 | `false` |
+**常用环境变量**:
+- `REGISTRYTOOLS_DATA_PATH` - 数据目录路径（默认: `~/.RegistryTools`）
+- `REGISTRYTOOLS_TRANSPORT` - 传输协议（默认: `stdio`）
+- `REGISTRYTOOLS_LOG_LEVEL` - 日志级别（默认: `INFO`）
+- `REGISTRYTOOLS_ENABLE_AUTH` - 启用 API Key 认证（默认: `false`）
 
 **配置优先级**: 环境变量 > CLI 参数 > 默认值
 
-**示例**:
-```bash
-# 设置环境变量
-export REGISTRYTOOLS_DATA_PATH=/custom/path
-export REGISTRYTOOLS_LOG_LEVEL=DEBUG
-registry-tools
-```
-
-### 日志配置
-
-RegistryTools 使用 Python `logging` 模块记录运行日志。
-
-**日志级别**:
-- `DEBUG`: 详细调试信息
-- `INFO`: 一般信息（默认）
-- `WARNING`: 警告信息
-- `ERROR`: 错误信息
-
-**配置方式**:
-```bash
-# 环境变量
-export REGISTRYTOOLS_LOG_LEVEL=DEBUG
-registry-tools
-
-# CLI 参数
-registry-tools --log-level WARNING
-```
-
-**日志格式**:
-```
-YYYY-MM-DD HH:MM:SS - registrytools - LEVEL - Message
-```
+**详细配置**:
+- 环境变量配置 → [配置指南 - 环境变量配置](CONFIGURATION.md#环境变量配置)
+- CLI 参数配置 → [配置指南 - CLI 参数配置](CONFIGURATION.md#cli-参数配置)
+- 日志配置 → [配置指南 - 日志配置](CONFIGURATION.md#日志配置)
+- API Key 认证 → [配置指南 - API Key 认证配置](CONFIGURATION.md#api-key-认证配置)
+- 冷热工具分离 → [配置指南 - 冷热工具分离配置](CONFIGURATION.md#冷热工具分离配置)
+- 性能调优 → [配置指南 - 性能调优配置](CONFIGURATION.md#性能调优配置)
 
 ---
 
