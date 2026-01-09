@@ -9,6 +9,47 @@
 
 ## [Unreleased]
 
+---
+
+## [0.1.1] - 2026-01-09
+
+### 新增
+- **Phase 24 EMBEDDING 语义搜索实现** (2026-01-09)
+  - 实现 EmbeddingSearch 类，使用 sentence-transformers
+  - 支持中英文双语语义搜索
+  - 使用余弦相似度进行向量比较
+  - 实现索引缓存和哈希值检测机制
+  - 分层索引支持（热工具优先）
+  - 218 行代码，97% 测试覆盖率
+
+- **Phase 25 审核报告与版本发布** (2026-01-09)
+  - 完成全面功能审核报告（docs/AUDIT_REPORT_V0.1.0.md）
+  - 验证所有功能实现与文档描述一致
+  - 版本号从 v0.1.0 更新至 v0.1.1
+  - 清理旧版本 wheel 包，构建最新版本
+  - 远端版本清理（删除旧版本 tag）
+
+- **Phase 26 版本号修正与文档一致性审核** (2026-01-09)
+  - 修正 pyproject.toml 版本号为 0.1.1
+  - 修正 __init__.py 版本号为 0.1.1
+  - 更新所有用户面向文档版本号
+  - 完善 CHANGELOG.md 版本历史
+
+### 修复
+- **$HOME 环境变量展开 bug** (2026-01-09)
+  - 修复 Path.expanduser() 前 $HOME 未展开的问题
+  - 修复位置: __main__.py:172, 241
+  - 防止创建字面量 '$HOME' 目录
+
+### 变更
+- **版本号更新**: 0.1.0 → 0.1.1
+- **wheel 包**: registry_tools-0.1.0 → registry_tools-0.1.1
+- **文档版本**: 所有用户面向文档更新至 v0.1.1
+
+---
+
+## [0.1.0] - 2026-01-05
+
 ### 新增
 - **Phase 21 MCP 配置参数完善** (2026-01-07)
   - 修复 expanduser bug：环境变量 `REGISTRYTOOLS_DATA_PATH` 现在支持波浪号（`~`）自动展开
@@ -31,7 +72,7 @@
   - PyPI 包名从 `Registry-Tools` 改为 `Registry_Tools`
   - 统一 pip list 显示与 wheel 文件名（`Registry_Tools`）
   - 更新所有文档中的安装命令引用
-  - wheel 文件名从 `registry_tools-0.1.0-py3-none-any.whl` 改为 `Registry_Tools-0.1.0-py3-none-any.whl`
+  - wheel 文件名从 `registry_tools-0.1.0-py3-none-any.whl` 改为 `registry_tools-0.1.1-py3-none-any.whl`
 - **Phase 15 API Key 认证功能** (2026-01-05)
   - 实现 API Key 生成、存储、认证中间件
   - 支持 READ/WRITE/ADMIN 三级权限

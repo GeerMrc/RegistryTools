@@ -1,7 +1,7 @@
 # RegistryTools
 
-**版本**: v0.1.0
-**更新日期**: 2026-01-05
+**版本**: v0.1.1
+**更新日期**: 2026-01-09
 **独立 MCP Tool Registry Server** - 通用工具搜索与发现服务
 
 [![Python Version](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
@@ -522,7 +522,7 @@ ruff check src/registrytools/ tests/
 
 ## 路线图
 
-### v0.1.0 (当前 - 2026-01-05)
+### v0.1.1 (当前 - 2026-01-09)
 - ✅ 基础工具注册和搜索
 - ✅ Regex 搜索算法（精确匹配）
 - ✅ BM25 搜索算法（支持中文分词）

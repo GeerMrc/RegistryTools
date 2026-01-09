@@ -1,7 +1,7 @@
 # RegistryTools IDE 配置指南
 
-**版本**: v0.1.0
-**更新日期**: 2026-01-07
+**版本**: v0.1.1
+**更新日期**: 2026-01-09
 **适用对象**: Claude Desktop、Claude Code、Cursor、Continue.dev、Cline 等 MCP 客户端用户
 
 ---

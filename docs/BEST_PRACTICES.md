@@ -1,6 +1,6 @@
 # RegistryTools 最佳实践
 
-**版本**: v0.1.0
+**版本**: v0.1.1
 **更新日期**: 2026-01-09
 **项目**: RegistryTools - MCP Tool Registry Server
 
