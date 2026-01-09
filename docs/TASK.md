@@ -1,7 +1,7 @@
 # RegistryTools - 任务追踪文档
 
 **项目开始**: 2026-01-04
-**当前状态**: Phase 24 已完成 - 功能审核与 EMBEDDING 搜索实现 ✅
+**当前状态**: Phase 25 已完成 - 审核报告保存与版本发布 ✅
 **完成进度**: 100%
 
 ---
@@ -2677,3 +2677,100 @@ $HOME/                        # 测试目录已删除
 | $HOME 测试目录 | ✅ 已清理 | 目录已删除 |
 
 **文档一致性评分**: 95% → 100% (+5)
+
+---
+
+## Phase 25: 审核报告保存与版本发布 (2026-01-09)
+
+> **触发原因**: 全面功能审核完成，需要保存审核报告并发布最新版本
+> **审核日期**: 2026-01-09
+> **审核范围**: 完整项目功能实现、配置参数、MCP规范符合性、文档一致性
+
+| 任务ID | 任务描述 | 状态 | 完成时间 | 备注 |
+|--------|----------|------|----------|------|
+| TASK-2501 | 保存审核报告到 docs/ | ✅ DONE | 2026-01-09 | AUDIT_REPORT_V0.1.0.md |
+| TASK-2502 | 清理旧版本 wheel 包 | ✅ DONE | 2026-01-09 | dist/ 目录已清理 |
+| TASK-2503 | 构建最新版本 wheel 包 | ✅ DONE | 2026-01-09 | registry_tools-0.1.0-py3-none-any.whl |
+| TASK-2504 | Git commit 审核报告 | ✅ DONE | 2026-01-09 | Conventional Commits |
+| TASK-2505 | 移动 tag v0.1.1 | ✅ DONE | 2026-01-09 | tag 已移至最新 commit |
+| TASK-2506 | 推送到远端仓库 | ✅ DONE | 2026-01-09 | master + v0.1.1 已推送 |
+| TASK-2507 | 清理远端旧版本 | ✅ DONE | 2026-01-09 | v0.1.0 tag 已删除 |
+| TASK-2508 | 交叉验证 | ✅ DONE | 2026-01-09 | 所有操作已验证 |
+| TASK-2509 | 更新 TASK.md | ✅ DONE | 2026-01-09 | Phase 25 记录 |
+| TASK-2510 | Git commit TASK.md | ⏳ PENDING | 2026-01-09 | 独立提交 |
+
+### 审核结果摘要
+
+**审核方法**: 以实际代码为准，文档为辅（避免文档与代码不一致）
+
+**审核结论**: ✅ **通过** - 所有功能实现与文档描述一致，符合 MCP 规范
+
+**核心功能验证**:
+- ✅ 4 个 MCP 工具接口（search_tools, get_tool_definition, list_tools_by_category, register_tool）
+- ✅ 2 个 MCP 资源接口（registry://stats, registry://categories）
+- ✅ 3 种搜索算法（Regex, BM25, Embedding）
+- ✅ 2 种存储后端（JSON, SQLite）
+- ✅ 2 种传输协议（STDIO, HTTP）
+- ✅ API Key 认证系统（3级权限）
+- ✅ 冷热工具分离机制（自动升降级）
+- ✅ 环境变量配置支持（4个变量）
+- ✅ CLI 命令行工具
+- ✅ 88% 测试覆盖率
+
+### 版本发布操作
+
+**Git 操作**:
+```bash
+# 清理旧版本 wheel
+rm -f dist/*.whl
+
+# 构建最新 wheel
+python -m build --wheel
+
+# 提交审核报告
+git add docs/AUDIT_REPORT_V0.1.0.md
+git commit -m "docs: add comprehensive audit report for v0.1.0"
+
+# 移动 tag v0.1.1
+git tag -d v0.1.1
+git tag v0.1.1 HEAD
+
+# 推送到远端
+git push origin master
+git push origin v0.1.1 --force
+
+# 删除远端旧版本 tag
+git push origin --delete v0.1.0
+```
+
+**验证结果**:
+```
+1. Git 状态: ✅ Clean
+2. 最新提交: 07d7f7a docs: add comprehensive audit report for v0.1.0
+3. 本地 Tag: v0.1.0, v0.1.1
+4. 远端 Tag: v0.1.1 (v0.1.0 已删除)
+5. dist/ 目录: registry_tools-0.1.0-py3-none-any.whl (最新)
+```
+
+### 输出物
+
+- [x] docs/AUDIT_REPORT_V0.1.0.md - 完整审核报告
+- [x] dist/registry_tools-0.1.0-py3-none-any.whl - 最新 wheel 包
+- [x] Git commit 07d7f7a - 审核报告提交
+- [x] Tag v0.1.1 - 已移至最新 commit
+- [x] 远端同步 - master + v0.1.1 已推送，v0.1.0 已删除
+
+### 验收标准
+
+- [x] 审核报告已保存到 docs/ ✅
+- [x] 旧版本 wheel 包已清理 ✅
+- [x] 最新 wheel 包已构建 ✅
+- [x] Git commit 已完成（遵循 Conventional Commits）✅
+- [x] Tag v0.1.1 已移至最新 commit ✅
+- [x] 远端仓库已同步 ✅
+- [x] 远端旧版本已清理 ✅
+- [x] 交叉验证已完成 ✅
+- [x] TASK.md 已更新 ✅
+- [ ] TASK.md 独立提交 ⏳
+
+**Phase 25 状态**: ✅ 完成（待 TASK.md 独立提交）
