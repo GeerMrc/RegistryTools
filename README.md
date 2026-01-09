@@ -414,6 +414,7 @@ register_tool(
 |------|------|------|----------|
 | **Regex** | 正则表达式精确匹配 | 最快 | 精确名称匹配 |
 | **BM25** | BM25 关键词搜索（支持中文分词） | 快 | 关键词搜索（推荐） |
+| **Embedding** | 语义搜索（支持中英文） | 中 | 语义理解和模糊匹配（可选依赖） |
 
 ### MCP 工具接口
 
@@ -523,7 +524,9 @@ ruff check src/registrytools/ tests/
 
 ### v0.1.0 (当前 - 2026-01-05)
 - ✅ 基础工具注册和搜索
+- ✅ Regex 搜索算法（精确匹配）
 - ✅ BM25 搜索算法（支持中文分词）
+- ✅ Embedding 语义搜索（可选依赖，支持中英文）
 - ✅ JSON/SQLite 存储
 - ✅ MCP 工具和资源接口
 - ✅ STDIO 和 Streamable HTTP 传输协议支持
@@ -533,7 +536,6 @@ ruff check src/registrytools/ tests/
 - ✅ 性能优化（索引缓存、冷热工具分离）
 
 ### v0.2.0 (计划中)
-- ⏳ Embedding 语义搜索
 - ⏳ 分布式工具注册
 - ⏳ 工具依赖管理
 - ⏳ Web UI 管理界面

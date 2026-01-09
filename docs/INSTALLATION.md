@@ -177,14 +177,32 @@ RegistryTools 使用 Python 标准库 `logging` 模块记录运行日志。
 
 **配置方式**:
 
-日志级别通过环境变量配置：
+#### 方式 1: 环境变量配置
 
 ```bash
 export REGISTRYTOOLS_LOG_LEVEL=DEBUG
 registry-tools
 ```
 
-**注意**: 日志级别仅支持通过环境变量 `REGISTRYTOOLS_LOG_LEVEL` 配置，不支持 CLI 参数。
+#### 方式 2: fastmcp.json 配置文件
+
+编辑 `fastmcp.json` 或 `fastmcp.http.json`：
+
+```json
+{
+  "$schema": "https://gofastmcp.com/public/schemas/fastmcp.json/v1.json",
+  "source": {
+    "path": "src/registrytools/__main__.py",
+    "entrypoint": "main"
+  },
+  "deployment": {
+    "transport": "stdio",
+    "log_level": "DEBUG"  // 修改此处的日志级别
+  }
+}
+```
+
+**注意**: CLI 参数 `--log-level` 不支持，请使用环境变量或配置文件。
 
 **详细配置**: 参见 [配置指南 - 日志配置](CONFIGURATION.md#日志配置)
 
