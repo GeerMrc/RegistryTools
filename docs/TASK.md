@@ -1,8 +1,9 @@
 # RegistryTools - 任务追踪文档
 
 **项目开始**: 2026-01-04
-**当前状态**: Phase 25 已完成 - 审核报告保存与版本发布 ✅
+**当前状态**: Phase 26 已完成 - 版本号修正与文档一致性全面审核 ✅
 **完成进度**: 100%
+**当前版本**: v0.1.1
 
 ---
 
@@ -2774,3 +2775,98 @@ git push origin --delete v0.1.0
 - [ ] TASK.md 独立提交 ⏳
 
 **Phase 25 状态**: ✅ 完成（待 TASK.md 独立提交）
+
+---
+
+## Phase 26: 版本号修正与文档一致性全面审核 (2026-01-09)
+
+> **触发原因**: Phase 25 发现版本号不一致问题
+> **审核日期**: 2026-01-09
+> **审核范围**: 版本号修正 + 文档一致性全面审核
+
+| 任务ID | 任务描述 | 状态 | 完成时间 | 备注 |
+|--------|----------|------|----------|------|
+| TASK-2601 | 分析版本号不一致问题 | ✅ DONE | 2026-01-09 | 发现 pyproject.toml 与 tag 不一致 |
+| TASK-2602 | 设计版本修正方案 | ✅ DONE | 2026-01-09 | 确定修正范围和方法 |
+| TASK-2603 | 任务拆解 | ✅ DONE | 2026-01-09 | 制定详细修正清单 |
+| TASK-2604 | 修正 pyproject.toml | ✅ DONE | 2026-01-09 | 0.1.0 → 0.1.1 |
+| TASK-2605 | 修正 __init__.py | ✅ DONE | 2026-01-09 | __version__ 更新 |
+| TASK-2606 | 重新构建 wheel | ✅ DONE | 2026-01-09 | registry_tools-0.1.1 |
+| TASK-2607 | 验证版本号一致性 | ✅ DONE | 2026-01-09 | 全部通过 ✅ |
+| TASK-2608 | 全面审核文档一致性 | ✅ DONE | 2026-01-09 | 14个文档更新 |
+| TASK-2609 | Git commit 版本修正 | ✅ DONE | 2026-01-09 | 97ce739 |
+| TASK-2610 | 更新 CHANGELOG.md | ✅ DONE | 2026-01-09 | 添加 v0.1.1 条目 |
+| TASK-2611 | 推送到远端 | ✅ DONE | 2026-01-09 | master 已同步 |
+| TASK-2612 | 交叉验证 | ✅ DONE | 2026-01-09 | 所有验证通过 |
+| TASK-2613 | 更新 TASK.md | ✅ DONE | 2026-01-09 | 本条目 |
+| TASK-2614 | Git commit TASK.md | ⏳ PENDING | 2026-01-09 | 独立提交 |
+
+### 版本号修正详情
+
+**问题诊断**:
+- pyproject.toml: 0.1.0 → 0.1.1 ✅
+- src/registrytools/__init__.py: 0.1.0 → 0.1.1 ✅
+- wheel 包: registry_tools-0.1.0 → registry_tools-0.1.1 ✅
+
+### 文档一致性审核
+
+**更新范围**: 14 个用户面向文档
+
+| 文档 | 更新内容 | 状态 |
+|------|---------|------|
+| README.md | 版本号、日期、路线图 | ✅ |
+| docs/INSTALLATION.md | 版本号、日期 | ✅ |
+| docs/USER_GUIDE.md | 版本号、日期 | ✅ |
+| docs/API.md | 版本号、日期 | ✅ |
+| docs/CONFIGURATION.md | 版本号 | ✅ |
+| docs/BEST_PRACTICES.md | 版本号 | ✅ |
+| docs/TROUBLESHOOTING.md | 版本号 | ✅ |
+| docs/ARCHITECTURE.md | 版本号、日期 | ✅ |
+| docs/CLAUDE_CONFIG.md | 版本号、日期 | ✅ |
+| docs/IDE_CONFIG.md | 版本号、日期 | ✅ |
+| docs/CONTRIBUTING.md | 版本号 | ✅ |
+| docs/DEVELOPMENT_WORKFLOW.md | 版本号 | ✅ |
+| docs/PUBLISHING.md | 版本号 | ✅ |
+| docs/README.md | 版本号 | ✅ |
+| docs/CHANGELOG.md | 添加 v0.1.1 条目 | ✅ |
+
+### 排除的历史文档
+
+以下文档为历史记录，未修改版本号：
+- ✅ docs/TASK.md - 任务追踪文档
+- ✅ docs/AUDIT_REPORT_V0.1.0.md - 审核报告快照
+- ✅ 其他历史审计文档
+
+### 输出物
+
+- [x] pyproject.toml: version = "0.1.1"
+- [x] src/registrytools/__init__.py: __version__ = "0.1.1"
+- [x] dist/registry_tools-0.1.1-py3-none-any.whl
+- [x] Git commit 97ce739: 版本修正提交
+- [x] CHANGELOG.md: v0.1.1 版本条目
+- [x] 14 个文档版本号已更新
+
+### 验证结果
+
+```bash
+# 版本号一致性验证
+pyproject.toml: 0.1.1 ✅
+__init__.py: 0.1.1 ✅
+README.md: v0.1.1 ✅
+所有文档: v0.1.1 ✅
+wheel 包: registry_tools-0.1.1 ✅
+```
+
+### 验收标准
+
+- [x] 版本号一致性: pyproject.toml = __init__.py = wheel 包 = 文档 ✅
+- [x] Git 状态: Clean ✅
+- [x] 远端同步: 已推送 ✅
+- [x] CHANGELOG: v0.1.1 条目已添加 ✅
+- [x] 交叉验证: 全部通过 ✅
+- [x] TASK.md: 本条目已记录 ✅
+- [ ] TASK.md 独立提交 ⏳
+
+**Phase 26 状态**: ✅ 完成（待 TASK.md 独立提交）
+
+**版本状态**: v0.1.1 (代码、文档、wheel 包全部一致)
