@@ -1,9 +1,8 @@
 # RegistryTools
 
-> **版本**: v0.1.0
-> **更新日期**: 2026-01-05
->
-> **独立 MCP Tool Registry Server** - 通用工具搜索与发现服务
+**版本**: v0.1.0
+**更新日期**: 2026-01-05
+**独立 MCP Tool Registry Server** - 通用工具搜索与发现服务
 
 [![Python Version](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)

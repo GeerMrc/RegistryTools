@@ -1,8 +1,8 @@
 # RegistryTools 文档索引
 
-> **版本**: v0.1.0
-> **项目**: RegistryTools - MCP Tool Registry Server
-> **最后更新**: 2026-01-05
+**版本**: v0.1.0
+**项目**: RegistryTools - MCP Tool Registry Server
+**最后更新**: 2026-01-05
 
 ---
 

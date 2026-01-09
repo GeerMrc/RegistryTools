@@ -1,28 +1,37 @@
 # RegistryTools 最佳实践
 
-> **版本**: v0.1.0
-> **更新日期**: 2026-01-09
-> **项目**: RegistryTools - MCP Tool Registry Server
->
-> **⚠️ PyPI 发布状态**: **RegistryTools 尚未发布到 PyPI**
->
-> **当前仅支持本地安装**:
->
-> ```bash
-> # 从源码安装
-> git clone https://github.com/GeerMrc/RegistryTools.git
-> cd RegistryTools
-> pip install -e .
-> ```
->
-> **安装后配置命令**:
-> ```json
-> {
->   "command": "registry-tools"
-> }
-> ```
->
-> ❌ **不可用**: `uvx registry-tools`（仅在 PyPI 发布后可用）
+**版本**: v0.1.0
+**更新日期**: 2026-01-09
+**项目**: RegistryTools - MCP Tool Registry Server
+
+---
+
+## ⚠️ PyPI 发布状态
+
+**RegistryTools 尚未发布到 PyPI**
+
+### 当前安装方式
+
+仅支持从源码本地安装：
+
+```bash
+# 从源码安装
+git clone https://github.com/GeerMrc/RegistryTools.git
+cd RegistryTools
+pip install -e .
+```
+
+### 安装后配置命令
+
+```json
+{
+  "command": "registry-tools"
+}
+```
+
+❌ **不可用**: `uvx registry-tools`（仅在 PyPI 发布后可用）
+
+---
 
 本文档提供使用 RegistryTools 的最佳实践建议，帮助您充分发挥工具注册表的潜力。
 

@@ -1,31 +1,41 @@
 # RegistryTools - Claude Code 配置指南
 
-> **版本**: v0.1.0
-> **更新日期**: 2026-01-07
-> **项目**: RegistryTools - MCP Tool Registry Server
+**版本**: v0.1.0
+**更新日期**: 2026-01-07
+**项目**: RegistryTools - MCP Tool Registry Server
 
-> **⚠️ PyPI 发布状态**: **RegistryTools 尚未发布到 PyPI**
->
-> **当前安装方式**: 仅支持从源码本地安装
->
-> ```bash
-> # 本地安装（推荐）
-> pip install -e .
-> # 或使用 uv
-> uv pip install -e .
-> ```
->
-> **配置命令选择**:
-> - ✅ **本地安装后**: 使用 `registry-tools` 命令（见下方配置）
-> - ❌ **不可用**: `uvx registry-tools`（仅在 PyPI 发布后可用）
->
-> **配置示例**:
-> ```json
-> {
->   "command": "registry-tools",
->   "env": { "REGISTRYTOOLS_DATA_PATH": "~/.RegistryTools" }
-> }
-> ```
+---
+
+## ⚠️ PyPI 发布状态
+
+**RegistryTools 尚未发布到 PyPI**
+
+### 当前安装方式
+
+仅支持从源码本地安装：
+
+```bash
+# 本地安装（推荐）
+pip install -e .
+# 或使用 uv
+uv pip install -e .
+```
+
+### 配置命令选择
+
+- ✅ **本地安装后**: 使用 `registry-tools` 命令（见下方配置）
+- ❌ **不可用**: `uvx registry-tools`（仅在 PyPI 发布后可用）
+
+### 配置示例
+
+```json
+{
+  "command": "registry-tools",
+  "env": { "REGISTRYTOOLS_DATA_PATH": "~/.RegistryTools" }
+}
+```
+
+---
 
 本文档描述如何在 Claude Code 和 Claude Desktop 中配置和使用 RegistryTools。
 
