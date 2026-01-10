@@ -3241,3 +3241,108 @@ RegistryTools - MCP 工具注册表服务器
 **Phase 31 状态**: ✅ 完成（待 Git commit + TASK.md 独立提交）
 
 ---
+
+## Phase 32: 文档全面审核与优化 (2026-01-10)
+
+> **需求**: 全面审核项目文档与实际功能实现的完整性一致性，优化文档结构
+
+### 用户提出的核心问题
+
+| 问题ID | 问题描述 | 影响范围 |
+|--------|----------|----------|
+| DOC-101 | `REGISTRYTOOLS_DESCRIPTION` 参数默认值显示为"官方默认描述"而非实际值 | 所有配置文档 |
+| DOC-102 | PyPI 发布状态说明在 9 个文档中重复 | 用户体验 |
+| DOC-103 | 文档版本号和更新日期不一致 | 文档质量 |
+
+### 任务清单
+
+| 任务ID | 任务描述 | 状态 | 完成时间 | 备注 |
+|--------|----------|------|----------|------|
+| TASK-3201 | Phase 32.1: REGISTRYTOOLS_DESCRIPTION 参数统一 | ✅ DONE | 2026-01-10 | 3个文档已更新 |
+| TASK-3202 | Phase 32.2: PyPI 发布状态简化 | ✅ DONE | 2026-01-10 | 减少 144 行 |
+| TASK-3203 | Phase 32.3: 文档元数据标准化 | ✅ DONE | 2026-01-10 | 版本号和日期统一 |
+| TASK-3204 | Phase 32.4: 创建验证脚本 | ✅ DONE | 2026-01-10 | verify-docs-optimization.sh |
+| TASK-3205 | Phase 32.5: 运行验证并确认 | ✅ DONE | 2026-01-10 | 所有验证通过 |
+| TASK-3206 | Phase 32.6: 更新 TASK.md - 记录 Phase 32 | 📝 IN_PROGRESS | 2026-01-10 | 本条目 |
+| TASK-3207 | Phase 32.7: Git 提交 - 提交验证脚本 | ⏳ TODO | 2026-01-10 | 待执行 |
+
+### Phase 32.1: REGISTRYTOOLS_DESCRIPTION 参数统一
+
+**修改的文件**:
+- `docs/CONFIGURATION.md:113` - 表格默认值
+- `docs/CONFIGURATION.md:229` - 详细说明
+- `docs/CLAUDE_CONFIG.md:418` - 表格默认值
+- `docs/IDE_CONFIG.md:536` - 表格默认值
+
+**修改内容**:
+将 "官方默认描述" 替换为实际的默认值：
+```
+统一的 MCP 工具注册与搜索服务，用于发现和筛选可用工具，
+提升任务执行工具调用准确性，复杂任务工具调用效率
+```
+
+### Phase 32.2: PyPI 发布状态简化
+
+**保留完整说明的文档** (3个):
+- `README.md`
+- `INSTALLATION.md` (添加锚点 `#pypi-发布状态`)
+- `PUBLISHING.md`
+
+**简化为引用格式的文档** (6个):
+- `CONFIGURATION.md`
+- `CLAUDE_CONFIG.md`
+- `USER_GUIDE.md`
+- `API.md`
+- `TROUBLESHOOTING.md`
+- `ARCHITECTURE.md`
+- `BEST_PRACTICES.md`
+
+**简化格式**:
+```markdown
+> **注意**: RegistryTools 尚未发布到 PyPI，当前仅支持本地开发环境安装。
+> 详见 [安装指南 - PyPI 发布状态](INSTALLATION.md#pypi-发布状态)。
+```
+
+**效果**: 减少 144 行重复内容 (从 159 行减少到 15 行)
+
+### Phase 32.3: 文档元数据标准化
+
+**版本号统一**:
+- 所有文档统一为 `v0.1.1`
+- 更新了 `REFACTORING_ANALYSIS.md` 和 `SCRIPTS_GUIDE.md` (原为 v0.1.0)
+
+**更新日期统一**:
+- 所有文档统一为 `2026-01-10`
+- 更新了 14 个文档的更新日期
+
+### Phase 32.4: 验证脚本
+
+创建 `scripts/verify/verify-docs-optimization.sh`，验证内容：
+
+1. ✅ REGISTRYTOOLS_DESCRIPTION 统一性（无占位符）
+2. ✅ 完整默认值出现 4 次
+3. ✅ PyPI 状态引用链接 7 个
+4. ✅ 版本号一致性 15/15
+5. ✅ 更新日期一致性 14/14
+
+### Git 提交记录
+
+```
+ed54c67 docs(config): 统一 REGISTRYTOOLS_DESCRIPTION 参数默认值显示
+b20b8ec docs(optimize): 简化 PyPI 发布状态说明重复
+3310953 docs(meta): 标准化文档元数据格式
+```
+
+### 验收标准
+
+- [x] REGISTRYTOOLS_DESCRIPTION 参数显示实际默认值 ✅
+- [x] PyPI 发布状态说明已简化 ✅
+- [x] 文档版本号统一为 v0.1.1 ✅
+- [x] 文档更新日期统一为 2026-01-10 ✅
+- [x] 验证脚本创建并运行 ✅
+- [ ] Git commit 提交验证脚本 ⏳
+- [ ] TASK.md 独立提交 ⏳
+
+**Phase 32 状态**: ✅ 完成（待 Git commit + TASK.md 独立提交）
+
+---
