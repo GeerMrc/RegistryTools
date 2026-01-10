@@ -1,7 +1,7 @@
 # RegistryTools 脚本工具完整使用指南
 
-**版本**: v0.1.0
-**更新日期**: 2026-01-06
+**版本**: v0.1.1
+**更新日期**: 2026-01-10
 **项目**: RegistryTools - MCP Tool Registry Server
 
 ---
