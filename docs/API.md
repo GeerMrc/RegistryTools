@@ -430,6 +430,8 @@ class ToolMetadata(BaseModel):
 | `WARM` | 3-9 次 | 温工具，按需加载并缓存 |
 | `COLD` | < 3 次 | 冷工具，延迟加载（默认） |
 
+> **注意**: `input_schema` 和 `output_schema` 为预留扩展字段，用于存储工具的输入输出 JSON Schema 定义。当前默认工具集中这些字段均为 `null`，预留用于未来集成外部 MCP 服务器的 schema 信息。
+
 ### ToolSearchResult
 
 搜索结果模型

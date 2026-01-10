@@ -3,6 +3,7 @@
 **版本**: v0.1.1
 **更新日期**: 2026-01-10
 **项目**: RegistryTools - MCP Tool Registry Server
+**当前状态**: 本文档记录的是 v0.1.0 发布前的重构分析，当前项目已发布 v0.1.1
 
 分析 RegistryTools 到 src 的完整重构方案
 

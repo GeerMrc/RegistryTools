@@ -49,11 +49,11 @@ class EmbeddingSearch(SearchAlgorithm):
         """
         super().__init__()
         self.model_name = model_name or self.DEFAULT_MODEL
-        self._model: "SentenceTransformer | None" = None
+        self._model: "SentenceTransformer | None" = None  # noqa: UP037
         self._embeddings: np.ndarray | None = None
         self._model_lock = threading.Lock()
 
-    def _load_model(self) -> "SentenceTransformer":
+    def _load_model(self) -> "SentenceTransformer":  # noqa: UP037
         """
         延迟加载 sentence-transformers 模型
 
