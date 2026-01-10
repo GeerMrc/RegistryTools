@@ -457,5 +457,5 @@ chmod +x scripts/**/*.py
 ---
 
 **维护者**: Maric
-**文档版本**: v0.1.0
+**文档版本**: v0.1.1
 **项目主页**: [GitHub](https://github.com/maric/RegistryTools)
