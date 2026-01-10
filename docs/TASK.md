@@ -3030,3 +3030,88 @@ python -m build --wheel
 **Phase 28 状态**: ✅ 完成（待 TASK.md 独立提交）
 
 ---
+
+## Phase 29: REGISTRYTOOLS_DESCRIPTION 环境变量支持 (2026-01-10)
+
+> **需求**: 添加 `REGISTRYTOOLS_DESCRIPTION` 环境变量支持，允许用户自定义 MCP 服务器的服务器级别描述
+
+### 设计参考
+
+- **DeepThinking 项目**: `DEEP_THINKING_DESCRIPTION` 环境变量实现
+- **实现方式**: FastMCP 的 `instructions` 参数
+- **配置类型**: 仅环境变量
+
+### 任务清单
+
+| 任务ID | 任务描述 | 状态 | 完成时间 | 备注 |
+|--------|----------|------|----------|------|
+| TASK-DESC-001 | 在 server.py 中添加 get_server_description() 函数 | ✅ DONE | 2026-01-10 | 包含默认描述 |
+| TASK-DESC-002 | 修改 create_server() 添加 instructions 参数 | ✅ DONE | 2026-01-10 | 使用动态描述 |
+| TASK-DESC-003 | 修改 create_server_with_sqlite() 添加 instructions 参数 | ✅ DONE | 2026-01-10 | 使用动态描述 |
+| TASK-DESC-004 | 更新 __main__.py 文档字符串 | ✅ DONE | 2026-01-10 | 环境变量说明 |
+| TASK-DESC-005 | 更新 docs/CONFIGURATION.md | ✅ DONE | 2026-01-10 | 详细配置说明 |
+| TASK-DESC-006 | 更新 README.md | ✅ DONE | 2026-01-10 | 环境变量列表 |
+| TASK-DESC-007 | 编写单元测试 test_server_description.py | ✅ DONE | 2026-01-10 | 7 个测试用例 |
+| TASK-DESC-008 | 运行完整测试套件验证 | ✅ DONE | 2026-01-10 | 所有测试通过 |
+| TASK-DESC-009 | 代码格式化和质量检查 | ✅ DONE | 2026-01-10 | Black + Ruff 通过 |
+| TASK-DESC-010 | 更新 TASK.md 并提交 | 📝 IN_PROGRESS | 2026-01-10 | 本条目 |
+
+### 代码变更
+
+**src/registrytools/server.py**:
+- 添加 `logging` 和 `os` 导入
+- 添加 `get_server_description()` 函数（~45 行）
+- 修改 `create_server()`: `FastMCP("RegistryTools", instructions=get_server_description())`
+- 修改 `create_server_with_sqlite()`: `FastMCP("RegistryTools", instructions=get_server_description())`
+
+**src/registrytools/__main__.py**:
+- 模块文档字符串添加 `REGISTRYTOOLS_DESCRIPTION` 说明
+- `main()` 函数 epilog 添加环境变量说明
+
+**tests/test_server_description.py** (新建):
+- 7 个测试用例
+- 测试默认描述、自定义描述、空值回退、多行支持等
+
+### 文档变更
+
+**docs/CONFIGURATION.md**:
+- "可用环境变量" 表格添加新行
+- 添加 `REGISTRYTOOLS_DESCRIPTION` 详细说明章节
+
+**README.md**:
+- "常用环境变量" 列表添加新项
+
+### 默认描述内容
+
+```
+RegistryTools - MCP 工具注册表服务器
+
+提供通用工具搜索与发现能力，支持 Regex、BM25、Embedding 多种搜索算法。
+可作为任何 MCP 客户端（Claude Desktop、Cursor、DeepThinking Agent 等）的工具目录管理器。
+
+核心功能：
+- 工具注册与元数据管理
+- 多算法搜索（Regex/BM25/Embedding）
+- 分类浏览与统计信息
+- 动态工具注册 API
+```
+
+### 测试结果
+
+- 新增测试: 7 个全部通过 ✅
+- 代码质量: Black + Ruff 通过 ✅
+- 现有测试: 无破坏 ✅
+
+### 验收标准
+
+- [x] 代码实现完成 ✅
+- [x] 单元测试通过 ✅
+- [x] 代码质量检查通过 ✅
+- [x] 文档更新完成 ✅
+- [x] 文档与代码一致 ✅
+- [ ] Git commit 提交 ⏳
+- [ ] TASK.md 独立提交 ⏳
+
+**Phase 29 状态**: ✅ 完成（待 Git commit + TASK.md 独立提交）
+
+---
