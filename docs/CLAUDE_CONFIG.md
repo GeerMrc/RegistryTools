@@ -415,7 +415,7 @@ claude mcp add-json "RegistryTools" '{
 | `REGISTRYTOOLS_LOG_LEVEL` | `INFO` | 日志级别 |
 | `REGISTRYTOOLS_TRANSPORT` | `stdio` | 传输协议 |
 | `REGISTRYTOOLS_ENABLE_AUTH` | `false` | 启用 API Key 认证（仅 HTTP 模式） |
-| `REGISTRYTOOLS_DESCRIPTION` | 官方默认描述 | MCP 服务器描述 |
+| `REGISTRYTOOLS_DESCRIPTION` | 统一的 MCP 工具注册与搜索服务，用于发现和筛选可用工具，提升任务执行工具调用准确性，复杂任务工具调用效率 | MCP 服务器描述 |
 
 > **完整配置**: 更多环境变量、可选值和详细说明，请参考 [配置指南](CONFIGURATION.md#环境变量配置)。
 

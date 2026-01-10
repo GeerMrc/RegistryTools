@@ -110,7 +110,7 @@ registry-tools --port 8000  # 实际使用 9000
 | `REGISTRYTOOLS_TRANSPORT` | 传输协议 | `stdio` | `stdio`, `http` |
 | `REGISTRYTOOLS_LOG_LEVEL` | 日志级别 | `INFO` | `DEBUG`, `INFO`, `WARNING`, `ERROR` |
 | `REGISTRYTOOLS_ENABLE_AUTH` | 启用 API Key 认证 | `false` | `true`, `false`, `1`, `0`, `yes`, `no` |
-| `REGISTRYTOOLS_DESCRIPTION` | MCP 服务器描述 | 官方默认描述 | 任意有效字符串 |
+| `REGISTRYTOOLS_DESCRIPTION` | MCP 服务器描述 | 统一的 MCP 工具注册与搜索服务，用于发现和筛选可用工具，提升任务执行工具调用准确性，复杂任务工具调用效率 | 任意有效字符串 |
 
 ### 详细说明
 
@@ -226,7 +226,7 @@ registry-tools
 **注意事项**:
 - 描述会在 MCP 客户端的服务器列表中显示
 - 建议描述内容简洁明了，突出服务器用途
-- 如果不设置，将使用官方默认描述
+- 如果不设置，将使用默认描述："统一的 MCP 工具注册与搜索服务，用于发现和筛选可用工具，提升任务执行工具调用准确性，复杂任务工具调用效率"
 - 支持多行描述，使用 `\\n` 表示换行
 
 ---
