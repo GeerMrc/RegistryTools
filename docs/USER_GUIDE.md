@@ -106,17 +106,15 @@ get_tool_definition("github.create_pull_request")
 {
   "name": "github.create_pull_request",
   "description": "Create a pull request in a GitHub repository",
-  "input_schema": {
-    "type": "object",
-    "properties": {
-      "owner": {"type": "string"},
-      "repo": {"type": "string"},
-      "title": {"type": "string"}
-    },
-    "required": ["owner", "repo", "title"]
-  }
+  "mcp_server": "github",
+  "category": "github",
+  "tags": ["github", "pull-request", "code-review"],
+  "use_frequency": 0,
+  "temperature": "cold"
 }
 ```
+
+> **注意**: `input_schema` 和 `output_schema` 字段为可选扩展字段，用于存储工具的输入输出 JSON Schema 定义。当前默认工具集中这些字段均为 `null`，预留用于未来集成外部 MCP 服务器的 schema 信息。
 
 ### list_tools_by_category - 按类别列出工具
 

@@ -531,7 +531,7 @@ ruff check src/registrytools/ tests/
 - ✅ MCP 工具和资源接口
 - ✅ STDIO 和 Streamable HTTP 传输协议支持
 - ✅ fastmcp.json 配置文件支持
-- ✅ 测试覆盖率 87%
+- ✅ 测试覆盖率 86%
 - ✅ 完整文档和使用示例
 - ✅ 性能优化（索引缓存、冷热工具分离）
 
