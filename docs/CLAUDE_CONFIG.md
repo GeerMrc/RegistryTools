@@ -414,6 +414,10 @@ claude mcp add-json "RegistryTools" '{
 | `REGISTRYTOOLS_DATA_PATH` | `~/.RegistryTools` | 数据目录路径 |
 | `REGISTRYTOOLS_LOG_LEVEL` | `INFO` | 日志级别 |
 | `REGISTRYTOOLS_TRANSPORT` | `stdio` | 传输协议 |
+| `REGISTRYTOOLS_ENABLE_AUTH` | `false` | 启用 API Key 认证（仅 HTTP 模式） |
+| `REGISTRYTOOLS_DESCRIPTION` | 官方默认描述 | MCP 服务器描述 |
+
+> **完整配置**: 更多环境变量、可选值和详细说明，请参考 [配置指南](CONFIGURATION.md#环境变量配置)。
 
 ### 配置示例
 
@@ -450,41 +454,16 @@ claude mcp add-json "RegistryTools" '{
 
 ### 路径配置说明
 
-**重要**: `REGISTRYTOOLS_DATA_PATH` 环境变量支持多种路径格式：
+`REGISTRYTOOLS_DATA_PATH` 支持多种路径格式：
 
-| 路径格式 | 示例 | 说明 | 推荐度 |
-|----------|------|------|--------|
-| **波浪号** | `~/.RegistryTools` | RegistryTools 会自动展开 `~` 为用户主目录 | ✅ 推荐 |
-| **$HOME 变量** | `$HOME/.RegistryTools` | 由 shell 展开环境变量 | ✅ 推荐 |
-| **绝对路径** | `/home/user/.RegistryTools` | 完整路径，无歧义 | ✅ 推荐 |
-| **相对路径** | `./.RegistryTools` | 相对于当前工作目录 | ⚠️ 谨慎使用 |
+| 路径格式 | 示例 | 推荐度 |
+|----------|------|--------|
+| 波浪号 | `~/.RegistryTools` | ✅ 推荐 |
+| 绝对路径 | `/home/user/.RegistryTools` | ✅ 推荐 |
+| 相对路径 | `./.RegistryTools` | ⚠️ 谨慎使用 |
 
-**配置示例对比**：
-
-```json
-{
-  "mcpServers": {
-    "RegistryTools": {
-      "command": "uvx",
-      "args": ["registry-tools"],
-      "env": {
-        // ✅ 推荐：波浪号格式（RegistryTools v0.1.0+ 自动展开）
-        "REGISTRYTOOLS_DATA_PATH": "~/.RegistryTools",
-
-        // ✅ 推荐：使用 $HOME 环境变量
-        "REGISTRYTOOLS_DATA_PATH": "$HOME/.RegistryTools",
-
-        // ✅ 推荐：使用绝对路径
-        "REGISTRYTOOLS_DATA_PATH": "/home/user/.RegistryTools",
-
-        // ⚠️ 谨慎：相对路径（依赖于工作目录）
-        "REGISTRYTOOLS_DATA_PATH": "./.RegistryTools-dev"
-      }
-    }
-  }
-}
-```
-
+> **详细说明**: 请查看 [配置指南 - 路径配置说明](CONFIGURATION.md#路径配置说明) 了解每种路径格式的详细说明、适用场景和最佳实践。
+>
 > **版本说明**: RegistryTools v0.1.0 及以上版本已修复波浪号（`~`）展开问题，可直接使用 `~/.RegistryTools` 格式。
 
 ---

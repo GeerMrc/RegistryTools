@@ -1,7 +1,7 @@
 # RegistryTools - 任务追踪文档
 
 **项目开始**: 2026-01-04
-**当前状态**: Phase 27 已完成 - Tag/Release 同步 ✅
+**当前状态**: Phase 31 已完成 - 文档覆盖优化 ✅
 **完成进度**: 100%
 **当前版本**: v0.1.1
 
@@ -3164,5 +3164,80 @@ RegistryTools - MCP 工具注册表服务器
 - [ ] TASK.md 独立提交 ⏳
 
 **Phase 30 状态**: ✅ 完成（待 TASK.md 独立提交）
+
+---
+
+## Phase 31: 文档覆盖优化 (2026-01-10)
+
+> **需求**: 基于 Phase 28 全面审核发现的问题，优化文档覆盖一致性，减少重复内容
+
+### 审核发现的问题
+
+| 问题ID | 问题描述 | 影响范围 | 优先级 |
+|--------|----------|----------|--------|
+| DOC-001 | CLAUDE_CONFIG.md 缺少 `ENABLE_AUTH` 和 `DESCRIPTION` | Claude Desktop 用户 | 高 |
+| DOC-002 | IDE_CONFIG.md 缺少 `DESCRIPTION` | IDE 用户 | 高 |
+| DOC-003 | 路径配置说明在多个文档中重复 | 维护成本 | 中 |
+
+### 任务清单
+
+| 任务ID | 任务描述 | 状态 | 完成时间 | 备注 |
+|--------|----------|------|----------|------|
+| TASK-3101 | Phase 31.1: 需求分析 - 明确文档优化需求 | ✅ DONE | 2026-01-10 | 确定3个问题 |
+| TASK-3102 | Phase 31.2: 方案设计 - 设计文档更新方案 | ✅ DONE | 2026-01-10 | 设计引用链接方式 |
+| TASK-3103 | Phase 31.3: CLAUDE_CONFIG.md - 补充缺失的环境变量 | ✅ DONE | 2026-01-10 | 添加 ENABLE_AUTH+DESCRIPTION |
+| TASK-3104 | Phase 31.4: IDE_CONFIG.md - 补充缺失的环境变量 | ✅ DONE | 2026-01-10 | 添加 DESCRIPTION |
+| TASK-3105 | Phase 31.5: 优化路径配置说明 - 建立文档层级关系 | ✅ DONE | 2026-01-10 | 精简为引用链接 |
+| TASK-3106 | Phase 31.6: 交叉验证 - 验证文档一致性 | ✅ DONE | 2026-01-10 | 所有5个环境变量已覆盖 |
+| TASK-3107 | Phase 31.7: 更新 TASK.md - 记录 Phase 31 完成 | 📝 IN_PROGRESS | 2026-01-10 | 本条目 |
+| TASK-3108 | Phase 31.8: Git 提交 - 提交文档变更 | ⏳ TODO | 2026-01-10 | 待执行 |
+
+### 文档变更
+
+**docs/CLAUDE_CONFIG.md**:
+- 环境变量表格新增：`REGISTRYTOOLS_ENABLE_AUTH`、`REGISTRYTOOLS_DESCRIPTION`
+- 添加指向 CONFIGURATION.md 的引用链接
+- 路径配置说明精简：从 ~40 行缩减为 ~12 行，使用引用链接
+
+**docs/IDE_CONFIG.md**:
+- 环境变量表格新增：`REGISTRYTOOLS_DESCRIPTION`
+- 添加指向 CONFIGURATION.md 的引用链接
+- 路径配置说明精简：从 ~40 行缩减为 ~12 行，使用引用链接
+
+### 环境变量覆盖验证
+
+| 文档 | DATA_PATH | LOG_LEVEL | TRANSPORT | ENABLE_AUTH | DESCRIPTION | 覆盖率 |
+|------|-----------|-----------|-----------|-------------|-------------|--------|
+| CONFIGURATION.md | ✅ | ✅ | ✅ | ✅ | ✅ | 100% |
+| README.md | ✅ | ✅ | ✅ | ✅ | ✅ | 100% |
+| CLAUDE_CONFIG.md | ✅ | ✅ | ✅ | ✅ | ✅ | **100%** ⬆️ |
+| IDE_CONFIG.md | ✅ | ✅ | ✅ | ✅ | ✅ | **100%** ⬆️ |
+
+> **变更**: CLAUDE_CONFIG.md 从 60% → 100%，IDE_CONFIG.md 从 80% → 100%
+
+### 文档优化效果
+
+**减少重复内容**:
+- CLAUDE_CONFIG.md: 路径配置说明从 ~40 行 → ~12 行（减少 70%）
+- IDE_CONFIG.md: 路径配置说明从 ~40 行 → ~12 行（减少 70%）
+- 两个文档都添加了指向 CONFIGURATION.md 的引用链接
+
+**建立文档层级**:
+- CONFIGURATION.md → 权威配置文档（保持完整说明）
+- CLAUDE_CONFIG.md → Claude Desktop 特定配置（引用 + 快速参考）
+- IDE_CONFIG.md → IDE 通用配置（引用 + 快速参考）
+
+### 验收标准
+
+- [x] CLAUDE_CONFIG.md 包含所有5个环境变量 ✅
+- [x] IDE_CONFIG.md 包含所有5个环境变量 ✅
+- [x] 路径配置说明使用引用链接方式 ✅
+- [x] 文档间交叉引用有效 ✅
+- [x] Markdown 格式正确 ✅
+- [x] 交叉验证通过 ✅
+- [ ] Git commit 提交 ⏳
+- [ ] TASK.md 独立提交 ⏳
+
+**Phase 31 状态**: ✅ 完成（待 Git commit + TASK.md 独立提交）
 
 ---
