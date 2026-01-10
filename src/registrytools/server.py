@@ -12,7 +12,6 @@ import logging
 import os
 from collections.abc import Callable
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
 
 from fastmcp import FastMCP
 
@@ -98,7 +97,9 @@ def _check_auth(
     # 获取 API Key
     api_key = _get_api_key_from_context()
     if api_key is None:
-        raise PermissionError("API Key is required (set REGISTRYTOOLS_API_KEY environment variable)")
+        raise PermissionError(
+            "API Key is required (set REGISTRYTOOLS_API_KEY environment variable)"
+        )
 
     # 执行认证检查
     try:
@@ -213,8 +214,7 @@ def _register_mcp_tools(
         except ValueError as err:
             supported_methods = [m.value for m in SearchMethod]
             raise ValueError(
-                f"无效的搜索方法: {search_method}。"
-                f"支持的方法: {', '.join(supported_methods)}"
+                f"无效的搜索方法: {search_method}。" f"支持的方法: {', '.join(supported_methods)}"
             ) from err
 
         # 执行搜索
@@ -489,8 +489,7 @@ def _register_mcp_tools(
         except ValueError as err:
             supported_methods = [m.value for m in SearchMethod]
             raise ValueError(
-                f"无效的搜索方法: {search_method}。"
-                f"支持的方法: {', '.join(supported_methods)}"
+                f"无效的搜索方法: {search_method}。" f"支持的方法: {', '.join(supported_methods)}"
             ) from err
 
         # 执行搜索（仅搜索热工具和温工具）
