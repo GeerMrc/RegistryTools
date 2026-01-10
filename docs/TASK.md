@@ -3532,3 +3532,85 @@ tests/test_mcp_tools.py::17 passed
 **Phase 34 状态**: ✅ 已完成
 
 ---
+
+## Phase 35: 搜索引擎全局配置优化 (2026-01-10)
+
+> **目标**: 添加 REGISTRYTOOLS_SEARCH_METHOD 环境变量，支持配置全局默认搜索引擎
+> **用户需求**: PyPI 发布前解决配置描述不一致和搜索引擎配置缺失问题
+> **实施方案**: 方案B（完整优化）- 新增环境变量配置 + 修复描述不一致
+
+### 任务清单
+
+| 任务ID | 任务描述 | 验收标准 | 状态 | 完成时间 |
+|-------|---------|---------|------|----------|
+| TASK-3501 | 修复 README.md 描述不一致 | 使用完整默认值 | ✅ DONE | 2026-01-10 |
+| TASK-3502 | 修复 __main__.py 描述不一致 | 使用完整默认值 | ✅ DONE | 2026-01-10 |
+| TASK-3503 | 在 defaults.py 添加搜索引擎常量 | DEFAULT_SEARCH_METHOD 等 | ✅ DONE | 2026-01-10 |
+| TASK-3504 | 在 server.py 添加 get_default_search_method() | 环境变量读取函数 | ✅ DONE | 2026-01-10 |
+| TASK-3505 | 修改 search_tools() 支持全局默认 | search_method 参数可选 | ✅ DONE | 2026-01-10 |
+| TASK-3506 | 修改 search_hot_tools() 支持全局默认 | search_method 参数可选 + 自动回退 | ✅ DONE | 2026-01-10 |
+| TASK-3507 | 更新 CONFIGURATION.md | 添加 REGISTRYTOOLS_SEARCH_METHOD 说明 | ✅ DONE | 2026-01-10 |
+| TASK-3508 | 更新 USER_GUIDE.md | 添加搜索引擎选择指南 | ✅ DONE | 2026-01-10 |
+| TASK-3509 | 新增 test_search_method_config.py | 13 个测试用例 | ✅ DONE | 2026-01-10 |
+| TASK-3510 | 运行完整测试套件验证 | 349 passed, 82% coverage | ✅ DONE | 2026-01-10 |
+| TASK-3511 | 更新版本号到 v0.2.0 | __init__.py + pyproject.toml | ✅ DONE | 2026-01-10 |
+| TASK-3512 | 更新 CHANGELOG.md | 记录 v0.2.0 变更 | ✅ DONE | 2026-01-10 |
+
+### 代码变更
+
+**修改的文件（7个）**:
+1. `src/registrytools/__init__.py` - 版本号 v0.1.1 → v0.2.0
+2. `src/registrytools/defaults.py` - 添加搜索引擎常量
+3. `src/registrytools/server.py` - 添加 `get_default_search_method()` 函数
+4. `src/registrytools/__main__.py` - 修复描述不一致 + 添加搜索引擎配置说明
+5. `README.md` - 修复描述不一致
+6. `docs/CONFIGURATION.md` - 添加 `REGISTRYTOOLS_SEARCH_METHOD` 详细说明
+7. `docs/USER_GUIDE.md` - 添加搜索引擎选择指南
+
+**新增文件（1个）**:
+- `tests/test_search_method_config.py` - 搜索引擎配置测试（13 个测试用例）
+
+**核心功能**:
+- 环境变量 `REGISTRYTOOLS_SEARCH_METHOD` 控制默认搜索引擎
+- 可选值：`regex`（最快）、`bm25`（推荐默认）、`embedding`（最准确）
+- `search_tools()` 和 `search_hot_tools()` 的 `search_method` 参数改为可选
+- 未指定时自动使用环境变量配置
+- `search_hot_tools()` 不支持 `embedding` 时自动回退到 `bm25`
+
+### 测试结果
+
+```
+tests/test_search_method_config.py::13 passed
+完整测试套件: 349 passed
+代码覆盖率: 82%
+```
+
+### 文档更新
+
+**docs/CONFIGURATION.md**:
+- 添加 `REGISTRYTOOLS_SEARCH_METHOD` 到环境变量表格
+- 添加详细说明章节（可选值、性能对比、示例、注意事项）
+
+**docs/USER_GUIDE.md**:
+- 扩展搜索引擎选择指南
+- 添加三种搜索引擎对比表
+- 添加使用场景指南和示例代码
+- 添加全局默认配置说明
+
+**docs/CHANGELOG.md**:
+- 添加 v0.2.0 变更记录
+- 记录新增功能、修复、改进、测试、变更
+
+### 验收标准
+
+- [x] REGISTRYTOOLS_DESCRIPTION 描述不一致已修复（2 处）
+- [x] REGISTRYTOOLS_SEARCH_METHOD 环境变量功能已实现
+- [x] search_tools() 和 search_hot_tools() 支持全局默认
+- [x] 新增测试用例全部通过
+- [x] 完整测试套件通过
+- [x] 文档已同步更新
+- [x] 版本号已更新至 v0.2.0
+- [x] CHANGELOG.md 已记录变更
+- [ ] Git commit 待完成 ⏳
+
+**Phase 35 状态**: ✅ 已完成，待 Git commit
