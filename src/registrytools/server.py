@@ -12,10 +12,17 @@ import logging
 import os
 from collections.abc import Callable
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from fastmcp import FastMCP
 
+from registrytools.auth.middleware import (
+    APIKeyAuthMiddleware,
+    APIKeyExpired,
+    APIKeyInsufficientPermission,
+    APIKeyInvalid,
+    APIKeyPermission,
+)
 from registrytools.registry.models import SearchMethod, ToolMetadata
 from registrytools.registry.registry import ToolRegistry
 from registrytools.search.bm25_search import BM25Search
@@ -25,14 +32,83 @@ from registrytools.storage.base import ToolStorage
 from registrytools.storage.json_storage import JSONStorage
 from registrytools.storage.sqlite_storage import SQLiteStorage
 
-if TYPE_CHECKING:
-    from registrytools.auth.middleware import APIKeyAuthMiddleware
-
 # ============================================================
 # MCP 工具和资源注册 (TASK-708: 重构提取公共函数)
 # ============================================================
 
 logger = logging.getLogger(__name__)
+
+# ============================================================
+# 常量定义 (Phase 33: 输入参数验证)
+# ============================================================
+
+# 输入参数限制
+MAX_QUERY_LENGTH = 1000  # 查询字符串最大长度
+MAX_LIMIT = 100  # 返回结果最大数量
+
+
+# ============================================================
+# 辅助函数 (Phase 33: 认证集成)
+# ============================================================
+
+
+def _get_api_key_from_context() -> str | None:
+    """
+    从请求上下文中获取 API Key
+
+    FastMCP 在 HTTP 模式下通过环境变量或请求上下文传递 API Key。
+    此函数尝试从多个来源获取 API Key：
+
+    1. 环境变量 REGISTRYTOOLS_API_KEY（用于测试）
+    2. FastMCP 请求上下文（如果可用）
+
+    Returns:
+        API Key 字符串，如果未找到则返回 None
+    """
+    # 优先从环境变量获取（用于测试和 CLI 场景）
+    api_key = os.getenv("REGISTRYTOOLS_API_KEY")
+    if api_key:
+        return api_key
+
+    # TODO: 从 FastMCP 请求上下文获取（需要进一步研究 FastMCP API）
+    # 目前 FastMCP 可能不直接暴露请求上下文到工具函数
+    # 如果需要完整的 HTTP 认证支持，可能需要使用 FastMCP 的中间件机制
+
+    return None
+
+
+def _check_auth(
+    auth_middleware: APIKeyAuthMiddleware | None,
+    required_permission: APIKeyPermission,
+) -> None:
+    """
+    检查 API Key 认证
+
+    Args:
+        auth_middleware: 认证中间件实例
+        required_permission: 需要的权限级别
+
+    Raises:
+        PermissionError: 如果认证失败或权限不足
+    """
+    if auth_middleware is None:
+        # 未启用认证，跳过检查
+        return
+
+    # 获取 API Key
+    api_key = _get_api_key_from_context()
+    if api_key is None:
+        raise PermissionError("API Key is required (set REGISTRYTOOLS_API_KEY environment variable)")
+
+    # 执行认证检查
+    try:
+        auth_middleware.require_permission(api_key, required_permission)
+    except APIKeyInvalid as e:
+        raise PermissionError(f"Invalid API Key: {e.message}") from e
+    except APIKeyExpired as e:
+        raise PermissionError(f"API Key has expired: {e.message}") from e
+    except APIKeyInsufficientPermission as e:
+        raise PermissionError(f"Insufficient permissions: {e.message}") from e
 
 
 def get_server_description() -> str:
@@ -94,7 +170,7 @@ def _register_mcp_tools(
         auth_middleware: API Key 认证中间件（可选）
     """
     # ========================================================
-    # MCP 工具: search_tools (Phase 15: API Key 认证)
+    # MCP 工具: search_tools (Phase 15: API Key 认证, Phase 33: 认证集成)
     # ========================================================
 
     @mcp.tool()
@@ -117,13 +193,29 @@ def _register_mcp_tools(
             匹配的工具列表，JSON 格式字符串
 
         Raises:
-            ValueError: 如果搜索方法无效
+            ValueError: 如果搜索方法无效或参数验证失败
             PermissionError: 如果认证失败（仅 HTTP 模式）
         """
+        # Phase 33: 认证检查
+        _check_auth(auth_middleware, APIKeyPermission.READ)
+
+        # Phase 33: 输入参数验证
+        if len(query) > MAX_QUERY_LENGTH:
+            raise ValueError(f"查询长度超过限制 ({MAX_QUERY_LENGTH} 字符)")
+        if limit > MAX_LIMIT:
+            raise ValueError(f"返回数量超过限制 ({MAX_LIMIT})")
+        if limit < 1:
+            raise ValueError("返回数量必须大于 0")
+
+        # Phase 33: 修复搜索方法验证（动态获取支持的方法列表）
         try:
             method = SearchMethod(search_method)
         except ValueError as err:
-            raise ValueError(f"无效的搜索方法: {search_method}。支持的方法: regex, bm25") from err
+            supported_methods = [m.value for m in SearchMethod]
+            raise ValueError(
+                f"无效的搜索方法: {search_method}。"
+                f"支持的方法: {', '.join(supported_methods)}"
+            ) from err
 
         # 执行搜索
         results = registry.search(query, method=method, limit=limit)
@@ -143,7 +235,7 @@ def _register_mcp_tools(
         return json.dumps(output, ensure_ascii=False, indent=2)
 
     # ========================================================
-    # MCP 工具: get_tool_definition (Phase 15: API Key 认证)
+    # MCP 工具: get_tool_definition (Phase 15: API Key 认证, Phase 33: 认证集成)
     # ========================================================
 
     @mcp.tool()
@@ -163,6 +255,13 @@ def _register_mcp_tools(
             ValueError: 如果工具不存在
             PermissionError: 如果认证失败（仅 HTTP 模式）
         """
+        # Phase 33: 认证检查
+        _check_auth(auth_middleware, APIKeyPermission.READ)
+
+        # Phase 33: 输入参数验证
+        if not tool_name or not tool_name.strip():
+            raise ValueError("工具名称不能为空")
+
         tool = registry.get_tool(tool_name)
         if tool is None:
             raise ValueError(f"工具不存在: {tool_name}")
@@ -173,7 +272,7 @@ def _register_mcp_tools(
         return json.dumps(definition, ensure_ascii=False, indent=2)
 
     # ========================================================
-    # MCP 工具: list_tools_by_category (Phase 15: API Key 认证)
+    # MCP 工具: list_tools_by_category (Phase 15: API Key 认证, Phase 33: 认证集成)
     # ========================================================
 
     @mcp.tool()
@@ -191,8 +290,20 @@ def _register_mcp_tools(
             该类别下的工具列表，JSON 格式字符串
 
         Raises:
+            ValueError: 如果参数验证失败
             PermissionError: 如果认证失败（仅 HTTP 模式）
         """
+        # Phase 33: 认证检查
+        _check_auth(auth_middleware, APIKeyPermission.READ)
+
+        # Phase 33: 输入参数验证
+        if not category or not category.strip():
+            raise ValueError("类别名称不能为空")
+        if limit > MAX_LIMIT:
+            raise ValueError(f"返回数量超过限制 ({MAX_LIMIT})")
+        if limit < 1:
+            raise ValueError("返回数量必须大于 0")
+
         if category.lower() == "all":
             # 列出所有类别
             categories = registry.list_categories()
@@ -216,7 +327,7 @@ def _register_mcp_tools(
         return json.dumps(result, ensure_ascii=False, indent=2)
 
     # ========================================================
-    # MCP 工具: register_tool (Phase 15: API Key 认证)
+    # MCP 工具: register_tool (Phase 15: API Key 认证, Phase 33: 认证集成)
     # ========================================================
 
     @mcp.tool()
@@ -241,9 +352,20 @@ def _register_mcp_tools(
             注册结果，JSON 格式字符串
 
         Raises:
-            ValueError: 如果工具名称已存在
+            ValueError: 如果工具名称已存在或参数验证失败
             PermissionError: 如果认证失败或权限不足（仅 HTTP 模式）
         """
+        # Phase 33: 认证检查（需要 WRITE 权限）
+        _check_auth(auth_middleware, APIKeyPermission.WRITE)
+
+        # Phase 33: 输入参数验证
+        if not name or not name.strip():
+            raise ValueError("工具名称不能为空")
+        if not description or not description.strip():
+            raise ValueError("工具描述不能为空")
+        if len(description) > MAX_QUERY_LENGTH:
+            raise ValueError(f"工具描述长度超过限制 ({MAX_QUERY_LENGTH} 字符)")
+
         # 检查工具是否已存在
         if registry.get_tool(name) is not None:
             raise ValueError(f"工具已存在: {name}")
@@ -276,7 +398,120 @@ def _register_mcp_tools(
         return json.dumps(result, ensure_ascii=False, indent=2)
 
     # ========================================================
-    # 资源: 工具统计信息
+    # MCP 工具: unregister_tool (Phase 33: 新增)
+    # ========================================================
+
+    @mcp.tool()
+    def unregister_tool(tool_name: str) -> str:
+        """
+        注销工具
+
+        从工具注册表中移除指定的工具。
+
+        Args:
+            tool_name: 工具名称
+
+        Returns:
+            注销结果，JSON 格式字符串
+
+        Raises:
+            ValueError: 如果工具不存在
+            PermissionError: 如果认证失败或权限不足（仅 HTTP 模式）
+        """
+        # Phase 33: 认证检查（需要 WRITE 权限）
+        _check_auth(auth_middleware, APIKeyPermission.WRITE)
+
+        # Phase 33: 输入参数验证
+        if not tool_name or not tool_name.strip():
+            raise ValueError("工具名称不能为空")
+
+        # 检查工具是否存在
+        tool = registry.get_tool(tool_name)
+        if tool is None:
+            raise ValueError(f"工具不存在: {tool_name}")
+
+        # 从注册表中注销
+        registry.unregister(tool_name)
+
+        # 从存储中删除
+        storage.delete(tool_name)
+
+        result = {
+            "success": True,
+            "tool_name": tool_name,
+            "message": f"工具 '{tool_name}' 已成功注销",
+        }
+
+        return json.dumps(result, ensure_ascii=False, indent=2)
+
+    # ========================================================
+    # MCP 工具: search_hot_tools (Phase 33: 新增)
+    # ========================================================
+
+    @mcp.tool()
+    def search_hot_tools(
+        query: str,
+        search_method: str = "bm25",
+        limit: int = 5,
+    ) -> str:
+        """
+        快速搜索热工具（性能优化）
+
+        仅搜索热工具和温工具，跳过冷工具以提升搜索性能。
+        热工具是高频使用的工具，温工具是中等频率使用的工具。
+
+        Args:
+            query: 搜索查询字符串
+            search_method: 搜索方法 (regex/bm25)，默认 bm25
+            limit: 返回结果数量，默认 5
+
+        Returns:
+            匹配的工具列表，JSON 格式字符串
+
+        Raises:
+            ValueError: 如果搜索方法无效或参数验证失败
+            PermissionError: 如果认证失败（仅 HTTP 模式）
+        """
+        # Phase 33: 认证检查
+        _check_auth(auth_middleware, APIKeyPermission.READ)
+
+        # Phase 33: 输入参数验证
+        if len(query) > MAX_QUERY_LENGTH:
+            raise ValueError(f"查询长度超过限制 ({MAX_QUERY_LENGTH} 字符)")
+        if limit > MAX_LIMIT:
+            raise ValueError(f"返回数量超过限制 ({MAX_LIMIT})")
+        if limit < 1:
+            raise ValueError("返回数量必须大于 0")
+
+        # Phase 33: 修复搜索方法验证（动态获取支持的方法列表）
+        try:
+            method = SearchMethod(search_method)
+        except ValueError as err:
+            supported_methods = [m.value for m in SearchMethod]
+            raise ValueError(
+                f"无效的搜索方法: {search_method}。"
+                f"支持的方法: {', '.join(supported_methods)}"
+            ) from err
+
+        # 执行搜索（仅搜索热工具和温工具）
+        results = registry.search_hot_warm(query, method, limit)
+
+        # 转换为字典列表
+        output = []
+        for result in results:
+            output.append(
+                {
+                    "tool_name": result.tool_name,
+                    "description": result.description,
+                    "score": result.score,
+                    "match_reason": result.match_reason,
+                }
+            )
+
+        return json.dumps(output, ensure_ascii=False, indent=2)
+
+    # ========================================================
+    # 资源: 工具统计信息 (Phase 33: 认证集成)
     # ========================================================
 
     @mcp.resource("registry://stats")
@@ -286,7 +521,13 @@ def _register_mcp_tools(
 
         Returns:
             统计信息，JSON 格式字符串
+
+        Raises:
+            PermissionError: 如果认证失败（仅 HTTP 模式）
         """
+        # Phase 33: 认证检查
+        _check_auth(auth_middleware, APIKeyPermission.READ)
+
         stats = {
             "total_tools": registry.tool_count,
             "total_categories": registry.category_count,
@@ -300,7 +541,7 @@ def _register_mcp_tools(
         return json.dumps(stats, ensure_ascii=False, indent=2)
 
     # ========================================================
-    # 资源: 类别列表
+    # 资源: 类别列表 (Phase 33: 认证集成)
     # ========================================================
 
     @mcp.resource("registry://categories")
@@ -310,7 +551,13 @@ def _register_mcp_tools(
 
         Returns:
             类别列表，JSON 格式字符串
+
+        Raises:
+            PermissionError: 如果认证失败（仅 HTTP 模式）
         """
+        # Phase 33: 认证检查
+        _check_auth(auth_middleware, APIKeyPermission.READ)
+
         categories = registry.list_categories()
         result = {
             "count": len(categories),

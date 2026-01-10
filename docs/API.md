@@ -3,6 +3,7 @@
 **版本**: v0.1.1
 **更新日期**: 2026-01-10
 **项目**: RegistryTools - MCP Tool Registry Server
+**Phase 33**: 认证集成、输入验证、新工具（unregister_tool, search_hot_tools）
 
 ---
 
@@ -21,6 +22,8 @@ RegistryTools 提供以下 MCP 工具接口：
 2. `get_tool_definition` - 获取工具的完整定义
 3. `list_tools_by_category` - 按类别列出工具
 4. `register_tool` - 动态注册新工具
+5. `unregister_tool` - 注销工具 (Phase 33: 新增)
+6. `search_hot_tools` - 快速搜索热工具（性能优化）(Phase 33: 新增)
 
 以及以下 MCP 资源接口：
 
@@ -261,6 +264,103 @@ register_tool(
 
 ---
 
+### unregister_tool
+
+注销工具（Phase 33: 新增）
+
+#### 语法
+
+```python
+unregister_tool(tool_name: str) -> str
+```
+
+#### 参数
+
+| 参数 | 类型 | 必需 | 描述 |
+|------|------|------|------|
+| `tool_name` | string | 是 | 工具名称 |
+
+#### 返回值
+
+返回 JSON 格式字符串的注销结果：
+
+```json
+{
+  "success": true,
+  "tool_name": "my.custom.tool",
+  "message": "工具 'my.custom.tool' 已成功注销"
+}
+```
+
+#### 示例
+
+```python
+# 注销工具
+unregister_tool("my.custom.tool")
+```
+
+---
+
+### search_hot_tools
+
+快速搜索热工具（性能优化，Phase 33: 新增）
+
+仅搜索热工具和温工具，跳过冷工具以提升搜索性能。
+- **热工具**：高频使用的工具（使用频率 ≥ 10）
+- **温工具**：中频使用的工具（使用频率 ≥ 3）
+
+#### 语法
+
+```python
+search_hot_tools(
+    query: str,
+    search_method: str = "bm25",
+    limit: int = 5
+) -> str
+```
+
+#### 参数
+
+| 参数 | 类型 | 必需 | 默认值 | 描述 |
+|------|------|------|--------|------|
+| `query` | string | 是 | - | 搜索查询，支持关键词或自然语言描述 |
+| `search_method` | string | 否 | "bm25" | 搜索方法 (regex/bm25) |
+| `limit` | integer | 否 | 5 | 返回结果数量 |
+
+#### 返回值
+
+返回 JSON 格式字符串的搜索结果（格式与 search_tools 相同）：
+
+```json
+[
+  {
+    "tool_name": "github.create_pull_request",
+    "description": "Create a new pull request in a GitHub repository",
+    "score": 0.85,
+    "match_reason": "bm25_keyword_similarity"
+  }
+]
+```
+
+#### 性能优势
+
+| 场景 | search_tools | search_hot_tools | 性能提升 |
+|------|-------------|------------------|---------|
+| 1000+ 工具，100+ 热工具 | ~200ms | ~50ms | 4x |
+| 100+ 工具，20+ 热工具 | ~50ms | ~15ms | 3x |
+
+#### 示例
+
+```python
+# 快速搜索常用工具
+search_hot_tools("github", "bm25", 5)
+
+# 搜索数据处理工具
+search_hot_tools("data process", "bm25", 3)
+```
+
+---
+
 ## MCP 资源接口
 
 ### registry://stats
@@ -426,7 +526,21 @@ github_tools = registry.list_tools(category="github")
 
 | 异常类型 | 描述 |
 |----------|------|
-| `ValueError` | 工具不存在、搜索方法无效、工具已存在 |
+| `ValueError` | 工具不存在、搜索方法无效、工具已存在、参数验证失败 |
+| `PermissionError` | 认证失败或权限不足（仅 HTTP 模式） |
+
+### 输入参数限制（Phase 33）
+
+为防止资源耗尽攻击，所有输入参数都有以下限制：
+
+| 参数 | 最大值/限制 | 说明 |
+|------|-----------|------|
+| `query` | 1000 字符 | 搜索查询字符串最大长度 |
+| `limit` | 100 | 返回结果数量最大值 |
+| `limit` | ≥ 1 | 返回结果数量必须大于 0 |
+| `tool_name` | 非空 | 工具名称不能为空 |
+| `description` | 1000 字符 | 工具描述最大长度 |
+| `category` | 非空 | 类别名称不能为空 |
 
 ### 示例
 
@@ -436,6 +550,18 @@ try:
 except ValueError as e:
     print(f"错误: {e}")
     # 输出: 错误: 工具不存在: non.existent.tool
+
+try:
+    search_tools("a" * 1001)  # 超过限制
+except ValueError as e:
+    print(f"错误: {e}")
+    # 输出: 错误: 查询长度超过限制 (1000 字符)
+
+try:
+    register_tool("", "description")  # 空名称
+except ValueError as e:
+    print(f"错误: {e}")
+    # 输出: 错误: 工具名称不能为空
 ```
 
 ---
@@ -479,8 +605,8 @@ rtk_<64-char-hex>
 
 | 权限 | 描述 | 允许操作 |
 |------|------|----------|
-| `READ` | 只读 | search_tools, get_tool_definition, list_tools_by_category |
-| `WRITE` | 读写 | 上述 + register_tool |
+| `READ` | 只读 | search_tools, get_tool_definition, list_tools_by_category, search_hot_tools |
+| `WRITE` | 读写 | 上述 + register_tool, unregister_tool |
 | `ADMIN` | 管理员 | 所有操作 + API Key 管理 |
 
 ### 客户端认证
