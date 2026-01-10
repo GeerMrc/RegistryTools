@@ -22,10 +22,10 @@ class TestGetServerDescription:
 
         result = get_server_description()
 
-        assert "RegistryTools" in result
-        assert "MCP 工具注册表服务器" in result
-        assert "Regex" in result or "BM25" in result
-        assert "工具注册与元数据管理" in result
+        assert "统一的 MCP 工具注册与搜索服务" in result
+        assert "发现和筛选可用工具" in result
+        assert "任务执行工具调用准确性" in result
+        assert "复杂任务工具调用效率" in result
 
     def test_get_server_description_custom(self, monkeypatch: pytest.MonkeyPatch) -> None:
         """测试自定义描述"""
@@ -41,8 +41,8 @@ class TestGetServerDescription:
 
         result = get_server_description()
 
-        assert "RegistryTools" in result
-        assert "MCP 工具注册表服务器" in result
+        assert "统一的 MCP 工具注册与搜索服务" in result
+        assert "发现和筛选可用工具" in result
 
     def test_get_server_description_whitespace(self, monkeypatch: pytest.MonkeyPatch) -> None:
         """测试纯空格回退到默认"""
@@ -50,8 +50,8 @@ class TestGetServerDescription:
 
         result = get_server_description()
 
-        assert "RegistryTools" in result
-        assert "MCP 工具注册表服务器" in result
+        assert "统一的 MCP 工具注册与搜索服务" in result
+        assert "发现和筛选可用工具" in result
 
     def test_get_server_description_with_leading_trailing_spaces(
         self, monkeypatch: pytest.MonkeyPatch
@@ -82,17 +82,8 @@ class TestGetServerDescription:
 
         result = get_server_description()
 
-        # 验证包含所有核心功能
-        assert "工具注册与元数据管理" in result
-        assert "多算法搜索" in result
-        assert "分类浏览" in result
-        assert "统计信息" in result
-        assert "动态工具注册 API" in result
-        # 验证包含搜索算法
-        assert "Regex" in result
-        assert "BM25" in result
-        assert "Embedding" in result
-        # 验证包含客户端示例
-        assert "Claude Desktop" in result
-        assert "Cursor" in result
-        assert "DeepThinking Agent" in result
+        # 验证包含新的默认描述的关键内容
+        assert "统一的 MCP 工具注册与搜索服务" in result
+        assert "发现和筛选可用工具" in result
+        assert "任务执行工具调用准确性" in result
+        assert "复杂任务工具调用效率" in result

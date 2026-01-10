@@ -66,14 +66,8 @@ def get_server_description() -> str:
 
     # 使用默认描述
     default_description = (
-        "RegistryTools - MCP 工具注册表服务器\n\n"
-        "提供通用工具搜索与发现能力，支持 Regex、BM25、Embedding 多种搜索算法。\n"
-        "可作为任何 MCP 客户端（Claude Desktop、Cursor、DeepThinking Agent 等）的工具目录管理器。\n\n"
-        "核心功能：\n"
-        "- 工具注册与元数据管理\n"
-        "- 多算法搜索（Regex/BM25/Embedding）\n"
-        "- 分类浏览与统计信息\n"
-        "- 动态工具注册 API"
+        "统一的 MCP 工具注册与搜索服务，用于发现和筛选可用工具，"
+        "提升任务执行工具调用准确性，复杂任务工具调用效率"
     )
     logger.debug("使用默认服务器描述")
     return default_description
