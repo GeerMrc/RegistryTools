@@ -1,8 +1,8 @@
 # RegistryTools - 任务追踪文档
 
 **项目开始**: 2026-01-04
-**当前状态**: Phase 31 已完成 - 文档覆盖优化 ✅
-**完成进度**: 100%
+**当前状态**: Phase 33 进行中 - 紧急修复实施 📝
+**完成进度**: 100% (Phase 33 待提交)
 **当前版本**: v0.1.1
 
 ---
@@ -3344,5 +3344,78 @@ b20b8ec docs(optimize): 简化 PyPI 发布状态说明重复
 - [ ] TASK.md 独立提交 ⏳
 
 **Phase 32 状态**: ✅ 完成（待 Git commit + TASK.md 独立提交）
+
+---
+
+## Phase 33: 紧急修复实施 (2026-01-10)
+
+> **触发原因**: 全面功能审核发现的高优先级安全问题
+> **用户决策**: 立即启动改进，认证未集成和输入验证缺失归类为紧急修复
+
+### 任务清单
+
+| 任务ID | 任务描述 | 验收标准 | 状态 | 完成时间 |
+|-------|---------|---------|------|----------|
+| TASK-3301 | 集成认证中间件到 MCP 工具 | 所有工具调用认证检查 | ✅ DONE | 2026-01-10 |
+| TASK-3302 | 添加输入参数验证 | query/limit 参数有长度限制 | ✅ DONE | 2026-01-10 |
+| TASK-3303 | 添加 unregister_tool MCP 工具 | 工具注销功能可用 | ✅ DONE | 2026-01-10 |
+| TASK-3304 | 暴露 search_hot_warm 为 MCP 工具 | 性能优化功能可用 | ✅ DONE | 2026-01-10 |
+| TASK-3305 | 修复搜索方法验证错误消息 | 动态获取支持的方法列表 | ✅ DONE | 2026-01-10 |
+| TASK-3306 | 更新相关文档 | API.md 更新认证说明 | ✅ DONE | 2026-01-10 |
+| TASK-3307 | 编写集成测试 | 认证和输入验证测试 | ⏸️ SKIPPED | - |
+| TASK-3308 | 运行完整测试套件 | 所有测试通过 | ✅ DONE | 2026-01-10 |
+| TASK-3309 | 更新 TASK.md 并提交 | Phase 33 完成 | 📝 IN_PROGRESS | 2026-01-10 |
+
+### 代码变更
+
+**修改的文件**:
+- `src/registrytools/server.py`
+  - 添加认证相关导入和常量
+  - 添加 `_check_auth()` 和 `_get_api_key_from_context()` 辅助函数
+  - 为所有 MCP 工具添加认证检查
+  - 为所有 MCP 工具添加输入参数验证
+  - 添加 `unregister_tool` MCP 工具
+  - 添加 `search_hot_tools` MCP 工具
+  - 修复搜索方法验证错误消息（动态获取）
+
+**新增常量**:
+- `MAX_QUERY_LENGTH = 1000` - 查询字符串最大长度
+- `MAX_LIMIT = 100` - 返回结果最大数量
+
+**新增 MCP 工具**:
+1. `unregister_tool(tool_name: str)` - 注销工具（需要 WRITE 权限）
+2. `search_hot_tools(query, search_method, limit)` - 快速搜索热工具（需要 READ 权限）
+
+### 测试结果
+
+```
+tests/test_mcp_tools.py::17 passed
+Coverage: 84%
+```
+
+所有现有测试通过，新功能需要额外的集成测试（TASK-3307 已标记为 SKIPPED，后续补充）
+
+### 文档更新
+
+**docs/API.md**:
+- 更新概述部分，添加新工具说明
+- 添加 `unregister_tool` 工具文档
+- 添加 `search_hot_tools` 工具文档（含性能对比）
+- 更新错误处理部分，添加 PermissionError 和输入参数限制说明
+- 更新认证权限级别说明
+
+### 验收标准
+
+- [x] 所有 MCP 工具都集成了认证检查 ✅
+- [x] 所有输入参数都有长度限制 ✅
+- [x] unregister_tool 和 search_hot_tools 工具可用 ✅
+- [x] 搜索方法验证动态获取支持列表 ✅
+- [x] 文档已更新 ✅
+- [ ] 集成测试通过（SKIPPED，后续补充）⏸️
+- [x] 完整测试套件通过 ✅
+- [ ] TASK.md 已更新 📝（本条目）
+- [ ] Git commit 待完成 ⏳
+
+**Phase 33 状态**: 📝 文档已更新，待 Git commit
 
 ---
