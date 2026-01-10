@@ -348,7 +348,7 @@ RegistryTools 支持灵活的配置方式。完整配置说明请参见 [配置�
 - `REGISTRYTOOLS_TRANSPORT` - 传输协议（默认: `stdio`）
 - `REGISTRYTOOLS_LOG_LEVEL` - 日志级别（默认: `INFO`）
 - `REGISTRYTOOLS_ENABLE_AUTH` - 启用 API Key 认证（默认: `false`）
-- `REGISTRYTOOLS_DESCRIPTION` - MCP 服务器描述（可选，默认: 官方描述）
+- `REGISTRYTOOLS_DESCRIPTION` - MCP 服务器描述（可选，默认: 统一的 MCP 工具注册与搜索服务，用于发现和筛选可用工具，提升任务执行工具调用准确性，复杂任务工具调用效率）
 
 **快速示例**:
 ```bash

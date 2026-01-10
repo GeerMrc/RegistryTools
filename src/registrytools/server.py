@@ -150,6 +150,52 @@ def get_server_description() -> str:
     return default_description
 
 
+def get_default_search_method() -> SearchMethod:
+    """
+    获取默认搜索方法
+
+    从环境变量 REGISTRYTOOLS_SEARCH_METHOD 读取默认搜索方法，
+    如果未设置或无效，则使用默认值 BM25。
+
+    优先级：
+        1. 环境变量 REGISTRYTOOLS_SEARCH_METHOD（有效值）
+        2. 默认值 BM25
+
+    Returns:
+        默认搜索方法枚举值
+
+    Examples:
+        >>> # 环境变量未设置
+        >>> get_default_search_method()
+        <SearchMethod.BM25: 'bm25'>
+
+        >>> # 环境变量设置为有效值
+        >>> get_default_search_method()  # REGISTRYTOOLS_SEARCH_METHOD="regex"
+        <SearchMethod.REGEX: 'regex'>
+
+        >>> # 环境变量设置为无效值（回退到默认）
+        >>> get_default_search_method()  # REGISTRYTOOLS_SEARCH_METHOD="invalid"
+        <SearchMethod.BM25: 'bm25'>
+    """
+    custom_method = os.getenv("REGISTRYTOOLS_SEARCH_METHOD", "").strip().lower()
+
+    if custom_method:
+        try:
+            method = SearchMethod(custom_method)
+            logger.info(f"使用默认搜索方法: {method.value}")
+            return method
+        except ValueError:
+            logger.warning(
+                f"无效的搜索方法: {custom_method}，"
+                f"支持的方法: {[m.value for m in SearchMethod]}，"
+                f"使用默认值: {SearchMethod.BM25.value}"
+            )
+
+    # 使用默认值
+    logger.debug(f"使用默认搜索方法: {SearchMethod.BM25.value}")
+    return SearchMethod.BM25
+
+
 def _register_mcp_tools(
     mcp: FastMCP,
     registry: ToolRegistry,
@@ -177,7 +223,7 @@ def _register_mcp_tools(
     @mcp.tool()
     def search_tools(
         query: str,
-        search_method: str = "bm25",
+        search_method: str | None = None,
         limit: int = 5,
     ) -> str:
         """
@@ -187,7 +233,7 @@ def _register_mcp_tools(
 
         Args:
             query: 搜索查询字符串
-            search_method: 搜索方法 (regex/bm25)，默认 bm25
+            search_method: 搜索方法 (regex/bm25/embedding)，默认使用环境变量配置
             limit: 返回结果数量，默认 5
 
         Returns:
@@ -208,14 +254,21 @@ def _register_mcp_tools(
         if limit < 1:
             raise ValueError("返回数量必须大于 0")
 
-        # Phase 33: 修复搜索方法验证（动态获取支持的方法列表）
-        try:
-            method = SearchMethod(search_method)
-        except ValueError as err:
-            supported_methods = [m.value for m in SearchMethod]
-            raise ValueError(
-                f"无效的搜索方法: {search_method}。" f"支持的方法: {', '.join(supported_methods)}"
-            ) from err
+        # Phase 35: 搜索方法验证（支持全局默认值）
+        if search_method is None:
+            # 使用全局默认搜索方法
+            method = get_default_search_method()
+            logger.debug(f"使用全局默认搜索方法: {method.value}")
+        else:
+            # 验证用户指定的搜索方法
+            try:
+                method = SearchMethod(search_method)
+            except ValueError as err:
+                supported_methods = [m.value for m in SearchMethod]
+                raise ValueError(
+                    f"无效的搜索方法: {search_method}。"
+                    f"支持的方法: {', '.join(supported_methods)}"
+                ) from err
 
         # 执行搜索
         results = registry.search(query, method=method, limit=limit)
@@ -451,7 +504,7 @@ def _register_mcp_tools(
     @mcp.tool()
     def search_hot_tools(
         query: str,
-        search_method: str = "bm25",
+        search_method: str | None = None,
         limit: int = 5,
     ) -> str:
         """
@@ -462,7 +515,7 @@ def _register_mcp_tools(
 
         Args:
             query: 搜索查询字符串
-            search_method: 搜索方法 (regex/bm25)，默认 bm25
+            search_method: 搜索方法 (regex/bm25)，默认使用环境变量配置
             limit: 返回结果数量，默认 5
 
         Returns:
@@ -471,6 +524,10 @@ def _register_mcp_tools(
         Raises:
             ValueError: 如果搜索方法无效或参数验证失败
             PermissionError: 如果认证失败（仅 HTTP 模式）
+
+        Note:
+            search_hot_tools 不支持 embedding 搜索方法。
+            如果环境变量设置为 embedding，将自动回退到 bm25。
         """
         # Phase 33: 认证检查
         _check_auth(auth_middleware, APIKeyPermission.READ)
@@ -483,14 +540,28 @@ def _register_mcp_tools(
         if limit < 1:
             raise ValueError("返回数量必须大于 0")
 
-        # Phase 33: 修复搜索方法验证（动态获取支持的方法列表）
-        try:
-            method = SearchMethod(search_method)
-        except ValueError as err:
-            supported_methods = [m.value for m in SearchMethod]
-            raise ValueError(
-                f"无效的搜索方法: {search_method}。" f"支持的方法: {', '.join(supported_methods)}"
-            ) from err
+        # Phase 35: 搜索方法验证（支持全局默认值）
+        if search_method is None:
+            # 使用全局默认搜索方法
+            method = get_default_search_method()
+            logger.debug(f"使用全局默认搜索方法: {method.value}")
+        else:
+            # 验证用户指定的搜索方法
+            try:
+                method = SearchMethod(search_method)
+            except ValueError as err:
+                supported_methods = [m.value for m in SearchMethod]
+                raise ValueError(
+                    f"无效的搜索方法: {search_method}。"
+                    f"支持的方法: {', '.join(supported_methods)}"
+                ) from err
+
+        # search_hot_tools 不支持 embedding，自动回退到 bm25
+        if method == SearchMethod.EMBEDDING:
+            logger.warning(
+                "search_hot_tools 不支持 embedding 搜索方法，自动回退到 bm25"
+            )
+            method = SearchMethod.BM25
 
         # 执行搜索（仅搜索热工具和温工具）
         results = registry.search_hot_warm(query, method, limit)

@@ -506,10 +506,70 @@ registry-tools api-key delete <key-id>
 
 ### 1. 选择合适的搜索方法
 
-- **已知工具名称**: 使用 `regex`
-- **关键词搜索**: 使用 `bm25`（支持中文分词）
-- **语义搜索**: 使用 `embedding`（理解查询意图）
-- **中文搜索**: 使用 `bm25` 或 `embedding`
+#### 搜索方法对比
+
+| 方法 | 速度 | 准确率 | 中文支持 | 语义理解 | 适用场景 |
+|------|------|--------|----------|----------|----------|
+| `regex` | 最快 | 高 | 有限 | 无 | 已知工具名称或模式 |
+| `bm25` | 快 | 高 | 完美 | 无 | 关键词搜索（推荐） |
+| `embedding` | 慢 | 最高 | 完美 | 有 | 语义搜索、模糊查询 |
+
+#### 使用场景指南
+
+**何时使用 Regex**:
+- 已知工具的确切名称或模式
+- 需要最快响应速度
+- 批量工具名称匹配
+
+```python
+# 精确匹配工具名称
+search_tools("github.create_pull_request", "regex", 10)
+
+# 使用正则表达式模式
+search_tools("github\..*pull", "regex", 10)
+```
+
+**何时使用 BM25** (推荐):
+- 通用关键词搜索
+- 需要平衡速度和准确率
+- 支持中文分词
+- 中英文混合搜索
+
+```python
+# 使用全局默认搜索方法（推荐）
+search_tools("github pull request 创建", limit=5)
+
+# 显式指定 BM25
+search_tools("github pull request", "bm25", 5)
+```
+
+**何时使用 Embedding**:
+- 语义搜索，理解查询意图
+- 工具描述与关键词不直接匹配
+- 需要最高准确率
+- 同义词或相似表达
+
+```python
+# 语义搜索示例
+search_tools("如何在 GitHub 上提交代码", "embedding", 5)
+search_tools("创建合并请求", "embedding", 5)
+```
+
+#### 设置全局默认搜索方法
+
+您可以通过环境变量设置默认搜索引擎：
+
+```bash
+# 在 ~/.bashrc 或 ~/.zshrc 中添加
+export REGISTRYTOOLS_SEARCH_METHOD=bm25  # 或 regex/embedding
+```
+
+这样在调用搜索工具时可以省略 `search_method` 参数：
+
+```python
+# 使用全局默认搜索方法
+search_tools("github pull request", limit=5)
+```
 
 ### 2. 优化搜索结果
 

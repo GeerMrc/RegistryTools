@@ -7,7 +7,7 @@ Copyright (c) 2026 Maric
 License: MIT
 """
 
-__version__ = "0.1.1"
+__version__ = "0.2.0"
 __author__ = "Maric"
 __license__ = "MIT"
 

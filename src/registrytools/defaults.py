@@ -9,7 +9,17 @@ License: MIT
 
 from pathlib import Path
 
-from registrytools.registry.models import ToolMetadata
+from registrytools.registry.models import SearchMethod, ToolMetadata
+
+# ============================================================
+# 搜索引擎配置
+# ============================================================
+
+DEFAULT_SEARCH_METHOD = SearchMethod.BM25
+"""默认搜索方法 (regex/bm25/embedding)"""
+
+SUPPORTED_SEARCH_METHODS = [SearchMethod.REGEX, SearchMethod.BM25, SearchMethod.EMBEDDING]
+"""支持的搜索方法列表"""
 
 # ============================================================
 # 冷热工具分类配置 (TASK-802)

@@ -90,6 +90,7 @@ registry-tools --port 8000  # 实际使用 9000
 | `REGISTRYTOOLS_TRANSPORT` | 传输协议 | `stdio` | `stdio`, `http` |
 | `REGISTRYTOOLS_LOG_LEVEL` | 日志级别 | `INFO` | `DEBUG`, `INFO`, `WARNING`, `ERROR` |
 | `REGISTRYTOOLS_ENABLE_AUTH` | 启用 API Key 认证 | `false` | `true`, `false`, `1`, `0`, `yes`, `no` |
+| `REGISTRYTOOLS_SEARCH_METHOD` | 默认搜索方法 | `bm25` | `regex`, `bm25`, `embedding` |
 | `REGISTRYTOOLS_DESCRIPTION` | MCP 服务器描述 | 统一的 MCP 工具注册与搜索服务，用于发现和筛选可用工具，提升任务执行工具调用准确性，复杂任务工具调用效率 | 任意有效字符串 |
 
 ### 详细说明
@@ -208,6 +209,39 @@ registry-tools
 - 建议描述内容简洁明了，突出服务器用途
 - 如果不设置，将使用默认描述："统一的 MCP 工具注册与搜索服务，用于发现和筛选可用工具，提升任务执行工具调用准确性，复杂任务工具调用效率"
 - 支持多行描述，使用 `\\n` 表示换行
+
+#### REGISTRYTOOLS_SEARCH_METHOD
+
+指定默认搜索方法，应用于所有搜索工具。
+
+**可选值**:
+- `regex`: 正则表达式精确匹配（最快）
+- `bm25`: BM25 关键词搜索（推荐，默认）
+- `embedding`: 语义向量搜索（最准确，需要安装额外依赖）
+
+**性能对比**:
+| 方法 | 速度 | 准确率 | 依赖 |
+|------|------|--------|------|
+| `regex` | 最快 | 高 | 无 |
+| `bm25` | 快 | 高 | rank-bm25, jieba |
+| `embedding` | 慢 | 最高 | sentence-transformers, numpy |
+
+**示例**:
+```bash
+# 使用正则表达式搜索
+export REGISTRYTOOLS_SEARCH_METHOD=regex
+registry-tools
+
+# 使用语义搜索（需要安装额外依赖）
+pip install registry-tools[embedding]
+export REGISTRYTOOLS_SEARCH_METHOD=embedding
+registry-tools
+```
+
+**注意事项**:
+- `search_hot_tools` 工具不支持 `embedding` 方法，会自动回退到 `bm25`
+- 如果设置了无效值，会记录警告并使用默认值 `bm25`
+- 可以在调用时通过参数覆盖全局默认值
 
 ---
 

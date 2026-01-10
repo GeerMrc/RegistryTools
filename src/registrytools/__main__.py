@@ -20,7 +20,8 @@ RegistryTools MCP 服务器入口
     REGISTRYTOOLS_TRANSPORT       传输协议 (stdio/http, 默认: stdio)
     REGISTRYTOOLS_LOG_LEVEL       日志级别 (DEBUG/INFO/WARNING/ERROR, 默认: INFO)
     REGISTRYTOOLS_ENABLE_AUTH     启用 API Key 认证 (true/false, 默认: false, 仅 HTTP 模式)
-    REGISTRYTOOLS_DESCRIPTION     MCP 服务器描述 (可选, 默认: 官方描述)
+    REGISTRYTOOLS_SEARCH_METHOD   默认搜索方法 (regex/bm25/embedding, 默认: bm25)
+    REGISTRYTOOLS_DESCRIPTION     MCP 服务器描述 (可选, 默认: 统一的 MCP 工具注册与搜索服务，用于发现和筛选可用工具，提升任务执行工具调用准确性，复杂任务工具调用效率)
 """
 
 import argparse
@@ -73,7 +74,8 @@ def main():
   REGISTRYTOOLS_TRANSPORT       传输协议 (stdio/http, 默认: stdio)
   REGISTRYTOOLS_LOG_LEVEL       日志级别 (DEBUG/INFO/WARNING/ERROR, 默认: INFO)
   REGISTRYTOOLS_ENABLE_AUTH     启用 API Key 认证 (true/false, 默认: false, 仅 HTTP 模式)
-  REGISTRYTOOLS_DESCRIPTION     MCP 服务器描述 (可选, 默认: 官方描述)
+  REGISTRYTOOLS_SEARCH_METHOD    默认搜索方法 (regex/bm25/embedding, 默认: bm25)
+  REGISTRYTOOLS_DESCRIPTION       MCP 服务器描述 (可选, 默认: 统一的 MCP 工具注册与搜索服务，用于发现和筛选可用工具，提升任务执行工具调用准确性，复杂任务工具调用效率)
 
 示例:
   # 本地 STDIO 模式 (默认)
