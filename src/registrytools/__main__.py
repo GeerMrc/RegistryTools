@@ -16,10 +16,11 @@ RegistryTools MCP 服务器入口
     registry-tools api-key delete <key-id>
 
 环境变量:
-    REGISTRYTOOLS_DATA_PATH    数据目录路径 (默认: ~/.RegistryTools)
-    REGISTRYTOOLS_TRANSPORT     传输协议 (stdio/http, 默认: stdio)
-    REGISTRYTOOLS_LOG_LEVEL     日志级别 (DEBUG/INFO/WARNING/ERROR, 默认: INFO)
-    REGISTRYTOOLS_ENABLE_AUTH   启用 API Key 认证 (true/false, 默认: false, 仅 HTTP 模式)
+    REGISTRYTOOLS_DATA_PATH      数据目录路径 (默认: ~/.RegistryTools)
+    REGISTRYTOOLS_TRANSPORT       传输协议 (stdio/http, 默认: stdio)
+    REGISTRYTOOLS_LOG_LEVEL       日志级别 (DEBUG/INFO/WARNING/ERROR, 默认: INFO)
+    REGISTRYTOOLS_ENABLE_AUTH     启用 API Key 认证 (true/false, 默认: false, 仅 HTTP 模式)
+    REGISTRYTOOLS_DESCRIPTION     MCP 服务器描述 (可选, 默认: 官方描述)
 """
 
 import argparse
@@ -68,10 +69,11 @@ def main():
   http     Streamable HTTP,用于远程服务部署
 
 环境变量:
-  REGISTRYTOOLS_DATA_PATH    数据目录路径 (默认: ~/.RegistryTools)
-  REGISTRYTOOLS_TRANSPORT     传输协议 (stdio/http, 默认: stdio)
-  REGISTRYTOOLS_LOG_LEVEL     日志级别 (DEBUG/INFO/WARNING/ERROR, 默认: INFO)
-  REGISTRYTOOLS_ENABLE_AUTH   启用 API Key 认证 (true/false, 默认: false, 仅 HTTP 模式)
+  REGISTRYTOOLS_DATA_PATH      数据目录路径 (默认: ~/.RegistryTools)
+  REGISTRYTOOLS_TRANSPORT       传输协议 (stdio/http, 默认: stdio)
+  REGISTRYTOOLS_LOG_LEVEL       日志级别 (DEBUG/INFO/WARNING/ERROR, 默认: INFO)
+  REGISTRYTOOLS_ENABLE_AUTH     启用 API Key 认证 (true/false, 默认: false, 仅 HTTP 模式)
+  REGISTRYTOOLS_DESCRIPTION     MCP 服务器描述 (可选, 默认: 官方描述)
 
 示例:
   # 本地 STDIO 模式 (默认)

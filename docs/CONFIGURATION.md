@@ -110,6 +110,7 @@ registry-tools --port 8000  # 实际使用 9000
 | `REGISTRYTOOLS_TRANSPORT` | 传输协议 | `stdio` | `stdio`, `http` |
 | `REGISTRYTOOLS_LOG_LEVEL` | 日志级别 | `INFO` | `DEBUG`, `INFO`, `WARNING`, `ERROR` |
 | `REGISTRYTOOLS_ENABLE_AUTH` | 启用 API Key 认证 | `false` | `true`, `false`, `1`, `0`, `yes`, `no` |
+| `REGISTRYTOOLS_DESCRIPTION` | MCP 服务器描述 | 官方默认描述 | 任意有效字符串 |
 
 ### 详细说明
 
@@ -192,6 +193,49 @@ registry-tools
 export REGISTRYTOOLS_ENABLE_AUTH=true
 registry-tools --transport http --port 8000
 ```
+
+#### REGISTRYTOOLS_DESCRIPTION
+
+指定 MCP 服务器的描述信息，在 MCP 客户端的服务器列表中显示。
+
+**默认值**:
+```
+RegistryTools - MCP 工具注册表服务器
+
+提供通用工具搜索与发现能力，支持 Regex、BM25、Embedding 多种搜索算法。
+可作为任何 MCP 客户端（Claude Desktop、Cursor、DeepThinking Agent 等）的工具目录管理器。
+
+核心功能：
+- 工具注册与元数据管理
+- 多算法搜索（Regex/BM25/Embedding）
+- 分类浏览与统计信息
+- 动态工具注册 API
+```
+
+**示例**:
+```bash
+# 使用自定义描述
+export REGISTRYTOOLS_DESCRIPTION="我的工具服务器"
+registry-tools
+
+# 在 Claude Desktop 配置中使用
+{
+  "mcpServers": {
+    "RegistryTools": {
+      "command": "registry-tools",
+      "env": {
+        "REGISTRYTOOLS_DESCRIPTION": "团队内部工具目录"
+      }
+    }
+  }
+}
+```
+
+**注意事项**:
+- 描述会在 MCP 客户端的服务器列表中显示
+- 建议描述内容简洁明了，突出服务器用途
+- 如果不设置，将使用官方默认描述
+- 支持多行描述，使用 `\\n` 表示换行
 
 ---
 

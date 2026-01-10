@@ -8,6 +8,8 @@ License: MIT
 """
 
 import json
+import logging
+import os
 from collections.abc import Callable
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -29,6 +31,52 @@ if TYPE_CHECKING:
 # ============================================================
 # MCP 工具和资源注册 (TASK-708: 重构提取公共函数)
 # ============================================================
+
+logger = logging.getLogger(__name__)
+
+
+def get_server_description() -> str:
+    """
+    获取 MCP 服务器描述
+
+    从环境变量 REGISTRYTOOLS_DESCRIPTION 读取自定义描述，
+    如果未设置或为空，则使用默认描述。
+
+    优先级：
+        1. 环境变量 REGISTRYTOOLS_DESCRIPTION（去除首尾空格后非空）
+        2. 默认描述
+
+    Returns:
+        服务器描述字符串
+
+    Examples:
+        >>> # 环境变量未设置
+        >>> get_server_description()
+        'RegistryTools - MCP 工具注册表服务器...'
+
+        >>> # 环境变量设置为自定义值
+        >>> get_server_description()  # REGISTRYTOOLS_DESCRIPTION="我的工具服务器"
+        '我的工具服务器'
+    """
+    custom_desc = os.getenv("REGISTRYTOOLS_DESCRIPTION", "").strip()
+
+    if custom_desc:
+        logger.info(f"使用自定义服务器描述: {custom_desc}")
+        return custom_desc
+
+    # 使用默认描述
+    default_description = (
+        "RegistryTools - MCP 工具注册表服务器\n\n"
+        "提供通用工具搜索与发现能力，支持 Regex、BM25、Embedding 多种搜索算法。\n"
+        "可作为任何 MCP 客户端（Claude Desktop、Cursor、DeepThinking Agent 等）的工具目录管理器。\n\n"
+        "核心功能：\n"
+        "- 工具注册与元数据管理\n"
+        "- 多算法搜索（Regex/BM25/Embedding）\n"
+        "- 分类浏览与统计信息\n"
+        "- 动态工具注册 API"
+    )
+    logger.debug("使用默认服务器描述")
+    return default_description
 
 
 def _register_mcp_tools(
@@ -300,7 +348,7 @@ def create_server(
         配置好的 FastMCP 服务器实例
     """
     # 创建 FastMCP 服务器
-    mcp = FastMCP("RegistryTools")
+    mcp = FastMCP("RegistryTools", instructions=get_server_description())
 
     # 初始化存储层
     storage = JSONStorage(data_path / "tools.json")
@@ -358,7 +406,7 @@ def create_server_with_sqlite(
         配置好的 FastMCP 服务器实例
     """
     # 创建 FastMCP 服务器
-    mcp = FastMCP("RegistryTools")
+    mcp = FastMCP("RegistryTools", instructions=get_server_description())
 
     # 初始化 SQLite 存储
     storage = SQLiteStorage(data_path / "tools.db")
