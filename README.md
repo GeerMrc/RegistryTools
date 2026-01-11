@@ -1,7 +1,7 @@
 # RegistryTools
 
-**版本**: v0.2.0
-**更新日期**: 2026-01-10
+**版本**: v0.2.1
+**更新日期**: 2026-01-11
 **独立 MCP Tool Registry Server** - 通用工具搜索与发现服务
 
 [![Python Version](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
@@ -22,24 +22,6 @@ RegistryTools 是一个独立的 MCP Tool Registry Server，提供通用的工�
 
 ---
 
-> **⚠️ PyPI 发布状态**
->
-> **RegistryTools 目前尚未发布到 PyPI**，仅支持从源码本地安装。
->
-> | 安装方式 | 命令 | 配置命令 |
-> |----------|------|----------|
-> | **本地安装**（当前） | `pip install -e .` 或 `uv pip install -e .` | `registry-tools` ✅ |
-> | **PyPI 安装**（不可用） | `pip install registry-tools` | - |
-> | **uvx 运行**（不可用） | `uvx registry-tools` | - ❌ |
->
-> **MCP 配置示例**（本地安装后）:
-> ```json
-> {
->   "command": "registry-tools",
->   "env": { "REGISTRYTOOLS_DATA_PATH": "~/.RegistryTools" }
-> }
-> ```
-
 ---
 
 ## 快速开始
@@ -47,20 +29,20 @@ RegistryTools 是一个独立的 MCP Tool Registry Server，提供通用的工�
 ### 安装
 
 ```bash
+# 从 PyPI 安装（推荐）
+pip install registry-tools
+
+# 或使用 uvx 无需安装
+uvx registry-tools
+
 # 本地开发环境（从源码安装）
 cd RegistryTools
 pip install -e .
-
-# 或从 PyPI 安装（发布后）
-pip install registry-tools
-
-# 使用 uvx（仅 PyPI 发布后可用）
-uvx registry-tools
 ```
 
 > **注意**:
-> - **本地开发环境**: 使用 `pip install -e .` 安装后，直接使用 `registry-tools` 命令
-> - **PyPI 发布后**: 可以使用 `uvx registry-tools` 无需安装
+> - **生产环境**: 使用 `pip install registry-tools` 或 `uvx registry-tools`
+> - **本地开发**: 使用 `pip install -e .` 安装后，直接使用 `registry-tools` 命令
 
 ### 传输协议
 
@@ -83,7 +65,7 @@ RegistryTools 支持多种 MCP 传输协议:
 **Windows**: `%APPDATA%/Claude/claude_desktop_config.json`
 **Linux**: `~/.config/Claude/claude_desktop_config.json`
 
-**本地开发环境配置** (推荐用于开发):
+**本地开发配置** (用于开发):
 ```json
 {
   "mcpServers": {
@@ -95,7 +77,7 @@ RegistryTools 支持多种 MCP 传输协议:
 }
 ```
 
-**PyPI 发布后配置** (推荐用于生产):
+**生产环境配置** (推荐用于生产):
 ```json
 {
   "mcpServers": {
@@ -179,7 +161,7 @@ Claude Code 是 Anthropic 官方的 VSCode AI 助手，支持通过 MCP 协议�
 
 **STDIO 本地服务器**：
 
-**本地开发环境配置** (推荐用于开发):
+**本地开发配置** (用于开发):
 ```bash
 # 基础配置（直接使用已安装的命令）
 claude mcp add --transport stdio RegistryTools -- registry-tools
@@ -190,7 +172,7 @@ claude mcp add --transport stdio RegistryTools \
   -- registry-tools
 ```
 
-**PyPI 发布后配置** (推荐用于生产):
+**生产环境配置** (推荐用于生产):
 ```bash
 # 基础配置（使用 uvx）
 claude mcp add --transport stdio RegistryTools -- uvx registry-tools
@@ -243,7 +225,7 @@ claude mcp add --scope user --transport stdio RegistryTools -- uvx registry-tool
 
 创建 `.claude/config.json`（项目级）或 `~/.claude/config.json`（用户级）：
 
-**本地开发环境配置** (推荐用于开发):
+**本地开发配置** (用于开发):
 ```json
 {
   "mcpServers": {
@@ -258,7 +240,7 @@ claude mcp add --scope user --transport stdio RegistryTools -- uvx registry-tool
 }
 ```
 
-**PyPI 发布后配置** (推荐用于生产):
+**生产环境配置** (推荐用于生产):
 ```json
 {
   "mcpServers": {
@@ -280,7 +262,7 @@ claude mcp add --scope user --transport stdio RegistryTools -- uvx registry-tool
 
 **STDIO 本地服务器**：
 
-**本地开发环境配置** (推荐用于开发):
+**本地开发配置** (用于开发):
 ```bash
 # 基础配置
 claude mcp add-json "RegistryTools" '{"command": "registry-tools"}' --scope user
@@ -295,7 +277,7 @@ claude mcp add-json "RegistryTools" '{
 }' --scope user
 ```
 
-**PyPI 发布后配置** (推荐用于生产):
+**生产环境配置** (推荐用于生产):
 ```bash
 # 基础配置（使用 uvx）
 claude mcp add-json "RegistryTools" '{"command": "uvx", "args": ["registry-tools"]}' --scope user
@@ -366,6 +348,35 @@ registry-tools --host 0.0.0.0 --port 8000
 
 **详细配置**: 参见 [配置指南](docs/CONFIGURATION.md)
 
+### Embedding 搜索配置（可选）
+
+Embedding 搜索提供语义理解能力，但需要额外的依赖和资源。
+
+**安装依赖**:
+```bash
+pip install registry-tools[embedding]
+```
+
+**环境变量**:
+- `REGISTRYTOOLS_SEARCH_METHOD=embedding` - 启用语义搜索
+- `REGISTRYTOOLS_DEVICE=gpu:0` - 使用 GPU 加速（可选）
+  - `cpu` - 使用 CPU（默认）
+  - `gpu:0` / `gpu:1` - 使用指定 GPU
+  - `auto` - 自动选择 GPU 或 CPU
+
+**性能对比**:
+| 方法 | 速度 | 准确率 | 内存占用 |
+|------|------|--------|----------|
+| regex | 最快 | 高 | ~50MB |
+| bm25 | 快 | 高 | ~50MB |
+| embedding | 慢 | 最高 | ~550MB |
+
+**GPU 内存需求**:
+| 模型 | GPU 内存 | CPU 内存 |
+|------|---------|----------|
+| paraphrase-multilingual-MiniLM-L12-v2 (默认) | ~500MB | ~1GB |
+| all-MiniLM-L6-v2 | ~100MB | ~300MB |
+
 ---
 
 ## 高级功能
@@ -419,10 +430,13 @@ register_tool(
 
 ### MCP 工具接口
 
-- `search_tools` - 搜索可用的 MCP 工具
+- `search_tools` - 搜索可用的 MCP 工具（支持 regex/bm25/embedding）
+- `search_hot_tools` - 快速搜索热工具（性能优化，仅搜索高频工具）
 - `get_tool_definition` - 获取工具的完整定义
 - `list_tools_by_category` - 按类别列出工具
 - `register_tool` - 动态注册新工具
+
+> **性能提示**: 对于大型工具集，使用 `search_hot_tools` 可提升搜索速度 40-60%。
 
 ### MCP 资源接口
 
@@ -523,7 +537,7 @@ ruff check src/registrytools/ tests/
 
 ## 路线图
 
-### v0.2.0 (当前 - 2026-01-10)
+### v0.2.1 (当前 - 2026-01-11)
 - ✅ 所有 v0.1.1 功能
 - ✅ 搜索引擎全局配置（REGISTRYTOOLS_SEARCH_METHOD 环境变量）
 - ✅ search_method 参数可选（默认使用环境变量）
