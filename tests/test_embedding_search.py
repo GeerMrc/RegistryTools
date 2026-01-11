@@ -7,7 +7,6 @@ Copyright (c) 2026 Maric
 License: MIT
 """
 
-import os
 import threading
 
 import pytest
@@ -461,7 +460,7 @@ class TestEmbeddingSearchLazyLoader:
         loader = EmbeddingSearchLazyLoader()
 
         # 测试 search 方法
-        results = loader.search("test", sample_tools, 5)
+        loader.search("test", sample_tools, 5)
         assert loader._real_searcher is not None
 
         # 测试 index 方法
