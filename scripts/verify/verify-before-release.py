@@ -37,10 +37,9 @@ def verify_project_structure():
 
     required_dirs = [
         "docs",
-        "RegistryTools",
+        "src",
         "scripts",
-        "tests",
-        "examples"
+        "tests"
     ]
 
     required_docs = [
