@@ -16,7 +16,6 @@ import pytest
 from registrytools.auth import (
     APIKey,
     APIKeyAuthMiddleware,
-    APIKeyAuthResult,
     APIKeyGenerator,
     APIKeyMetadata,
     APIKeyPermission,
@@ -31,7 +30,6 @@ from registrytools.auth.middleware import (
     APIKeyInsufficientPermission,
     APIKeyInvalid,
 )
-
 
 # ============================================================
 # API Key 生成器测试

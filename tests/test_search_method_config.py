@@ -7,8 +7,6 @@ Copyright (c) 2026 Maric
 License: MIT
 """
 
-import os
-
 import pytest
 
 from registrytools.registry.models import SearchMethod
@@ -90,9 +88,7 @@ class TestGetDefaultSearchMethod:
         "method",
         ["regex", "bm25", "embedding"],
     )
-    def test_all_valid_methods(
-        self, monkeypatch: pytest.MonkeyPatch, method: str
-    ) -> None:
+    def test_all_valid_methods(self, monkeypatch: pytest.MonkeyPatch, method: str) -> None:
         """测试所有有效方法"""
         monkeypatch.setenv("REGISTRYTOOLS_SEARCH_METHOD", method)
 
@@ -100,9 +96,7 @@ class TestGetDefaultSearchMethod:
 
         assert result.value == method
 
-    def test_empty_string_uses_default(
-        self, monkeypatch: pytest.MonkeyPatch
-    ) -> None:
+    def test_empty_string_uses_default(self, monkeypatch: pytest.MonkeyPatch) -> None:
         """测试空字符串使用默认值"""
         monkeypatch.setenv("REGISTRYTOOLS_SEARCH_METHOD", "")
 
@@ -110,9 +104,7 @@ class TestGetDefaultSearchMethod:
 
         assert result == SearchMethod.BM25
 
-    def test_whitespace_only_uses_default(
-        self, monkeypatch: pytest.MonkeyPatch
-    ) -> None:
+    def test_whitespace_only_uses_default(self, monkeypatch: pytest.MonkeyPatch) -> None:
         """测试仅空格使用默认值"""
         monkeypatch.setenv("REGISTRYTOOLS_SEARCH_METHOD", "   ")
 

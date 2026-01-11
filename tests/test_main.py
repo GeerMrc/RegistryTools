@@ -7,7 +7,6 @@ Copyright (c) 2026 Maric
 License: MIT
 """
 
-import logging
 from pathlib import Path
 from unittest.mock import Mock, patch
 
@@ -19,7 +18,9 @@ from registrytools.__main__ import main
 class TestLogging:
     """测试日志功能 (Phase 14.2)"""
 
-    def test_default_log_level_is_info(self, tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    def test_default_log_level_is_info(
+        self, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+    ) -> None:
         """测试默认日志级别是 INFO"""
         with (
             patch("registrytools.server.create_server") as mock_create_server,
@@ -36,7 +37,9 @@ class TestLogging:
             assert "数据路径:" in captured.err
             assert "传输协议:" in captured.err
 
-    def test_debug_log_level_from_env(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    def test_debug_log_level_from_env(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
         """测试从环境变量设置 DEBUG 日志级别"""
         with (
             patch("registrytools.server.create_server") as mock_create_server,
@@ -52,9 +55,12 @@ class TestLogging:
 
             # 验证日志级别被设置为 DEBUG
             import logging
+
             assert logging.getLogger().level == logging.DEBUG
 
-    def test_warning_log_level_from_env(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    def test_warning_log_level_from_env(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
         """测试从环境变量设置 WARNING 日志级别"""
         with (
             patch("registrytools.server.create_server") as mock_create_server,
@@ -70,9 +76,12 @@ class TestLogging:
 
             # 验证日志级别被设置为 WARNING
             import logging
+
             assert logging.getLogger().level == logging.WARNING
 
-    def test_error_log_level_from_env(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    def test_error_log_level_from_env(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
         """测试从环境变量设置 ERROR 日志级别"""
         with (
             patch("registrytools.server.create_server") as mock_create_server,
@@ -88,9 +97,12 @@ class TestLogging:
 
             # 验证日志级别被设置为 ERROR
             import logging
+
             assert logging.getLogger().level == logging.ERROR
 
-    def test_debug_log_shows_version(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]) -> None:
+    def test_debug_log_shows_version(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+    ) -> None:
         """测试 DEBUG 级别显示版本信息"""
         with (
             patch("registrytools.server.create_server") as mock_create_server,
@@ -367,7 +379,9 @@ class TestMainEnvironmentVariables:
         """测试传输环境变量优先级高于命令行参数"""
         with (
             patch("registrytools.server.create_server") as mock_create_server,
-            patch("sys.argv", ["registry-tools", "--transport", "stdio", "--data-path", str(tmp_path)]),
+            patch(
+                "sys.argv", ["registry-tools", "--transport", "stdio", "--data-path", str(tmp_path)]
+            ),
         ):
             monkeypatch.setenv("REGISTRYTOOLS_TRANSPORT", "http")
 
@@ -406,14 +420,11 @@ class TestMainEnvironmentVariables:
 
                 mock_app = Mock()
                 mock_app.run = Mock()
-                mock_create_server = Mock(return_value=mock_app)
 
                 # 不应该抛出异常
                 main()
 
-    def test_env_log_level_invalid(
-        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-    ) -> None:
+    def test_env_log_level_invalid(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
         """测试无效的日志级别环境变量"""
         with (
             patch("registrytools.server.create_server"),
@@ -423,4 +434,3 @@ class TestMainEnvironmentVariables:
 
             with pytest.raises(ValueError, match="无效的日志级别"):
                 main()
-

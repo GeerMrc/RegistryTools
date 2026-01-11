@@ -558,9 +558,7 @@ def _register_mcp_tools(
 
         # search_hot_tools 不支持 embedding，自动回退到 bm25
         if method == SearchMethod.EMBEDDING:
-            logger.warning(
-                "search_hot_tools 不支持 embedding 搜索方法，自动回退到 bm25"
-            )
+            logger.warning("search_hot_tools 不支持 embedding 搜索方法，自动回退到 bm25")
             method = SearchMethod.BM25
 
         # 执行搜索（仅搜索热工具和温工具）
