@@ -1,15 +1,8 @@
 # RegistryTools - Claude Code 配置指南
 
-**版本**: v0.2.0
-**更新日期**: 2026-01-10
+**版本**: v0.2.1
+**更新日期**: 2026-01-11
 **项目**: RegistryTools - MCP Tool Registry Server
-
----
-
-## ⚠️ PyPI 发布状态
-
-> **注意**: RegistryTools 尚未发布到 PyPI，当前仅支持本地开发环境安装。
-> 详见 [安装指南 - PyPI 发布状态](INSTALLATION.md#pypi-发布状态)。
 
 ---
 
@@ -391,9 +384,23 @@ claude mcp add-json "RegistryTools" '{
 | `REGISTRYTOOLS_LOG_LEVEL` | `INFO` | 日志级别 |
 | `REGISTRYTOOLS_TRANSPORT` | `stdio` | 传输协议 |
 | `REGISTRYTOOLS_ENABLE_AUTH` | `false` | 启用 API Key 认证（仅 HTTP 模式） |
+| `REGISTRYTOOLS_SEARCH_METHOD` | `bm25` | 默认搜索方法 (regex/bm25/embedding) |
+| `REGISTRYTOOLS_DEVICE` | `cpu` | Embedding 模型计算设备 (cpu/gpu:0/gpu:1/auto) |
 | `REGISTRYTOOLS_DESCRIPTION` | 统一的 MCP 工具注册与搜索服务，用于发现和筛选可用工具，提升任务执行工具调用准确性，复杂任务工具调用效率 | MCP 服务器描述 |
 
 > **完整配置**: 更多环境变量、可选值和详细说明，请参考 [配置指南](CONFIGURATION.md#环境变量配置)。
+
+### 搜索方法配置
+
+**环境变量**:
+- `REGISTRYTOOLS_SEARCH_METHOD` - 默认搜索方法 (regex/bm25/embedding)
+
+**性能优化**:
+- `search_hot_tools` - 快速搜索热工具（性能优化）
+  - 仅搜索热工具（使用频率 ≥ 10）和温工具（使用频率 ≥ 3）
+  - 跳过冷工具以提升搜索性能
+  - 对于大型工具集，搜索速度提升 40-60%
+  - 注意：不支持 embedding 方法，会自动回退到 bm25
 
 ### 配置示例
 
@@ -549,4 +556,4 @@ Claude 应该会调用 `search_tools` 工具并返回结果。
 ---
 
 **维护者**: Maric
-**文档版本**: v1.0
+**文档版本**: v0.2.1

@@ -1,7 +1,7 @@
 # RegistryTools 发布指南
 
-**版本**: v0.2.0
-**更新日期**: 2026-01-10
+**版本**: v0.2.1
+**更新日期**: 2026-01-11
 **项目**: RegistryTools - MCP Tool Registry Server
 
 本文档描述如何将 RegistryTools 发布到 PyPI。
@@ -63,13 +63,13 @@ mypy src/registrytools
 ```toml
 [project]
 name = "registry-tools"
-version = "0.2.0"  # 更新版本号
+version = "0.2.1"  # 更新版本号
 ```
 
 同时更新 `src/registrytools/__init__.py`：
 
 ```python
-__version__ = "0.2.0"
+__version__ = "0.2.1"
 ```
 
 ### 4. 更新 CHANGELOG.md
@@ -191,8 +191,8 @@ registry-tools --help
 1. 访问 GitHub Releases 页面
 2. 点击 "Draft a new release"
 3. 填写发布信息：
-   - **Tag**: `v0.2.0`
-   - **Title**: `RegistryTools v0.2.0`
+   - **Tag**: `v0.2.1`
+   - **Title**: `RegistryTools v0.2.1`
    - **Description**: 从 CHANGELOG.md 复制变更内容
 4. 上传构建包
 5. 点击 "Publish release"
