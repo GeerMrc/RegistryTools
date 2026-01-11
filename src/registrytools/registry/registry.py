@@ -475,8 +475,9 @@ class ToolRegistry:
         # 合并热工具和温工具
         hot_warm_tools = hot_tools + warm_tools
 
-        # 强制重建索引以匹配热+温工具子集 (TASK-802)
-        searcher.index(hot_warm_tools)
+        # 仅在需要时重建索引（使用缓存检测）
+        if searcher._should_rebuild_index(hot_warm_tools):
+            searcher.index(hot_warm_tools)
 
         # 执行搜索
         results = searcher.search(query, hot_warm_tools, limit)

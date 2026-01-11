@@ -20,11 +20,7 @@ def create_git_tag(version: str):
     print(f"🏷️  创建 Git 标签 v{version}...")
 
     # 检查标签是否已存在
-    result = subprocess.run(
-        ["git", "tag", "-l", f"v{version}"],
-        capture_output=True,
-        text=True
-    )
+    result = subprocess.run(["git", "tag", "-l", f"v{version}"], capture_output=True, text=True)
 
     if result.stdout.strip():
         print(f"  ⚠️  标签 v{version} 已存在")
@@ -34,7 +30,7 @@ def create_git_tag(version: str):
     result = subprocess.run(
         ["git", "tag", "-a", f"v{version}", "-m", f"Release v{version}"],
         capture_output=True,
-        text=True
+        text=True,
     )
 
     if result.returncode != 0:
@@ -134,8 +130,9 @@ def create_release_package(version: str):
     package_dir = release_dir / "RegistryTools"
     if package_dir.exists():
         shutil.rmtree(package_dir)
-    shutil.copytree("RegistryTools", package_dir,
-                    ignore=shutil.ignore_patterns("__pycache__", "*.pyc"))
+    shutil.copytree(
+        "RegistryTools", package_dir, ignore=shutil.ignore_patterns("__pycache__", "*.pyc")
+    )
 
     # 创建压缩包
     archive_name = f"registry-tools-{version}"
@@ -144,9 +141,12 @@ def create_release_package(version: str):
     if archive_path.exists():
         archive_path.unlink()
 
-    shutil.make_archive(str(archive_path.with_suffix("")), "gztar",
-                       root_dir=dist_dir,
-                       base_dir=f"registry-tools-{version}")
+    shutil.make_archive(
+        str(archive_path.with_suffix("")),
+        "gztar",
+        root_dir=dist_dir,
+        base_dir=f"registry-tools-{version}",
+    )
 
     print(f"  ✓ 发布包已创建: {archive_path.name}")
 
@@ -166,11 +166,8 @@ def update_version(version: str):
         content = pyproject.read_text(encoding="utf-8")
         # 简单的版本号替换（实际应使用 toml 库）
         import re
-        new_content = re.sub(
-            r'version\s*=\s*"[^"]+"',
-            f'version = "{version}"',
-            content
-        )
+
+        new_content = re.sub(r'version\s*=\s*"[^"]+"', f'version = "{version}"', content)
         pyproject.write_text(new_content, encoding="utf-8")
         print("  ✓ pyproject.toml 已更新")
 

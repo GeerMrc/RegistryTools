@@ -7,10 +7,19 @@ Copyright (c) 2026 Maric
 License: MIT
 """
 
+import os
+import threading
+
 import pytest
 
 from registrytools.registry.models import SearchMethod, ToolMetadata
-from registrytools.search.embedding_search import EmbeddingSearch
+from registrytools.search.embedding_search import (
+    EmbeddingSearch,
+    EmbeddingSearchLazyLoader,
+    _is_gpu_available,
+    _is_specific_gpu_available,
+    _validate_and_get_device,
+)
 
 
 class TestEmbeddingSearch:
@@ -299,3 +308,228 @@ class TestEmbeddingSearch:
         assert hasattr(searcher, "search")
         assert callable(searcher.index)
         assert callable(searcher.search)
+
+
+# ============================================================
+# GPU 验证函数测试
+# ============================================================
+
+
+class TestGPUValidation:
+    """GPU 可用性验证函数测试"""
+
+    def test_is_gpu_available(self):
+        """测试 GPU 可用性检查"""
+        result = _is_gpu_available()
+        # 应该返回布尔值
+        assert isinstance(result, bool)
+
+    def test_is_specific_gpu_available(self):
+        """测试指定 GPU 可用性检查"""
+        # 测试 GPU 0
+        result = _is_gpu_available()
+        if result:
+            # 如果有 GPU，检查 GPU 0 应该可用
+            assert _is_specific_gpu_available(0) is True
+        else:
+            # 如果没有 GPU，检查应该返回 False
+            assert _is_specific_gpu_available(0) is False
+
+        # 测试不存在的 GPU
+        assert _is_specific_gpu_available(999) is False
+
+    def test_validate_cpu_device(self):
+        """测试 CPU 设备验证"""
+        device, fallback, log_msg = _validate_and_get_device("cpu")
+        assert device == "cpu"
+        assert fallback is False
+        assert log_msg == ""
+
+    def test_validate_empty_device(self):
+        """测试空设备配置（默认为 CPU）"""
+        device, fallback, log_msg = _validate_and_get_device("")
+        assert device == "cpu"
+        assert fallback is False
+        assert log_msg == ""
+
+    def test_validate_auto_mode_with_gpu(self, monkeypatch):
+        """测试 auto 模式（有 GPU）"""
+        # 模拟 GPU 可用
+        if _is_gpu_available():
+            device, fallback, log_msg = _validate_and_get_device("auto")
+            assert device == "cuda:0"
+            assert fallback is False
+            assert log_msg == ""
+
+    def test_validate_auto_mode_without_gpu(self):
+        """测试 auto 模式（无 GPU）静默降级"""
+        device, fallback, log_msg = _validate_and_get_device("auto")
+        # 无论是否有 GPU，都应该返回有效设备
+        assert device in ("cpu", "cuda:0")
+        # 如果是 CPU，应该是降级结果
+        if device == "cpu":
+            assert fallback is True
+            assert log_msg == ""  # auto 模式静默降级
+
+    def test_validate_specific_gpu_unavailable(self):
+        """测试具体 GPU 不可用时警告并降级"""
+        device, fallback, log_msg = _validate_and_get_device("gpu:999")
+        assert device == "cpu"
+        assert fallback is True
+        assert "不可用" in log_msg
+
+    def test_validate_gpu_format_conversion(self):
+        """测试 GPU 格式转换"""
+        if _is_gpu_available() and _is_specific_gpu_available(0):
+            device, fallback, log_msg = _validate_and_get_device("gpu:0")
+            assert device == "cuda:0"
+            assert fallback is False
+            assert log_msg == ""
+
+            device, fallback, log_msg = _validate_and_get_device("cuda:0")
+            assert device == "cuda:0"
+            assert fallback is False
+            assert log_msg == ""
+
+    def test_validate_invalid_gpu_config(self):
+        """测试无效 GPU 配置"""
+        device, fallback, log_msg = _validate_and_get_device("gpu:invalid")
+        assert device == "cpu"
+        assert fallback is True
+        assert "无效" in log_msg
+
+    def test_validate_unknown_device_config(self):
+        """测试未知设备配置"""
+        device, fallback, log_msg = _validate_and_get_device("unknown_device")
+        assert device == "cpu"
+        assert fallback is True
+        assert "未知" in log_msg
+
+
+# ============================================================
+# 延迟加载器测试
+# ============================================================
+
+
+class TestEmbeddingSearchLazyLoader:
+    """EmbeddingSearchLazyLoader 延迟加载器测试"""
+
+    @pytest.fixture
+    def sample_tools(self):
+        """创建示例工具列表"""
+        return [
+            ToolMetadata(
+                name="test.tool1",
+                description="Test tool 1",
+                tags={"test", "tool1"},
+            ),
+            ToolMetadata(
+                name="test.tool2",
+                description="Test tool 2",
+                tags={"test", "tool2"},
+            ),
+        ]
+
+    def test_lazy_loader_initialization(self):
+        """测试延迟加载器初始化"""
+        loader = EmbeddingSearchLazyLoader()
+        assert loader.method == SearchMethod.EMBEDDING
+        assert loader._real_searcher is None
+
+    def test_first_search_triggers_loading(self, sample_tools):
+        """测试首次搜索触发模型加载"""
+        loader = EmbeddingSearchLazyLoader()
+        assert loader._real_searcher is None
+
+        results = loader.search("test", sample_tools, 5)
+
+        assert loader._real_searcher is not None
+        assert len(results) >= 0
+
+    def test_first_index_triggers_loading(self, sample_tools):
+        """测试首次索引触发模型加载"""
+        loader = EmbeddingSearchLazyLoader()
+        assert loader._real_searcher is None
+
+        loader.index(sample_tools)
+
+        assert loader._real_searcher is not None
+        assert loader.is_indexed()
+
+    def test_lazy_loader_delegation(self, sample_tools):
+        """测试延迟加载器委托行为"""
+        loader = EmbeddingSearchLazyLoader()
+
+        # 测试 search 方法
+        results = loader.search("test", sample_tools, 5)
+        assert loader._real_searcher is not None
+
+        # 测试 index 方法
+        loader.index(sample_tools)
+        assert loader._real_searcher.is_indexed()
+
+        # 测试 index_layered 方法
+        hot = sample_tools[:1]
+        warm = sample_tools[1:]
+        loader.index_layered(hot, warm)
+        assert loader._real_searcher.is_indexed()
+
+    def test_unload_model_delegation(self, sample_tools):
+        """测试 unload_model 委托"""
+        loader = EmbeddingSearchLazyLoader()
+
+        # 触发加载
+        loader.index(sample_tools)
+        assert loader._real_searcher is not None
+
+        # 卸载模型
+        loader.unload_model()
+
+    def test_thread_safe_loading(self, sample_tools):
+        """测试线程安全的加载"""
+        loader = EmbeddingSearchLazyLoader()
+
+        results_list = []
+        exceptions = []
+
+        def search_in_thread():
+            try:
+                results = loader.search("test", sample_tools, 5)
+                results_list.append(results)
+            except Exception as e:
+                exceptions.append(e)
+
+        # 创建多个线程同时搜索
+        threads = [threading.Thread(target=search_in_thread) for _ in range(10)]
+
+        for t in threads:
+            t.start()
+        for t in threads:
+            t.join()
+
+        # 应该没有异常
+        assert len(exceptions) == 0
+        # 应该创建了搜索器实例
+        assert loader._real_searcher is not None
+        # 应该有结果
+        assert len(results_list) == 10
+
+    def test_gpu_validation_in_lazy_loader(self, sample_tools, monkeypatch):
+        """测试延迟加载器中的 GPU 验证"""
+        # 测试 auto 模式
+        monkeypatch.setenv("REGISTRYTOOLS_DEVICE", "auto")
+        loader = EmbeddingSearchLazyLoader()
+        loader.index(sample_tools)
+
+        # 验证搜索器已创建
+        assert loader._real_searcher is not None
+
+    def test_validated_device_parameter(self):
+        """测试 EmbeddingSearch 的 _validated_device 参数"""
+        # 直接创建 EmbeddingSearch 并传入已验证的设备
+        searcher = EmbeddingSearch(_validated_device="cpu")
+        assert searcher._device == "cpu"
+
+        # 不传参数时，应该从环境变量读取
+        searcher2 = EmbeddingSearch()
+        assert searcher2._device in ("cpu", "cuda:0", "cuda:1")

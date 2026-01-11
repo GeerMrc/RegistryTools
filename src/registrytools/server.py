@@ -176,12 +176,29 @@ def get_default_search_method() -> SearchMethod:
         >>> # 环境变量设置为无效值（回退到默认）
         >>> get_default_search_method()  # REGISTRYTOOLS_SEARCH_METHOD="invalid"
         <SearchMethod.BM25: 'bm25'>
+
+    Note:
+        embedding 方法需要安装可选依赖 sentence-transformers。
+        如果设置了 embedding 但依赖未安装，将回退到 BM25 并发出警告。
     """
     custom_method = os.getenv("REGISTRYTOOLS_SEARCH_METHOD", "").strip().lower()
 
     if custom_method:
         try:
             method = SearchMethod(custom_method)
+
+            # 检查 embedding 依赖
+            if method == SearchMethod.EMBEDDING:
+                try:
+                    import sentence_transformers  # noqa: F401
+                except ImportError:
+                    logger.warning(
+                        f"Embedding 搜索方法需要安装可选依赖，但未找到 sentence-transformers。"
+                        f"使用 'pip install registry-tools[embedding]' 安装。"
+                        f"回退到默认值: {SearchMethod.BM25.value}"
+                    )
+                    return SearchMethod.BM25
+
             logger.info(f"使用默认搜索方法: {method.value}")
             return method
         except ValueError:
@@ -684,7 +701,30 @@ def create_server(
     # 注册搜索算法
     registry.register_searcher(SearchMethod.REGEX, RegexSearch(case_sensitive=False))
     registry.register_searcher(SearchMethod.BM25, BM25Search())
-    registry.register_searcher(SearchMethod.EMBEDDING, EmbeddingSearch())
+
+    # 延迟注册 EmbeddingSearch（仅在配置为 embedding 时）
+    # 根据配置决定是否注册，实现按需加载
+    default_method = get_default_search_method()
+
+    if default_method == SearchMethod.EMBEDDING:
+        # 检查依赖是否安装
+        try:
+            import sentence_transformers  # noqa: F401
+
+            # 注册延迟加载器（首次搜索时才初始化模型）
+            from registrytools.search.embedding_search import EmbeddingSearchLazyLoader
+
+            registry.register_searcher(SearchMethod.EMBEDDING, EmbeddingSearchLazyLoader())
+            logger.info(
+                "Embedding 搜索器已注册（延迟加载模式，首次搜索时初始化模型）。"
+                f"当前配置：REGISTRYTOOLS_SEARCH_METHOD=embedding"
+            )
+        except ImportError:
+            logger.warning(
+                "Embedding 搜索方法需要安装可选依赖，但未找到 sentence-transformers。"
+                "使用 'pip install registry-tools[embedding]' 安装。"
+                "已禁用 Embedding 搜索器。"
+            )
 
     # 重建搜索索引
     registry.rebuild_indexes()
@@ -745,7 +785,30 @@ def create_server_with_sqlite(
     # 注册搜索算法
     registry.register_searcher(SearchMethod.REGEX, RegexSearch(case_sensitive=False))
     registry.register_searcher(SearchMethod.BM25, BM25Search())
-    registry.register_searcher(SearchMethod.EMBEDDING, EmbeddingSearch())
+
+    # 延迟注册 EmbeddingSearch（仅在配置为 embedding 时）
+    # 根据配置决定是否注册，实现按需加载
+    default_method = get_default_search_method()
+
+    if default_method == SearchMethod.EMBEDDING:
+        # 检查依赖是否安装
+        try:
+            import sentence_transformers  # noqa: F401
+
+            # 注册延迟加载器（首次搜索时才初始化模型）
+            from registrytools.search.embedding_search import EmbeddingSearchLazyLoader
+
+            registry.register_searcher(SearchMethod.EMBEDDING, EmbeddingSearchLazyLoader())
+            logger.info(
+                "Embedding 搜索器已注册（延迟加载模式，首次搜索时初始化模型）。"
+                f"当前配置：REGISTRYTOOLS_SEARCH_METHOD=embedding"
+            )
+        except ImportError:
+            logger.warning(
+                "Embedding 搜索方法需要安装可选依赖，但未找到 sentence-transformers。"
+                "使用 'pip install registry-tools[embedding]' 安装。"
+                "已禁用 Embedding 搜索器。"
+            )
 
     # 重建搜索索引
     registry.rebuild_indexes()

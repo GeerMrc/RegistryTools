@@ -20,6 +20,7 @@ def verify_import():
 
     try:
         import registrytools
+
         print("  ✓ RegistryTools 模块导入成功")
         return True
     except ImportError as e:
@@ -50,16 +51,53 @@ def verify_dependencies():
     return all_ok
 
 
+def verify_optional_dependencies():
+    """验证可选依赖项"""
+    print("\n🔍 验证可选依赖项...")
+
+    optional_deps = {
+        "embedding": ["sentence_transformers", "numpy"],
+    }
+
+    for feature, deps in optional_deps.items():
+        print(f"\n  {feature.upper()} 功能:")
+        all_available = True
+        for dep in deps:
+            try:
+                importlib.import_module(dep)
+                print(f"    ✓ {dep}")
+            except ImportError:
+                print(f"    ✗ {dep} 未安装（可选）")
+                all_available = False
+
+        if all_available:
+            print(f"    ✅ {feature} 功能完整可用")
+        else:
+            print(f"    ⚠️  {feature} 功能依赖缺失")
+
+        # 检查 GPU 可用性
+        if feature == "embedding" and all_available:
+            try:
+                import torch
+
+                if torch.cuda.is_available():
+                    print(f"    🎮 GPU 可用: {torch.cuda.device_count()} 个设备")
+                    for i in range(torch.cuda.device_count()):
+                        print(f"       - GPU {i}: {torch.cuda.get_device_name(i)}")
+                else:
+                    print(f"    💻 仅 CPU 模式可用")
+            except ImportError:
+                pass
+
+    return True
+
+
 def verify_cli():
     """验证命令行工具"""
     print("\n🔍 验证命令行工具...")
 
     try:
-        result = subprocess.run(
-            ["registry-tools", "--help"],
-            capture_output=True,
-            timeout=5
-        )
+        result = subprocess.run(["registry-tools", "--help"], capture_output=True, timeout=5)
         if result.returncode == 0:
             print("  ✓ registry-tools 命令可用")
             return True
@@ -76,6 +114,7 @@ def verify_data_directory():
     print("\n🔍 验证数据目录...")
 
     from pathlib import Path
+
     data_dir = Path.home() / ".RegistryTools"
 
     if data_dir.exists():
@@ -96,6 +135,7 @@ def main():
     checks = [
         verify_import(),
         verify_dependencies(),
+        verify_optional_dependencies(),
         verify_cli(),
         verify_data_directory(),
     ]

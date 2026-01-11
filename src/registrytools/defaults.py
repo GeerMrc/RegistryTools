@@ -18,8 +18,28 @@ from registrytools.registry.models import SearchMethod, ToolMetadata
 DEFAULT_SEARCH_METHOD = SearchMethod.BM25
 """默认搜索方法 (regex/bm25/embedding)"""
 
-SUPPORTED_SEARCH_METHODS = [SearchMethod.REGEX, SearchMethod.BM25, SearchMethod.EMBEDDING]
-"""支持的搜索方法列表"""
+
+def get_supported_search_methods() -> list[SearchMethod]:
+    """
+    动态获取当前安装支持的搜索方法
+
+    检测可选依赖是否安装，返回实际可用的搜索方法列表。
+
+    Returns:
+        支持的搜索方法列表
+    """
+    methods = [SearchMethod.REGEX, SearchMethod.BM25]
+    try:
+        import sentence_transformers  # noqa: F401
+
+        methods.append(SearchMethod.EMBEDDING)
+    except ImportError:
+        pass
+    return methods
+
+
+SUPPORTED_SEARCH_METHODS = get_supported_search_methods()
+"""支持的搜索方法列表（动态检测）"""
 
 # ============================================================
 # 冷热工具分类配置 (TASK-802)

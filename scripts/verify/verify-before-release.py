@@ -16,6 +16,7 @@ from pathlib import Path
 
 class Colors:
     """终端颜色"""
+
     GREEN = "\033[92m"
     RED = "\033[91m"
     YELLOW = "\033[93m"
@@ -25,7 +26,9 @@ class Colors:
 
 def print_check(name: str, passed: bool, message: str = ""):
     """打印检查结果"""
-    status = f"{Colors.GREEN}✓ PASS{Colors.RESET}" if passed else f"{Colors.RED}✗ FAIL{Colors.RESET}"
+    status = (
+        f"{Colors.GREEN}✓ PASS{Colors.RESET}" if passed else f"{Colors.RED}✗ FAIL{Colors.RESET}"
+    )
     print(f"  {status} {name}")
     if message:
         print(f"    {message}")
@@ -35,12 +38,7 @@ def verify_project_structure():
     """验证项目结构"""
     print(f"\n{Colors.BLUE}📁 验证项目结构{Colors.RESET}")
 
-    required_dirs = [
-        "docs",
-        "src",
-        "scripts",
-        "tests"
-    ]
+    required_dirs = ["docs", "src", "scripts", "tests"]
 
     required_docs = [
         "docs/TASK.md",
@@ -48,7 +46,7 @@ def verify_project_structure():
         "docs/DEVELOPMENT_WORKFLOW.md",
         "docs/ARCHITECTURE.md",
         "docs/API.md",
-        "docs/CHANGELOG.md"
+        "docs/CHANGELOG.md",
     ]
 
     all_passed = True
@@ -80,10 +78,7 @@ def verify_documentation_sync():
 
     content = task_md.read_text(encoding="utf-8")
 
-    required_phases = [
-        "Phase 0", "Phase 1", "Phase 2",
-        "Phase 3", "Phase 4", "Phase 5"
-    ]
+    required_phases = ["Phase 0", "Phase 1", "Phase 2", "Phase 3", "Phase 4", "Phase 5"]
 
     all_passed = True
     for phase in required_phases:
@@ -112,9 +107,7 @@ def verify_tests():
     # 运行测试（如果 pytest 可用）
     try:
         result = subprocess.run(
-            ["python", "-m", "pytest", "--collect-only"],
-            capture_output=True,
-            timeout=10
+            ["python", "-m", "pytest", "--collect-only"], capture_output=True, timeout=10
         )
         tests_passed = result.returncode == 0
         print_check("pytest 可运行", tests_passed)
@@ -133,9 +126,7 @@ def verify_code_quality():
     # 检查 Black
     try:
         result = subprocess.run(
-            ["black", "--check", "src/registrytools/"],
-            capture_output=True,
-            timeout=30
+            ["black", "--check", "src/registrytools/"], capture_output=True, timeout=30
         )
         formatted = result.returncode == 0
         print_check("代码格式 (Black)", formatted)
@@ -147,9 +138,7 @@ def verify_code_quality():
     # 检查 Ruff
     try:
         result = subprocess.run(
-            ["ruff", "check", "src/registrytools/"],
-            capture_output=True,
-            timeout=30
+            ["ruff", "check", "src/registrytools/"], capture_output=True, timeout=30
         )
         passed = result.returncode == 0
         print_check("代码检查 (Ruff)", passed)
@@ -168,9 +157,7 @@ def verify_git_status():
     # 检查是否在 Git 仓库中
     try:
         result = subprocess.run(
-            ["git", "rev-parse", "--is-inside-work-tree"],
-            capture_output=True,
-            text=True
+            ["git", "rev-parse", "--is-inside-work-tree"], capture_output=True, text=True
         )
         is_repo = result.stdout.strip() == "true"
         print_check("Git 仓库", is_repo)
@@ -181,11 +168,7 @@ def verify_git_status():
         return False
 
     # 检查是否有未提交的更改
-    result = subprocess.run(
-        ["git", "status", "--porcelain"],
-        capture_output=True,
-        text=True
-    )
+    result = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True)
     has_changes = len(result.stdout.strip()) > 0
     print_check("工作目录干净", not has_changes)
     if has_changes:
@@ -225,7 +208,9 @@ def main():
 
     all_passed = True
     for name, passed in results:
-        status = f"{Colors.GREEN}PASS{Colors.RESET}" if passed else f"{Colors.RED}FAIL{Colors.RESET}"
+        status = (
+            f"{Colors.GREEN}PASS{Colors.RESET}" if passed else f"{Colors.RED}FAIL{Colors.RESET}"
+        )
         print(f"  {status} {name}")
         if not passed:
             all_passed = False

@@ -8,10 +8,14 @@ License: MIT
 """
 
 import json
+import logging
 import sqlite3
+import threading
 from datetime import datetime
 from pathlib import Path
 from typing import TYPE_CHECKING
+
+logger = logging.getLogger(__name__)
 
 from registrytools.defaults import HOT_TOOL_THRESHOLD, WARM_TOOL_THRESHOLD
 from registrytools.registry.models import ToolMetadata
@@ -75,6 +79,10 @@ class SQLiteStorage(ToolStorage):
         if self._path.suffix != ".db":
             self._path = self._path.with_suffix(".db")
 
+        # 单例连接（线程安全）
+        self._conn: sqlite3.Connection | None = None
+        self._lock = threading.Lock()
+
     # ============================================================
     # 核心方法实现 (TASK-403)
     # ============================================================
@@ -103,8 +111,9 @@ class SQLiteStorage(ToolStorage):
                 try:
                     tool = self._row_to_tool(row)
                     tools.append(tool)
-                except Exception:
-                    # 跳过无效的数据
+                except Exception as e:
+                    # 跳过无效的数据，记录警告
+                    logger.warning(f"跳过无效的工具数据行: {row}, 错误: {e}")
                     continue
 
             return tools
@@ -409,12 +418,22 @@ class SQLiteStorage(ToolStorage):
 
     def _get_connection(self) -> sqlite3.Connection:
         """
-        获取数据库连接
+        获取数据库连接（单例模式，线程安全）
+
+        使用单例连接避免创建过多连接。首次调用时创建连接，
+        后续调用复用同一连接。
 
         Returns:
             SQLite 连接对象
         """
-        return sqlite3.connect(self._path, timeout=10.0)
+        if self._conn is None:
+            with self._lock:
+                # 双重检查锁定
+                if self._conn is None:
+                    self._conn = sqlite3.connect(self._path, timeout=10.0)
+                    # 启用 WAL 模式以提高并发性能
+                    self._conn.execute("PRAGMA journal_mode=WAL")
+        return self._conn
 
     def _ensure_initialized(self) -> None:
         """确保数据库已初始化"""
