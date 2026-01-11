@@ -3745,3 +3745,60 @@ tests/test_search_method_config.py::13 passed
 
 **Phase 39 状态**: ✅ 已完成
 
+
+
+---
+
+## Phase 40: 代码重复消除重构（2026-01-11）
+
+> **目标**: 消除 server.py 中 create_server() 和 create_server_with_sqlite() 的代码重复
+> **审核方法**: 100% 依赖实际代码/测试结果
+
+### 重构分析
+
+**问题识别（CODE-001）**:
+- `create_server()` 和 `create_server_with_sqlite()` 存在约 55 行重复代码
+- 唯一差异：
+  1. 存储初始化（JSONStorage vs SQLiteStorage）
+  2. 默认工具处理（auto_save=True vs auto_save=False + save_many）
+
+### 重构方案
+
+**新增辅助函数（3个）**:
+1. `_handle_default_tools_for_json()` - JSON 默认工具处理
+2. `_handle_default_tools_for_sqlite()` - SQLite 默认工具处理
+3. `_create_server_with_storage()` - 通用服务器创建逻辑
+
+**重构效果**:
+- 消除 55 行重复代码
+- `create_server()` 简化为 7 行（调用辅助函数）
+- `create_server_with_sqlite()` 简化为 7 行（调用辅助函数）
+- 总代码减少约 40 行
+
+### 代码变更
+
+**修改的文件（1个）**:
+- `src/registrytools/server.py`
+  - 新增 `_handle_default_tools_for_json()` 函数
+  - 新增 `_handle_default_tools_for_sqlite()` 函数
+  - 新增 `_create_server_with_storage()` 通用函数
+  - 简化 `create_server()` 使用辅助函数
+  - 简化 `create_server_with_sqlite()` 使用辅助函数
+
+### 测试结果
+
+- ✅ 404 passed
+- ✅ 1 warning (jieba DeprecationWarning)
+- ✅ ruff 代码检查通过
+- ✅ mypy 类型检查通过
+- ✅ black 格式化完成
+
+### 验收标准
+
+- [x] 代码重复已消除
+- [x] 所有测试通过（404个测试用例）
+- [x] 代码质量检查通过（ruff, mypy, black）
+- [x] STDIO 和 HTTP 模式均正常工作
+- [x] 提交遵循 Conventional Commits
+
+**Phase 40 状态**: ✅ 已完成

@@ -652,8 +652,133 @@ def _register_mcp_tools(
 
 
 # ============================================================
-# MCP 服务器创建函数 (Phase 15: 添加认证支持)
+# MCP 服务器创建函数 (Phase 15: 添加认证支持, Phase 40: 代码重构)
 # ============================================================
+
+
+def _handle_default_tools_for_json(
+    registry: ToolRegistry,
+    storage: ToolStorage,
+    data_path: Path,
+) -> None:
+    """
+    JSON 存储的默认工具处理逻辑
+
+    使用 auto_save=True 自动保存到 JSON。
+
+    Args:
+        registry: 工具注册表实例
+        storage: 存储层实例
+        data_path: 数据目录路径
+    """
+    from registrytools.defaults import load_default_tools_if_empty
+
+    default_tools = load_default_tools_if_empty(
+        tool_count=registry.tool_count,
+        storage_path=data_path / "tools.json",
+        auto_save=True,
+    )
+    if default_tools:
+        registry.register_many(default_tools)
+
+
+def _handle_default_tools_for_sqlite(
+    registry: ToolRegistry,
+    storage: ToolStorage,
+    data_path: Path,
+) -> None:
+    """
+    SQLite 存储的默认工具处理逻辑
+
+    使用 auto_save=False，手动调用 storage.save_many()。
+
+    Args:
+        registry: 工具注册表实例
+        storage: 存储层实例
+        data_path: 数据目录路径
+    """
+    from registrytools.defaults import load_default_tools_if_empty
+
+    default_tools = load_default_tools_if_empty(
+        tool_count=registry.tool_count,
+        storage_path=None,  # 不保存到 JSON
+        auto_save=False,
+    )
+    if default_tools:
+        registry.register_many(default_tools)
+        # 手动保存到 SQLite
+        storage.save_many(default_tools)
+
+
+def _create_server_with_storage(
+    data_path: Path,
+    storage: ToolStorage,
+    auth_middleware: "APIKeyAuthMiddleware | None" = None,
+    default_tools_handler: "Callable[[ToolRegistry, ToolStorage, Path], None] | None" = None,
+) -> FastMCP:
+    """
+    通用服务器创建辅助函数 (Phase 40: 重构提取)
+
+    消除 create_server() 和 create_server_with_sqlite() 之间的代码重复。
+
+    Args:
+        data_path: 数据目录路径
+        storage: 存储层实例（JSONStorage 或 SQLiteStorage）
+        auth_middleware: API Key 认证中间件（可选，仅 HTTP 模式使用）
+        default_tools_handler: 默认工具处理回调函数（可选）
+
+    Returns:
+        配置好的 FastMCP 服务器实例
+    """
+    # 创建 FastMCP 服务器
+    mcp = FastMCP("RegistryTools", instructions=get_server_description())
+
+    # 初始化工具注册表
+    registry = ToolRegistry()
+
+    # 加载已保存的工具
+    if storage.validate():
+        tools = storage.load_all()
+        registry.register_many(tools)
+
+    # 处理默认工具
+    if default_tools_handler:
+        default_tools_handler(registry, storage, data_path)
+
+    # 注册搜索算法
+    registry.register_searcher(SearchMethod.REGEX, RegexSearch(case_sensitive=False))
+    registry.register_searcher(SearchMethod.BM25, BM25Search())
+
+    # 延迟注册 EmbeddingSearch（仅在配置为 embedding 时）
+    default_method = get_default_search_method()
+
+    if default_method == SearchMethod.EMBEDDING:
+        # 检查依赖是否安装
+        try:
+            import sentence_transformers  # noqa: F401
+
+            # 注册延迟加载器（首次搜索时才初始化模型）
+            from registrytools.search.embedding_search import EmbeddingSearchLazyLoader
+
+            registry.register_searcher(SearchMethod.EMBEDDING, EmbeddingSearchLazyLoader())
+            logger.info(
+                "Embedding 搜索器已注册（延迟加载模式，首次搜索时初始化模型）。"
+                "当前配置：REGISTRYTOOLS_SEARCH_METHOD=embedding"
+            )
+        except ImportError:
+            logger.warning(
+                "Embedding 搜索方法需要安装可选依赖，但未找到 sentence-transformers。"
+                "使用 'pip install registry-tools[embedding]' 安装。"
+                "已禁用 Embedding 搜索器。"
+            )
+
+    # 重建搜索索引
+    registry.rebuild_indexes()
+
+    # 注册 MCP 工具和资源 (TASK-708: 使用公共函数, Phase 15: 添加认证支持)
+    _register_mcp_tools(mcp, registry, storage, storage.save, auth_middleware)
+
+    return mcp
 
 
 def create_server(
@@ -672,70 +797,17 @@ def create_server(
     Returns:
         配置好的 FastMCP 服务器实例
     """
-    # 创建 FastMCP 服务器
-    mcp = FastMCP("RegistryTools", instructions=get_server_description())
-
-    # 初始化存储层
     storage = JSONStorage(data_path / "tools.json")
-
-    # 初始化工具注册表
-    registry = ToolRegistry()
-
-    # 加载已保存的工具
-    if storage.validate():
-        tools = storage.load_all()
-        registry.register_many(tools)
-
-    # 加载默认工具集（如果注册表为空）(TASK-603)
-    from registrytools.defaults import load_default_tools_if_empty
-
-    default_tools = load_default_tools_if_empty(
-        tool_count=registry.tool_count,
-        storage_path=data_path / "tools.json",
-        auto_save=True,
+    return _create_server_with_storage(
+        data_path,
+        storage,
+        auth_middleware,
+        _handle_default_tools_for_json,
     )
-    if default_tools:
-        registry.register_many(default_tools)
-
-    # 注册搜索算法
-    registry.register_searcher(SearchMethod.REGEX, RegexSearch(case_sensitive=False))
-    registry.register_searcher(SearchMethod.BM25, BM25Search())
-
-    # 延迟注册 EmbeddingSearch（仅在配置为 embedding 时）
-    # 根据配置决定是否注册，实现按需加载
-    default_method = get_default_search_method()
-
-    if default_method == SearchMethod.EMBEDDING:
-        # 检查依赖是否安装
-        try:
-            import sentence_transformers  # noqa: F401
-
-            # 注册延迟加载器（首次搜索时才初始化模型）
-            from registrytools.search.embedding_search import EmbeddingSearchLazyLoader
-
-            registry.register_searcher(SearchMethod.EMBEDDING, EmbeddingSearchLazyLoader())
-            logger.info(
-                "Embedding 搜索器已注册（延迟加载模式，首次搜索时初始化模型）。"
-                "当前配置：REGISTRYTOOLS_SEARCH_METHOD=embedding"
-            )
-        except ImportError:
-            logger.warning(
-                "Embedding 搜索方法需要安装可选依赖，但未找到 sentence-transformers。"
-                "使用 'pip install registry-tools[embedding]' 安装。"
-                "已禁用 Embedding 搜索器。"
-            )
-
-    # 重建搜索索引
-    registry.rebuild_indexes()
-
-    # 注册 MCP 工具和资源 (TASK-708: 使用公共函数, Phase 15: 添加认证支持)
-    _register_mcp_tools(mcp, registry, storage, storage.save, auth_middleware)
-
-    return mcp
 
 
 # ============================================================
-# 辅助函数 (Phase 15: 添加认证支持)
+# 辅助函数 (Phase 15: 添加认证支持, Phase 40: 代码重构)
 # ============================================================
 
 
@@ -753,69 +825,13 @@ def create_server_with_sqlite(
     Returns:
         配置好的 FastMCP 服务器实例
     """
-    # 创建 FastMCP 服务器
-    mcp = FastMCP("RegistryTools", instructions=get_server_description())
-
-    # 初始化 SQLite 存储
     storage = SQLiteStorage(data_path / "tools.db")
-
-    # 初始化工具注册表
-    registry = ToolRegistry()
-
-    # 加载已保存的工具
-    if storage.validate():
-        tools = storage.load_all()
-        registry.register_many(tools)
-
-    # 加载默认工具集（如果注册表为空）(TASK-603)
-    from registrytools.defaults import load_default_tools_if_empty
-
-    # 获取默认工具（不自动保存到 JSON）
-    default_tools = load_default_tools_if_empty(
-        tool_count=registry.tool_count,
-        storage_path=None,  # 不保存到 JSON
-        auto_save=False,
+    return _create_server_with_storage(
+        data_path,
+        storage,
+        auth_middleware,
+        _handle_default_tools_for_sqlite,
     )
-    if default_tools:
-        registry.register_many(default_tools)
-        # 保存到 SQLite
-        storage.save_many(default_tools)
-
-    # 注册搜索算法
-    registry.register_searcher(SearchMethod.REGEX, RegexSearch(case_sensitive=False))
-    registry.register_searcher(SearchMethod.BM25, BM25Search())
-
-    # 延迟注册 EmbeddingSearch（仅在配置为 embedding 时）
-    # 根据配置决定是否注册，实现按需加载
-    default_method = get_default_search_method()
-
-    if default_method == SearchMethod.EMBEDDING:
-        # 检查依赖是否安装
-        try:
-            import sentence_transformers  # noqa: F401
-
-            # 注册延迟加载器（首次搜索时才初始化模型）
-            from registrytools.search.embedding_search import EmbeddingSearchLazyLoader
-
-            registry.register_searcher(SearchMethod.EMBEDDING, EmbeddingSearchLazyLoader())
-            logger.info(
-                "Embedding 搜索器已注册（延迟加载模式，首次搜索时初始化模型）。"
-                "当前配置：REGISTRYTOOLS_SEARCH_METHOD=embedding"
-            )
-        except ImportError:
-            logger.warning(
-                "Embedding 搜索方法需要安装可选依赖，但未找到 sentence-transformers。"
-                "使用 'pip install registry-tools[embedding]' 安装。"
-                "已禁用 Embedding 搜索器。"
-            )
-
-    # 重建搜索索引
-    registry.rebuild_indexes()
-
-    # 注册 MCP 工具和资源 (TASK-708: 使用公共函数, Phase 15: 添加认证支持)
-    _register_mcp_tools(mcp, registry, storage, storage.save, auth_middleware)
-
-    return mcp
 
 
 # ============================================================
