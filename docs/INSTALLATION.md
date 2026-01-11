@@ -235,6 +235,136 @@ registry-tools api-key delete <key-id>
 
 详细使用说明请参考 [API 文档](API.md#api-key-认证-phase-15) 和 [用户指南](USER_GUIDE.md#api-key-认证-phase-15)。
 
+### 搜索方法配置
+
+RegistryTools 支持三种搜索方法，可根据场景选择：
+
+#### 搜索方法对比
+
+| 方法 | 适用场景 | 准确率 | 速度 | 依赖 |
+|------|----------|--------|------|------|
+| **regex** | 已知工具名称 | 高 | 最快 | 无 |
+| **bm25** | 关键词搜索 | 高 | 快 | rank-bm25, jieba |
+| **embedding** | 语义搜索 | 最高 | 慢 | sentence-transformers |
+
+#### 配置方式
+
+**方式 1: 环境变量**
+
+```bash
+# 使用 BM25 搜索（默认）
+registry-tools
+
+# 使用正则表达式搜索
+export REGISTRYTOOLS_SEARCH_METHOD=regex
+
+# 使用语义搜索（需要安装额外依赖）
+pip install registry-tools[embedding]
+export REGISTRYTOOLS_SEARCH_METHOD=embedding
+```
+
+**方式 2: Claude Desktop 配置**
+
+```json
+{
+  "mcpServers": {
+    "RegistryTools": {
+      "command": "registry-tools",
+      "env": {
+        "REGISTRYTOOLS_SEARCH_METHOD": "embedding"
+      }
+    }
+  }
+}
+```
+
+#### GPU 加速配置（Embedding 专用）
+
+Embedding 搜索支持 GPU 加速：
+
+| 配置值 | 说明 |
+|--------|------|
+| `cpu` | 使用 CPU（默认） |
+| `gpu:0` / `gpu:1` | 使用指定 GPU |
+| `auto` | 自动选择 GPU 或 CPU |
+
+```bash
+# 使用 GPU 加速
+export REGISTRYTOOLS_DEVICE=gpu:0
+
+# 自动选择
+export REGISTRYTOOLS_DEVICE=auto
+```
+
+**GPU 内存需求**:
+| 模型 | GPU 内存 | CPU 内存 |
+|------|---------|----------|
+| paraphrase-multilingual-MiniLM-L12-v2 (默认) | ~500MB | ~1GB |
+| all-MiniLM-L6-v2 | ~100MB | ~300MB |
+
+**详细配置**: 参见 [配置指南 - 搜索方法配置](CONFIGURATION.md#搜索方法配置)
+
+---
+
+### 存储后端配置
+
+RegistryTools 支持两种存储后端用于持久化工具元数据：
+
+| 存储类型 | 适用规模 | 配置方式 |
+|---------|---------|----------|
+| **JSON** | < 1000 工具（默认） | 无需配置 |
+| **SQLite** | > 1000 工具 | `--storage-backend sqlite` |
+
+#### 配置方式
+
+**方式 1: 环境变量**
+
+```bash
+# 使用 SQLite 存储
+export REGISTRYTOOLS_STORAGE_BACKEND=sqlite
+registry-tools
+```
+
+**方式 2: CLI 参数**
+
+```bash
+# 使用 SQLite 存储
+registry-tools --storage-backend sqlite
+```
+
+**方式 3: Claude Desktop 配置**
+
+```json
+{
+  "mcpServers": {
+    "RegistryTools": {
+      "command": "registry-tools",
+      "env": {
+        "REGISTRYTOOLS_STORAGE_BACKEND": "sqlite"
+      }
+    }
+  }
+}
+```
+
+**方式 4: Docker 部署配置**
+
+```yaml
+# docker-compose.yml
+services:
+  registrytools:
+    image: registrytools:latest
+    environment:
+      - REGISTRYTOOLS_STORAGE_BACKEND=sqlite  # 使用 SQLite
+```
+
+#### 存储后端选择建议
+
+- **个人开发/小型团队**（< 10 人，< 1000 工具）: 使用 JSON（默认）
+- **大型团队/生产环境**（> 10 人，> 1000 工具）: 使用 SQLite
+
+详见 [存储选择指南](STORAGE.md)。
+
 ---
 
 ## MCP 客户端配置

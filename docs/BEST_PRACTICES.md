@@ -128,6 +128,174 @@ search_tools("aws s3 upload", "bm25", 5)
 3. **使用具体关键词**: 避免过于泛泛的查询
 4. **结合类别筛选**: 先用 `list_tools_by_category` 缩小范围
 
+### 配置搜索方法
+
+**环境变量配置**:
+
+```bash
+# 方法 1: 环境变量
+export REGISTRYTOOLS_SEARCH_METHOD=bm25
+
+# 方法 2: Claude Desktop 配置
+{
+  "mcpServers": {
+    "RegistryTools": {
+      "command": "registry-tools",
+      "env": {
+        "REGISTRYTOOLS_SEARCH_METHOD": "embedding"
+      }
+    }
+  }
+}
+```
+
+**Embedding GPU 加速配置**:
+
+```bash
+# 使用 GPU 加速
+export REGISTRYTOOLS_SEARCH_METHOD=embedding
+export REGISTRYTOOLS_DEVICE=gpu:0
+
+# 自动选择
+export REGISTRYTOOLS_DEVICE=auto
+```
+
+**详细配置**: 参见 [配置指南](CONFIGURATION.md#搜索方法配置)
+
+---
+
+## 存储后端选择
+
+### 存储类型对比
+
+| 存储类型 | 适用规模 | 性能特点 | 维护成本 | 推荐场景 |
+|---------|---------|----------|----------|----------|
+| **JSON** | < 1000 工具 | 简单可读 | 低 | 个人开发、小型团队 |
+| **SQLite** | > 1000 工具 | 高性能查询 | 低 | 大型团队、生产环境 |
+
+### JSON 存储最佳实践
+
+**适用场景**:
+- 个人开发环境
+- 小型团队（< 10 人）
+- 工具数量 < 1000
+- 需要直接查看/编辑工具数据
+
+**配置示例**:
+```bash
+# 默认使用 JSON 存储（无需配置）
+registry-tools
+
+# 或显式指定
+export REGISTRYTOOLS_STORAGE_BACKEND=json
+registry-tools
+```
+
+**优势**:
+- 人类可读，便于调试
+- 文件备份和迁移简单
+- 无需额外依赖
+- 适合版本控制
+
+**限制**:
+- 大型工具集性能下降
+- 并发写入支持有限
+- 不支持复杂查询
+
+### SQLite 存储最佳实践
+
+**适用场景**:
+- 大型团队（> 10 人）
+- 工具数量 > 1000
+- 需要高性能查询
+- 多实例部署
+
+**配置示例**:
+```bash
+# 使用 SQLite 存储
+export REGISTRYTOOLS_STORAGE_BACKEND=sqlite
+registry-tools
+
+# 或使用 CLI 参数
+registry-tools --storage-backend sqlite
+```
+
+**优势**:
+- 高性能查询（比 JSON 快 76%）
+- 支持复杂查询（按标签、类别、温度过滤）
+- WAL 模式提供更好的并发性能
+- 内存占用更低（比 JSON 少 60%）
+
+**性能对比** (1000 工具):
+| 操作 | JSON | SQLite | 提升 |
+|-----|------|--------|-----|
+| 加载全部 | 75ms | 18ms | 76% |
+| 按标签过滤 | 15ms | 4ms | 73% |
+| 按温度加载 | 12ms | 3ms | 75% |
+| 内存占用 | 15MB | 6MB | 60% |
+
+### 决策流程
+
+```
+开始
+  ↓
+工具数量 < 1000？
+  ├─ 是 → 需要人类可读？
+  │      ├─ 是 → 使用 JSON
+  │      └─ 否 → 需要高性能查询？
+  │                ├─ 是 → 使用 SQLite
+  │                └─ 否 → 使用 JSON（默认）
+  └─ 否 → 使用 SQLite
+```
+
+### 迁移最佳实践
+
+**何时需要迁移**:
+1. 工具数量增长到 1000+ → 从 JSON 迁移到 SQLite
+2. 需要更好的查询性能 → 从 JSON 迁移到 SQLite
+3. 需要简化部署或调试 → 从 SQLite 迁移到 JSON
+
+**迁移步骤**:
+```bash
+# 1. 备份现有数据
+cp ~/.RegistryTools/tools.json ~/.RegistryTools/tools.json.backup
+# 或
+cp ~/.RegistryTools/tools.db ~/.RegistryTools/tools.db.backup
+
+# 2. 使用迁移工具
+python examples/storage_migration.py
+
+# 3. 验证迁移结果
+registry-tools
+# 检查日志确认加载的工具数量
+
+# 4. 更新配置
+export REGISTRYTOOLS_STORAGE_BACKEND=sqlite
+
+# 5. 确认运行正常后，删除旧数据文件
+rm ~/.RegistryTools/tools.json.backup
+```
+
+### 生产环境建议
+
+**小型生产环境**（< 500 工具，< 50 用户）:
+```bash
+# 使用 JSON 存储，简单可靠
+export REGISTRYTOOLS_STORAGE_BACKEND=json
+export REGISTRYTOOLS_ENABLE_AUTH=true
+registry-tools --transport http --host 0.0.0.0 --port 8000
+```
+
+**大型生产环境**（> 500 工具，> 50 用户）:
+```bash
+# 使用 SQLite 存储，高性能
+export REGISTRYTOOLS_STORAGE_BACKEND=sqlite
+export REGISTRYTOOLS_ENABLE_AUTH=true
+registry-tools --transport http --host 0.0.0.0 --port 8000
+```
+
+详见 [存储选择指南](STORAGE.md)。
+
 ---
 
 ## 冷热工具优化
