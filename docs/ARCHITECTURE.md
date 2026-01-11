@@ -1,6 +1,6 @@
 # RegistryTools 架构设计
 
-**版本**: v0.1.1
+**版本**: v0.2.0
 **更新日期**: 2026-01-10
 **项目**: RegistryTools - MCP Tool Registry Server
 

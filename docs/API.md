@@ -1,6 +1,6 @@
 # RegistryTools API 文档
 
-**版本**: v0.1.1
+**版本**: v0.2.0
 **更新日期**: 2026-01-10
 **项目**: RegistryTools - MCP Tool Registry Server
 **Phase 33**: 认证集成、输入验证、新工具（unregister_tool, search_hot_tools）
@@ -43,7 +43,7 @@ RegistryTools 提供以下 MCP 工具接口：
 ```python
 search_tools(
     query: str,
-    search_method: str = "bm25",
+    search_method: str | None = None,  # 默认使用环境变量 REGISTRYTOOLS_SEARCH_METHOD
     limit: int = 5
 ) -> str
 ```
@@ -53,7 +53,7 @@ search_tools(
 | 参数 | 类型 | 必需 | 默认值 | 描述 |
 |------|------|------|--------|------|
 | `query` | string | 是 | - | 搜索查询，支持关键词或自然语言描述 |
-| `search_method` | string | 否 | "bm25" | 搜索方法 (regex/bm25/embedding) |
+| `search_method` | string | 否 | 环境变量 | 搜索方法 (regex/bm25/embedding)，默认使用环境变量 `REGISTRYTOOLS_SEARCH_METHOD`（未设置时为 `bm25`） |
 | `limit` | integer | 否 | 5 | 返回结果数量 |
 
 #### 搜索方法
@@ -314,7 +314,7 @@ unregister_tool("my.custom.tool")
 ```python
 search_hot_tools(
     query: str,
-    search_method: str = "bm25",
+    search_method: str | None = None,  # 默认使用环境变量 REGISTRYTOOLS_SEARCH_METHOD
     limit: int = 5
 ) -> str
 ```
@@ -324,7 +324,7 @@ search_hot_tools(
 | 参数 | 类型 | 必需 | 默认值 | 描述 |
 |------|------|------|--------|------|
 | `query` | string | 是 | - | 搜索查询，支持关键词或自然语言描述 |
-| `search_method` | string | 否 | "bm25" | 搜索方法 (regex/bm25) |
+| `search_method` | string | 否 | 环境变量 | 搜索方法 (regex/bm25)，默认使用环境变量 `REGISTRYTOOLS_SEARCH_METHOD`（未设置时为 `bm25`） |
 | `limit` | integer | 否 | 5 | 返回结果数量 |
 
 #### 返回值
@@ -771,4 +771,4 @@ class APIKey(BaseModel):
 ---
 
 **维护者**: Maric
-**文档版本**: v0.1.1
+**文档版本**: v0.2.0

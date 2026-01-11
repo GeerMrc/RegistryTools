@@ -1,6 +1,6 @@
 # RegistryTools 用户指南
 
-**版本**: v0.1.1
+**版本**: v0.2.0
 **更新日期**: 2026-01-10
 **项目**: RegistryTools - MCP Tool Registry Server
 
@@ -40,7 +40,7 @@ RegistryTools 是一个独立的 MCP Tool Registry Server，提供通用的工�
 #### 参数
 
 - `query` (string): 搜索查询
-- `search_method` (string): 搜索方法，可选值：`regex`、`bm25`、`embedding`
+- `search_method` (string): 搜索方法，可选值：`regex`、`bm25`、`embedding`（默认使用环境变量 `REGISTRYTOOLS_SEARCH_METHOD`，未设置时为 `bm25`）
 - `limit` (integer): 返回结果数量，默认 5
 
 #### 示例
@@ -165,7 +165,7 @@ unregister_tool("my.custom.tool")
 #### 参数
 
 - `query` (string): 搜索查询
-- `search_method` (string): 搜索方法，可选值：`regex`、`bm25`（默认: `bm25`）
+- `search_method` (string): 搜索方法，可选值：`regex`、`bm25`（默认使用环境变量 `REGISTRYTOOLS_SEARCH_METHOD`，未设置时为 `bm25`）
 - `limit` (integer): 返回结果数量，默认 5
 
 #### 示例

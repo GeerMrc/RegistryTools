@@ -1,7 +1,7 @@
 # RegistryTools
 
-**版本**: v0.1.1
-**更新日期**: 2026-01-09
+**版本**: v0.2.0
+**更新日期**: 2026-01-10
 **独立 MCP Tool Registry Server** - 通用工具搜索与发现服务
 
 [![Python Version](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
@@ -523,20 +523,13 @@ ruff check src/registrytools/ tests/
 
 ## 路线图
 
-### v0.1.1 (当前 - 2026-01-09)
-- ✅ 基础工具注册和搜索
-- ✅ Regex 搜索算法（精确匹配）
-- ✅ BM25 搜索算法（支持中文分词）
-- ✅ Embedding 语义搜索（可选依赖，支持中英文）
-- ✅ JSON/SQLite 存储
-- ✅ MCP 工具和资源接口
-- ✅ STDIO 和 Streamable HTTP 传输协议支持
-- ✅ fastmcp.json 配置文件支持
-- ✅ 测试覆盖率 87%
-- ✅ 完整文档和使用示例
-- ✅ 性能优化（索引缓存、冷热工具分离）
+### v0.2.0 (当前 - 2026-01-10)
+- ✅ 所有 v0.1.1 功能
+- ✅ 搜索引擎全局配置（REGISTRYTOOLS_SEARCH_METHOD 环境变量）
+- ✅ search_method 参数可选（默认使用环境变量）
+- ✅ search_hot_tools 自动回退机制（不支持 embedding 时自动使用 bm25）
 
-### v0.2.0 (计划中)
+### v0.3.0 (计划中)
 - ⏳ 分布式工具注册
 - ⏳ 工具依赖管理
 - ⏳ Web UI 管理界面

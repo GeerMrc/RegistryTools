@@ -1,8 +1,8 @@
 # RegistryTools 文档索引
 
-**版本**: v0.1.1
+**版本**: v0.2.0
 **项目**: RegistryTools - MCP Tool Registry Server
-**最后更新**: 2026-01-09
+**最后更新**: 2026-01-10
 
 ---
 
@@ -101,21 +101,24 @@
 
 | 文档 | 版本 | 状态 | 最后更新 |
 |------|------|------|----------|
-| README.md | v0.1.1 | ✅ 最新 | 2026-01-09 |
-| INSTALLATION.md | v1.0 | ✅ 新增 | 2026-01-05 |
-| USER_GUIDE.md | v1.0 | ✅ 新增 | 2026-01-05 |
-| CLAUDE_CONFIG.md | v1.0 | ✅ 新增 | 2026-01-05 |
-| IDE_CONFIG.md | v1.0 | ✅ 新增 | 2026-01-05 |
-| ARCHITECTURE.md | v1.0 | ✅ 最新 | 2026-01-04 |
-| API.md | v0.1.1 | ✅ 最新 | 2026-01-09 |
-| DEVELOPMENT_WORKFLOW.md | v1.0 | ✅ 最新 | 2026-01-04 |
-| CONTRIBUTING.md | v1.0 | ✅ 最新 | 2026-01-04 |
-| PUBLISHING.md | v1.0 | ✅ 新增 | 2026-01-05 |
-| SCRIPTS_GUIDE.md | v0.1.1 | ✅ 新增 | 2026-01-09 |
-| TASK.md | v0.1.1 | ✅ 完成 | 2026-01-09 |
-| CHANGELOG.md | v0.1.1 | ✅ 最新 | 2026-01-09 |
+| README.md | v0.2.0 | ✅ 最新 | 2026-01-10 |
+| INSTALLATION.md | v0.2.0 | ✅ 最新 | 2026-01-10 |
+| USER_GUIDE.md | v0.2.0 | ✅ 最新 | 2026-01-10 |
+| CLAUDE_CONFIG.md | v0.2.0 | ✅ 最新 | 2026-01-10 |
+| IDE_CONFIG.md | v0.2.0 | ✅ 最新 | 2026-01-10 |
+| ARCHITECTURE.md | v0.2.0 | ✅ 最新 | 2026-01-10 |
+| API.md | v0.2.0 | ✅ 最新 | 2026-01-10 |
+| DEVELOPMENT_WORKFLOW.md | v0.2.0 | ✅ 最新 | 2026-01-10 |
+| CONTRIBUTING.md | v0.2.0 | ✅ 最新 | 2026-01-10 |
+| PUBLISHING.md | v0.2.0 | ✅ 最新 | 2026-01-10 |
+| SCRIPTS_GUIDE.md | v0.2.0 | ✅ 最新 | 2026-01-10 |
+| TASK.md | v0.2.0 | ✅ 最新 | 2026-01-10 |
+| CHANGELOG.md | v0.2.0 | ✅ 最新 | 2026-01-10 |
+| CONFIGURATION.md | v0.2.0 | ✅ 最新 | 2026-01-10 |
+| BEST_PRACTICES.md | v0.2.0 | ✅ 最新 | 2026-01-10 |
+| TROUBLESHOOTING.md | v0.2.0 | ✅ 最新 | 2026-01-10 |
 
 ---
 
 **维护者**: Maric
-**文档版本**: v0.1.1
+**文档版本**: v0.2.0
