@@ -325,12 +325,57 @@ claude mcp add-json "RegistryTools" '{...}' --scope local
 
 RegistryTools 支持灵活的配置方式。完整配置说明请参见 [配置指南](docs/CONFIGURATION.md)。
 
-**常用环境变量**:
-- `REGISTRYTOOLS_DATA_PATH` - 数据目录路径（默认: `~/.RegistryTools`）
-- `REGISTRYTOOLS_TRANSPORT` - 传输协议（默认: `stdio`）
-- `REGISTRYTOOLS_LOG_LEVEL` - 日志级别（默认: `INFO`）
-- `REGISTRYTOOLS_ENABLE_AUTH` - 启用 API Key 认证（默认: `false`）
-- `REGISTRYTOOLS_DESCRIPTION` - MCP 服务器描述（可选，默认: 统一的 MCP 工具注册与搜索服务，用于发现和筛选可用工具，提升任务执行工具调用准确性，复杂任务工具调用效率）
+#### 完整配置参数表格
+
+| 环境变量 | 描述 | 默认值 | 可选值 |
+|---------|------|--------|--------|
+| `REGISTRYTOOLS_DATA_PATH` | 数据目录路径 | `~/.RegistryTools` | 任意有效路径 |
+| `REGISTRYTOOLS_TRANSPORT` | 传输协议 | `stdio` | `stdio`, `http` |
+| `REGISTRYTOOLS_LOG_LEVEL` | 日志级别 | `INFO` | `DEBUG`, `INFO`, `WARNING`, `ERROR` |
+| `REGISTRYTOOLS_ENABLE_AUTH` | 启用 API Key 认证 | `false` | `true`, `false`, `1`, `0`, `yes`, `no` |
+| `REGISTRYTOOLS_SEARCH_METHOD` | 默认搜索方法 | `bm25` | `regex`, `bm25`, `embedding` |
+| `REGISTRYTOOLS_DEVICE` | Embedding 模型计算设备 | `cpu` | `cpu`, `gpu:0`, `gpu:1`, `auto` |
+| `REGISTRYTOOLS_DESCRIPTION` | MCP 服务器描述 | 统一的 MCP 工具注册与搜索服务... | 任意有效字符串 |
+
+#### 完整配置示例
+
+**Claude Desktop 完整配置** (JSON 格式):
+```json
+{
+  "mcpServers": {
+    "RegistryTools": {
+      "command": "uvx",
+      "args": ["registry-tools"],
+      "env": {
+        "REGISTRYTOOLS_DATA_PATH": "~/.RegistryTools",
+        "REGISTRYTOOLS_TRANSPORT": "stdio",
+        "REGISTRYTOOLS_LOG_LEVEL": "INFO",
+        "REGISTRYTOOLS_ENABLE_AUTH": "false",
+        "REGISTRYTOOLS_SEARCH_METHOD": "bm25",
+        "REGISTRYTOOLS_DEVICE": "cpu",
+        "REGISTRYTOOLS_DESCRIPTION": "统一的 MCP 工具注册与搜索服务，用于发现和筛选可用工具，提升任务执行工具调用准确性，复杂任务工具调用效率"
+      }
+    }
+  }
+}
+```
+
+**Claude Code 完整配置** (add-json 命令):
+```bash
+claude mcp add-json "RegistryTools" '{
+  "command": "uvx",
+  "args": ["registry-tools"],
+  "env": {
+    "REGISTRYTOOLS_DATA_PATH": "$HOME/.RegistryTools",
+    "REGISTRYTOOLS_TRANSPORT": "stdio",
+    "REGISTRYTOOLS_LOG_LEVEL": "INFO",
+    "REGISTRYTOOLS_ENABLE_AUTH": "false",
+    "REGISTRYTOOLS_SEARCH_METHOD": "bm25",
+    "REGISTRYTOOLS_DEVICE": "cpu",
+    "REGISTRYTOOLS_DESCRIPTION": "统一的 MCP 工具注册与搜索服务，用于发现和筛选可用工具，提升任务执行工具调用准确性，复杂任务工具调用效率"
+  }
+}' --scope user
+```
 
 **快速示例**:
 ```bash
@@ -342,6 +387,11 @@ registry-tools
 export REGISTRYTOOLS_TRANSPORT=http
 export REGISTRYTOOLS_ENABLE_AUTH=true
 registry-tools --host 0.0.0.0 --port 8000
+
+# Embedding 搜索 + GPU
+export REGISTRYTOOLS_SEARCH_METHOD=embedding
+export REGISTRYTOOLS_DEVICE=gpu:0
+registry-tools
 ```
 
 **配置优先级**: 环境变量 > CLI 参数 > 默认值

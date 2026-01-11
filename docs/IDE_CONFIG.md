@@ -525,19 +525,19 @@ Cline 是另一个流行的 VSCode AI 助手。
 }
 ```
 
-### 可用的环境变量
+### 完整配置参数表格
 
-| 环境变量 | 默认值 | 描述 |
-|---------|--------|------|
-| `REGISTRYTOOLS_DATA_PATH` | `~/.RegistryTools` | 数据目录路径 |
-| `REGISTRYTOOLS_LOG_LEVEL` | `INFO` | 日志级别（DEBUG/INFO/WARNING/ERROR） |
-| `REGISTRYTOOLS_TRANSPORT` | `stdio` | 传输协议（stdio/http） |
-| `REGISTRYTOOLS_ENABLE_AUTH` | `false` | 启用 RegistryTools 内置 API Key 认证（Phase 15） |
-| `REGISTRYTOOLS_SEARCH_METHOD` | `bm25` | 默认搜索方法 (regex/bm25/embedding) |
-| `REGISTRYTOOLS_DEVICE` | `cpu` | Embedding 模型计算设备 (cpu/gpu:0/gpu:1/auto) |
-| `REGISTRYTOOLS_DESCRIPTION` | 统一的 MCP 工具注册与搜索服务，用于发现和筛选可用工具，提升任务执行工具调用准确性，复杂任务工具调用效率 | MCP 服务器描述 |
+| 环境变量 | 描述 | 默认值 | 可选值 |
+|---------|------|--------|--------|
+| `REGISTRYTOOLS_DATA_PATH` | 数据目录路径 | `~/.RegistryTools` | 任意有效路径 |
+| `REGISTRYTOOLS_TRANSPORT` | 传输协议 | `stdio` | `stdio`, `http` |
+| `REGISTRYTOOLS_LOG_LEVEL` | 日志级别 | `INFO` | `DEBUG`, `INFO`, `WARNING`, `ERROR` |
+| `REGISTRYTOOLS_ENABLE_AUTH` | 启用 API Key 认证（仅 HTTP 模式） | `false` | `true`, `false`, `1`, `0`, `yes`, `no` |
+| `REGISTRYTOOLS_SEARCH_METHOD` | 默认搜索方法 | `bm25` | `regex`, `bm25`, `embedding` |
+| `REGISTRYTOOLS_DEVICE` | Embedding 模型计算设备 | `cpu` | `cpu`, `gpu:0`, `gpu:1`, `auto` |
+| `REGISTRYTOOLS_DESCRIPTION` | MCP 服务器描述 | 统一的 MCP 工具注册与搜索服务... | 任意有效字符串 |
 
-> **完整配置**: 更多环境变量、可选值和详细说明，请参考 [配置指南](CONFIGURATION.md#环境变量配置)。
+> **完整配置**: 更多详细说明，请参考 [配置指南](CONFIGURATION.md#环境变量配置)。
 
 ### 搜索方法配置
 
@@ -550,6 +550,46 @@ Cline 是另一个流行的 VSCode AI 助手。
   - 跳过冷工具以提升搜索性能
   - 对于大型工具集，搜索速度提升 40-60%
   - 注意：不支持 embedding 方法，会自动回退到 bm25
+
+### 完整配置示例
+
+#### JSON 配置文件（完整配置）
+```json
+{
+  "mcpServers": {
+    "RegistryTools": {
+      "command": "uvx",
+      "args": ["registry-tools"],
+      "env": {
+        "REGISTRYTOOLS_DATA_PATH": "~/.RegistryTools",
+        "REGISTRYTOOLS_TRANSPORT": "stdio",
+        "REGISTRYTOOLS_LOG_LEVEL": "INFO",
+        "REGISTRYTOOLS_ENABLE_AUTH": "false",
+        "REGISTRYTOOLS_SEARCH_METHOD": "bm25",
+        "REGISTRYTOOLS_DEVICE": "cpu",
+        "REGISTRYTOOLS_DESCRIPTION": "统一的 MCP 工具注册与搜索服务，用于发现和筛选可用工具，提升任务执行工具调用准确性，复杂任务工具调用效率"
+      }
+    }
+  }
+}
+```
+
+#### CLI 命令（add-json）- 完整配置
+```bash
+claude mcp add-json "RegistryTools" '{
+  "command": "uvx",
+  "args": ["registry-tools"],
+  "env": {
+    "REGISTRYTOOLS_DATA_PATH": "$HOME/.RegistryTools",
+    "REGISTRYTOOLS_TRANSPORT": "stdio",
+    "REGISTRYTOOLS_LOG_LEVEL": "INFO",
+    "REGISTRYTOOLS_ENABLE_AUTH": "false",
+    "REGISTRYTOOLS_SEARCH_METHOD": "bm25",
+    "REGISTRYTOOLS_DEVICE": "cpu",
+    "REGISTRYTOOLS_DESCRIPTION": "统一的 MCP 工具注册与搜索服务，用于发现和筛选可用工具，提升任务执行工具调用准确性，复杂任务工具调用效率"
+  }
+}' --scope user
+```
 
 ### 路径配置说明
 
