@@ -59,7 +59,7 @@ def _setup_logging(log_level_str: str) -> None:
     logger.debug(f"日志级别: {log_level_str.upper()}")
 
 
-def main():
+def main() -> None:
     """主入口"""
     parser = argparse.ArgumentParser(
         description="RegistryTools - MCP Tool Registry Server",

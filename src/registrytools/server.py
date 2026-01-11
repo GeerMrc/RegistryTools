@@ -25,7 +25,6 @@ from registrytools.auth.middleware import (
 from registrytools.registry.models import SearchMethod, ToolMetadata
 from registrytools.registry.registry import ToolRegistry
 from registrytools.search.bm25_search import BM25Search
-from registrytools.search.embedding_search import EmbeddingSearch
 from registrytools.search.regex_search import RegexSearch
 from registrytools.storage.base import ToolStorage
 from registrytools.storage.json_storage import JSONStorage
@@ -377,7 +376,7 @@ def _register_mcp_tools(
         if category.lower() == "all":
             # 列出所有类别
             categories = registry.list_categories()
-            result = {"categories": categories}
+            result: dict[str, object] = {"categories": categories}
         else:
             # 按类别列出工具
             tools = registry.list_tools(category=category)[:limit]
@@ -717,7 +716,7 @@ def create_server(
             registry.register_searcher(SearchMethod.EMBEDDING, EmbeddingSearchLazyLoader())
             logger.info(
                 "Embedding 搜索器已注册（延迟加载模式，首次搜索时初始化模型）。"
-                f"当前配置：REGISTRYTOOLS_SEARCH_METHOD=embedding"
+                "当前配置：REGISTRYTOOLS_SEARCH_METHOD=embedding"
             )
         except ImportError:
             logger.warning(
@@ -801,7 +800,7 @@ def create_server_with_sqlite(
             registry.register_searcher(SearchMethod.EMBEDDING, EmbeddingSearchLazyLoader())
             logger.info(
                 "Embedding 搜索器已注册（延迟加载模式，首次搜索时初始化模型）。"
-                f"当前配置：REGISTRYTOOLS_SEARCH_METHOD=embedding"
+                "当前配置：REGISTRYTOOLS_SEARCH_METHOD=embedding"
             )
         except ImportError:
             logger.warning(

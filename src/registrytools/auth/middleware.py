@@ -177,14 +177,15 @@ class APIKeyAuthMiddleware:
         result = self.authenticate(api_key, required_permission)
 
         if not result.success:
-            if result.error == "API Key not found" or "Invalid API Key format" in result.error:
-                raise APIKeyInvalid(result.error or "Invalid API Key")
-            elif "expired" in result.error:
-                raise APIKeyExpired(result.error)
-            elif "Insufficient permissions" in result.error:
-                raise APIKeyInsufficientPermission(result.error)
+            error_msg = result.error or "Authentication failed"
+            if result.error == "API Key not found" or "Invalid API Key format" in error_msg:
+                raise APIKeyInvalid(error_msg)
+            elif "expired" in error_msg:
+                raise APIKeyExpired(error_msg)
+            elif "Insufficient permissions" in error_msg:
+                raise APIKeyInsufficientPermission(error_msg)
             else:
-                raise APIKeyInvalid(result.error or "Authentication failed")
+                raise APIKeyInvalid(error_msg)
 
         # result.success 为 True，key_metadata 不为 None
         return result.key_metadata  # type: ignore

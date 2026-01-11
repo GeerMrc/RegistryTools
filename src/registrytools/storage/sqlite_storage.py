@@ -15,14 +15,14 @@ from datetime import datetime
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-logger = logging.getLogger(__name__)
-
 from registrytools.defaults import HOT_TOOL_THRESHOLD, WARM_TOOL_THRESHOLD
 from registrytools.registry.models import ToolMetadata
 from registrytools.storage.base import ToolStorage
 
 if TYPE_CHECKING:
     from registrytools.registry.models import ToolTemperature
+
+logger = logging.getLogger(__name__)
 
 
 class SQLiteStorage(ToolStorage):

@@ -132,7 +132,7 @@ class SearchAlgorithm(ABC):
                 }
                 for t in tools
             ],
-            key=lambda x: x["name"],
+            key=lambda x: str(x["name"]),
         )
 
         # 计算哈希值

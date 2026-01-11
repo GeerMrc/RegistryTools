@@ -1,16 +1,9 @@
 # RegistryTools API 文档
 
-**版本**: v0.2.0
-**更新日期**: 2026-01-10
+**版本**: v0.2.1
+**更新日期**: 2026-01-11
 **项目**: RegistryTools - MCP Tool Registry Server
 **Phase 33**: 认证集成、输入验证、新工具（unregister_tool, search_hot_tools）
-
----
-
-## ⚠️ PyPI 发布状态
-
-> **注意**: RegistryTools 尚未发布到 PyPI，当前仅支持本地开发环境安装。
-> 详见 [安装指南 - PyPI 发布状态](INSTALLATION.md#pypi-发布状态)。
 
 ---
 
@@ -771,4 +764,4 @@ class APIKey(BaseModel):
 ---
 
 **维护者**: Maric
-**文档版本**: v0.2.0
+**文档版本**: v0.2.1

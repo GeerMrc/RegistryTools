@@ -1,8 +1,8 @@
 # RegistryTools 文档索引
 
-**版本**: v0.2.0
+**版本**: v0.2.1
 **项目**: RegistryTools - MCP Tool Registry Server
-**最后更新**: 2026-01-10
+**最后更新**: 2026-01-11
 
 ---
 
@@ -101,24 +101,24 @@
 
 | 文档 | 版本 | 状态 | 最后更新 |
 |------|------|------|----------|
-| README.md | v0.2.0 | ✅ 最新 | 2026-01-10 |
-| INSTALLATION.md | v0.2.0 | ✅ 最新 | 2026-01-10 |
-| USER_GUIDE.md | v0.2.0 | ✅ 最新 | 2026-01-10 |
-| CLAUDE_CONFIG.md | v0.2.0 | ✅ 最新 | 2026-01-10 |
-| IDE_CONFIG.md | v0.2.0 | ✅ 最新 | 2026-01-10 |
-| ARCHITECTURE.md | v0.2.0 | ✅ 最新 | 2026-01-10 |
-| API.md | v0.2.0 | ✅ 最新 | 2026-01-10 |
-| DEVELOPMENT_WORKFLOW.md | v0.2.0 | ✅ 最新 | 2026-01-10 |
-| CONTRIBUTING.md | v0.2.0 | ✅ 最新 | 2026-01-10 |
-| PUBLISHING.md | v0.2.0 | ✅ 最新 | 2026-01-10 |
-| SCRIPTS_GUIDE.md | v0.2.0 | ✅ 最新 | 2026-01-10 |
-| TASK.md | v0.2.0 | ✅ 最新 | 2026-01-10 |
-| CHANGELOG.md | v0.2.0 | ✅ 最新 | 2026-01-10 |
-| CONFIGURATION.md | v0.2.0 | ✅ 最新 | 2026-01-10 |
-| BEST_PRACTICES.md | v0.2.0 | ✅ 最新 | 2026-01-10 |
-| TROUBLESHOOTING.md | v0.2.0 | ✅ 最新 | 2026-01-10 |
+| README.md | v0.2.1 | ✅ 最新 | 2026-01-11 |
+| INSTALLATION.md | v0.2.1 | ✅ 最新 | 2026-01-11 |
+| USER_GUIDE.md | v0.2.1 | ✅ 最新 | 2026-01-11 |
+| CLAUDE_CONFIG.md | v0.2.1 | ✅ 最新 | 2026-01-11 |
+| IDE_CONFIG.md | v0.2.1 | ✅ 最新 | 2026-01-11 |
+| ARCHITECTURE.md | v0.2.1 | ✅ 最新 | 2026-01-11 |
+| API.md | v0.2.1 | ✅ 最新 | 2026-01-11 |
+| DEVELOPMENT_WORKFLOW.md | v0.2.1 | ✅ 最新 | 2026-01-11 |
+| CONTRIBUTING.md | v0.2.1 | ✅ 最新 | 2026-01-11 |
+| PUBLISHING.md | v0.2.1 | ✅ 最新 | 2026-01-11 |
+| SCRIPTS_GUIDE.md | v0.2.1 | ✅ 最新 | 2026-01-11 |
+| TASK.md | v0.2.1 | ✅ 最新 | 2026-01-11 |
+| CHANGELOG.md | v0.2.1 | ✅ 最新 | 2026-01-11 |
+| CONFIGURATION.md | v0.2.1 | ✅ 最新 | 2026-01-11 |
+| BEST_PRACTICES.md | v0.2.1 | ✅ 最新 | 2026-01-11 |
+| TROUBLESHOOTING.md | v0.2.1 | ✅ 最新 | 2026-01-11 |
 
 ---
 
 **维护者**: Maric
-**文档版本**: v0.2.0
+**文档版本**: v0.2.1
