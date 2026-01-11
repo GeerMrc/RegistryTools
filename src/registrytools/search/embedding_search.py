@@ -146,8 +146,8 @@ class EmbeddingSearchLazyLoader(SearchAlgorithm):
     def __init__(self) -> None:
         """初始化延迟加载器"""
         super().__init__()
-        # 使用字符串注解处理前向引用
-        self._real_searcher: "EmbeddingSearch | None" = None
+        # 注解延迟求值，无需字符串引号（Python 3.10+）
+        self._real_searcher: EmbeddingSearch | None = None
         self._loader_lock = threading.Lock()
 
     def _load_real_searcher(self) -> "EmbeddingSearch":

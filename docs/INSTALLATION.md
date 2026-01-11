@@ -83,7 +83,7 @@ registry-tools --help
 预期输出：
 
 ```
-RegistryTools v0.1.0
+RegistryTools v0.2.1
 
 usage: registry-tools [-h] [--data-path DATA_PATH] [--transport {stdio,http}]
                       [--host HOST] [--port PORT] [--path PATH] [--version]

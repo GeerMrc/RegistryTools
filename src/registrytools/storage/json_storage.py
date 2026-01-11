@@ -8,9 +8,12 @@ License: MIT
 """
 
 import json
+import logging
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 from typing import TYPE_CHECKING
+
+from pydantic import ValidationError
 
 from registrytools.defaults import HOT_TOOL_THRESHOLD, WARM_TOOL_THRESHOLD
 from registrytools.registry.models import ToolMetadata
@@ -18,6 +21,8 @@ from registrytools.storage.base import ToolStorage
 
 if TYPE_CHECKING:
     from registrytools.registry.models import ToolTemperature
+
+logger = logging.getLogger(__name__)
 
 
 class JSONStorage(ToolStorage):
@@ -77,8 +82,15 @@ class JSONStorage(ToolStorage):
                 try:
                     tool = ToolMetadata(**tool_data)
                     tools.append(tool)
-                except Exception:
-                    # 跳过无效的工具数据
+                except ValidationError as e:
+                    # 跳过无效的工具数据，记录警告
+                    tool_name = tool_data.get("name", "<unknown>")
+                    logger.warning(f"跳过无效的工具数据: {tool_name}, 错误: {e}")
+                    continue
+                except Exception as e:
+                    # 捕获其他意外错误
+                    tool_name = tool_data.get("name", "<unknown>")
+                    logger.error(f"加载工具数据时发生意外错误: {tool_name}, 错误: {e}")
                     continue
 
             return tools
