@@ -1,15 +1,8 @@
 # RegistryTools 配置指南
 
-**版本**: v0.2.0
-**更新日期**: 2026-01-10
+**版本**: v0.2.1
+**更新日期**: 2026-01-11
 **项目**: RegistryTools - MCP Tool Registry Server
-
----
-
-## ⚠️ PyPI 发布状态
-
-> **注意**: RegistryTools 尚未发布到 PyPI，当前仅支持本地开发环境安装。
-> 详见 [安装指南 - PyPI 发布状态](INSTALLATION.md#pypi-发布状态)。
 
 ---
 
@@ -91,6 +84,7 @@ registry-tools --port 8000  # 实际使用 9000
 | `REGISTRYTOOLS_LOG_LEVEL` | 日志级别 | `INFO` | `DEBUG`, `INFO`, `WARNING`, `ERROR` |
 | `REGISTRYTOOLS_ENABLE_AUTH` | 启用 API Key 认证 | `false` | `true`, `false`, `1`, `0`, `yes`, `no` |
 | `REGISTRYTOOLS_SEARCH_METHOD` | 默认搜索方法 | `bm25` | `regex`, `bm25`, `embedding` |
+| `REGISTRYTOOLS_DEVICE` | Embedding 模型计算设备 | `cpu` | `cpu`, `gpu:0`, `gpu:1`, `auto` |
 | `REGISTRYTOOLS_DESCRIPTION` | MCP 服务器描述 | 统一的 MCP 工具注册与搜索服务，用于发现和筛选可用工具，提升任务执行工具调用准确性，复杂任务工具调用效率 | 任意有效字符串 |
 
 ### 详细说明
@@ -226,8 +220,18 @@ registry-tools
 | `bm25` | 快 | 高 | rank-bm25, jieba |
 | `embedding` | 慢 | 最高 | sentence-transformers, numpy |
 
+**延迟加载机制**:
+- 当配置为 `bm25`（默认）时，Embedding 搜索器不会被注册，不加载任何模型
+- 当配置为 `embedding` 时，采用延迟加载：
+  - 服务器启动时只注册延迟加载器，不实际加载模型
+  - 首次执行 embedding 搜索时才初始化模型
+  - 这样可以显著减少启动时间和内存占用
+
 **示例**:
 ```bash
+# 使用 BM25 搜索（默认，不加载 embedding 模型）
+registry-tools
+
 # 使用正则表达式搜索
 export REGISTRYTOOLS_SEARCH_METHOD=regex
 registry-tools
@@ -242,6 +246,81 @@ registry-tools
 - `search_hot_tools` 工具不支持 `embedding` 方法，会自动回退到 `bm25`
 - 如果设置了无效值，会记录警告并使用默认值 `bm25`
 - 可以在调用时通过参数覆盖全局默认值
+
+#### REGISTRYTOOLS_DEVICE
+
+控制 Embedding 搜索器使用的计算设备（GPU/CPU）。
+
+**可选值**:
+- `cpu` 或未设置: 使用 CPU（默认，最安全）
+- `gpu:0` 或 `cuda:0`: 使用第一个 GPU
+- `gpu:1` 或 `cuda:1`: 使用第二个 GPU
+- `auto`: 自动选择（有 GPU 时使用第一个）
+
+**设计原则**:
+- **默认安全**: 不设置时默认使用 CPU，确保不意外占用 GPU
+- **显式启用**: 只有明确配置 `gpu:N` 时才使用 GPU
+- **多 GPU 支持**: 支持指定 GPU 编号（0、1、2...）
+- **可用性验证**: 系统会验证 GPU 是否可用，不可用时自动降级
+
+**GPU 降级策略**:
+
+| 配置 | GPU 可用 | GPU 不可用 |
+|-----|---------|-----------|
+| `auto` | 使用 GPU:0，**静默**切换 | 降级到 CPU，**不记录日志** |
+| `gpu:0` / `gpu:1` | 使用指定 GPU | 降级到 CPU，**记录警告日志** |
+| `cpu` | 使用 CPU | 使用 CPU |
+
+**日志行为示例**:
+```bash
+# auto 模式降级（静默）
+# 日志：Embedding 搜索：自动检测到 GPU，使用 cuda:0
+# （无降级日志）
+
+# 具体 GPU 降级（警告）
+# 日志：Embedding 搜索：配置的 GPU gpu:0 不可用，已降级到 CPU
+```
+
+**示例**:
+```bash
+# 默认 CPU 模式（推荐，无 GPU 占用）
+registry-tools
+
+# 显式 CPU 模式
+export REGISTRYTOOLS_DEVICE=cpu
+registry-tools
+
+# 使用第一个 GPU
+export REGISTRYTOOLS_DEVICE=gpu:0
+registry-tools
+
+# 使用第二个 GPU
+export REGISTRYTOOLS_DEVICE=gpu:1
+registry-tools
+
+# 自动模式（有 GPU 时使用第一个，无 GPU 时静默降级）
+export REGISTRYTOOLS_DEVICE=auto
+registry-tools
+```
+
+**注意事项**:
+- 默认使用 CPU 是为了确保不意外占用 GPU 资源
+- 如果需要 GPU 加速，请显式设置 `REGISTRYTOOLS_DEVICE=gpu:N`
+- GPU 模式需要安装 CUDA 版本的 PyTorch
+- 多 GPU 环境下可以指定使用哪个 GPU
+- 配置的 GPU 不可用时，系统会自动降级到 CPU 并记录警告
+
+**GPU 内存需求**:
+
+使用 Embedding 搜索时，不同模型的内存占用：
+
+| 模型 | GPU 内存 | CPU 内存 |
+|------|---------|----------|
+| paraphrase-multilingual-MiniLM-L12-v2 (默认) | ~500MB | ~1GB |
+| all-MiniLM-L6-v2 | ~100MB | ~300MB |
+| paraphrase-multilingual-mpnet-base-v2 | ~1.2GB | ~2.5GB |
+
+**注意**: 模型会在首次使用时从 Hugging Face 下载并缓存在 `~/.cache/huggingface/`。
 
 ---
 
@@ -671,12 +750,14 @@ RegistryTools 使用线程安全的搜索实现：
 
 ### 性能基准
 
-| 指标 | 目标值 | 测试条件 |
-|------|--------|----------|
-| 搜索响应时间 | < 200ms | 1000+ 工具 |
-| 内存占用 | < 100MB | 1000+ 工具 |
-| 索引构建时间 | < 2s | 1000+ 工具 |
-| 热工具加载 | < 100ms | 100 个工具 |
+| 指标 | BM25 目标值 | Embedding 目标值 | 测试条件 |
+|------|-----------|----------------|----------|
+| 搜索响应时间 | < 100ms | < 500ms | 1000+ 工具 |
+| 内存占用（不含模型） | < 50MB | < 100MB | 1000+ 工具 |
+| 模型内存占用 | 0MB | ~500MB | paraphrase-multilingual-MiniLM-L12-v2 |
+| 首次搜索延迟 | < 50ms | < 2s | 模型加载 |
+| 索引构建时间 | < 1s | < 3s | 1000+ 工具 |
+| 热工具加载 | < 50ms | < 100ms | 100 个工具 |
 
 ---
 
