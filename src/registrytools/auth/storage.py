@@ -7,6 +7,8 @@ Copyright (c) 2026 Maric
 License: MIT
 """
 
+import json
+import logging
 import sqlite3
 from datetime import datetime
 from pathlib import Path
@@ -18,6 +20,8 @@ from registrytools.auth.models import (
     APIKeyScope,
     APIKeyUpdateRequest,
 )
+
+logger = logging.getLogger(__name__)
 
 
 class APIKeyStorage:
@@ -119,14 +123,14 @@ class APIKeyStorage:
         Returns:
             APIKey: API Key 对象
         """
-        import json
-
         metadata = None
         if row["metadata"]:
             try:
                 metadata = json.loads(row["metadata"])
-            except Exception:
-                pass
+            except json.JSONDecodeError as e:
+                # JSON 解析失败，记录警告并使用空字典
+                logger.warning(f"解析 API Key metadata 失败: {e}")
+                metadata = None
 
         return APIKey(
             key_id=row["key_id"],

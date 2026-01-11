@@ -7,6 +7,7 @@ Copyright (c) 2026 Maric
 License: MIT
 """
 
+import logging
 from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -15,6 +16,8 @@ from registrytools.registry.models import ToolMetadata
 
 if TYPE_CHECKING:
     from registrytools.registry.models import ToolTemperature
+
+logger = logging.getLogger(__name__)
 
 
 class ToolStorage(ABC):
@@ -230,5 +233,7 @@ class ToolStorage(ABC):
                 return self._path.exists() and self._path.is_file()
             else:  # 是目录路径
                 return self._path.exists() and self._path.is_dir()
-        except Exception:
+        except (OSError, ValueError) as e:
+            # 路径检查失败时记录并返回 False
+            logger.debug(f"验证存储路径时发生错误: {e}")
             return False

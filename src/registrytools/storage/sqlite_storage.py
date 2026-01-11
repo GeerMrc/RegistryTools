@@ -185,8 +185,9 @@ class SQLiteStorage(ToolStorage):
                         )
                     # 提交事务
                     conn.commit()
-                except Exception:
-                    # 回滚事务
+                except sqlite3.Error as e:
+                    # 回滚事务并记录错误
+                    logger.error(f"批量保存工具时发生数据库错误: {e}")
                     conn.rollback()
                     raise
 
@@ -289,7 +290,13 @@ class SQLiteStorage(ToolStorage):
                 try:
                     tool = self._row_to_tool(row)
                     tools.append(tool)
-                except Exception:
+                except (ValueError, KeyError, TypeError) as e:
+                    # 跳过无效行，记录警告
+                    logger.warning(f"跳过无效的数据库行: {e}")
+                    continue
+                except Exception as e:
+                    # 捕获其他意外错误
+                    logger.error(f"转换数据库行时发生意外错误: {e}")
                     continue
 
             return tools
@@ -409,7 +416,9 @@ class SQLiteStorage(ToolStorage):
                     (self._TABLE_NAME,),
                 )
                 return cursor.fetchone() is not None
-        except Exception:
+        except sqlite3.Error as e:
+            # 数据库错误时记录并返回 False
+            logger.debug(f"检查表存在性时发生数据库错误: {e}")
             return False
 
     # ============================================================

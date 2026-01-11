@@ -16,11 +16,12 @@ from typing import TYPE_CHECKING
 from pydantic import ValidationError
 
 from registrytools.defaults import HOT_TOOL_THRESHOLD, WARM_TOOL_THRESHOLD
-from registrytools.registry.models import ToolMetadata
+from registrytools.registry.models import ToolMetadata, ToolTemperature
 from registrytools.storage.base import ToolStorage
 
+# TYPE_CHECKING 块保留用于其他前向引用
 if TYPE_CHECKING:
-    from registrytools.registry.models import ToolTemperature
+    pass
 
 logger = logging.getLogger(__name__)
 
@@ -206,7 +207,7 @@ class JSONStorage(ToolStorage):
 
     def load_by_temperature(
         self,
-        temperature: "ToolTemperature",
+        temperature: ToolTemperature,
         limit: int | None = None,
     ) -> list[ToolMetadata]:
         """
@@ -224,14 +225,14 @@ class JSONStorage(ToolStorage):
         # 加载所有工具
         all_tools = self.load_all()
 
-        # 根据温度过滤
-        if temperature.value == "hot":
+        # 根据温度过滤（使用枚举比较）
+        if temperature == ToolTemperature.HOT:
             filtered = [t for t in all_tools if t.use_frequency >= HOT_TOOL_THRESHOLD]
-        elif temperature.value == "warm":
+        elif temperature == ToolTemperature.WARM:
             filtered = [
                 t for t in all_tools if WARM_TOOL_THRESHOLD <= t.use_frequency < HOT_TOOL_THRESHOLD
             ]
-        else:  # cold
+        else:  # ToolTemperature.COLD
             filtered = [t for t in all_tools if t.use_frequency < WARM_TOOL_THRESHOLD]
 
         # 应用限制
