@@ -83,6 +83,94 @@ class TestGetAPIKeyFromContext:
         result = _get_api_key_from_context()
         assert result == test_key
 
+    def test_returns_api_key_from_x_api_key_header(self, monkeypatch):
+        """从 HTTP X-API-Key 请求头获取 API Key"""
+        from unittest.mock import MagicMock, patch
+
+        test_key = "rtk_test_http_123456789abcdef"
+        monkeypatch.delenv("REGISTRYTOOLS_API_KEY", raising=False)
+
+        # 模拟 FastMCP HTTP 请求
+        mock_request = MagicMock()
+        mock_request.headers = MagicMock()
+        mock_request.headers.get = MagicMock(return_value=test_key)
+
+        # Patch fastmcp.server.dependencies.get_http_request（动态导入的位置）
+        with patch("fastmcp.server.dependencies.get_http_request", return_value=mock_request):
+            result = _get_api_key_from_context()
+            assert result == test_key
+
+    def test_returns_api_key_from_authorization_bearer_header(self, monkeypatch):
+        """从 HTTP Authorization Bearer 请求头获取 API Key"""
+        from unittest.mock import MagicMock, patch
+
+        test_key = "rtk_test_bearer_987654321fedcba"
+        monkeypatch.delenv("REGISTRYTOOLS_API_KEY", raising=False)
+
+        # 模拟 FastMCP HTTP 请求
+        mock_request = MagicMock()
+        mock_request.headers = MagicMock()
+        # X-API-Key 返回 None，触发 Authorization 检查
+        mock_request.headers.get = MagicMock(
+            side_effect=lambda key: None if key == "X-API-Key" else f"Bearer {test_key}"
+        )
+
+        # Patch fastmcp.server.dependencies.get_http_request（动态导入的位置）
+        with patch("fastmcp.server.dependencies.get_http_request", return_value=mock_request):
+            result = _get_api_key_from_context()
+            assert result == test_key
+
+    def test_x_api_key_header_takes_precedence_over_env_var(self, monkeypatch):
+        """HTTP 请求头优先于环境变量"""
+        from unittest.mock import MagicMock, patch
+
+        http_key = "rtk_http_header_key"
+        env_key = "rtk_env_var_key"
+        monkeypatch.setenv("REGISTRYTOOLS_API_KEY", env_key)
+
+        # 模拟 FastMCP HTTP 请求
+        mock_request = MagicMock()
+        mock_request.headers = MagicMock()
+        mock_request.headers.get = MagicMock(return_value=http_key)
+
+        # Patch fastmcp.server.dependencies.get_http_request（动态导入的位置）
+        with patch("fastmcp.server.dependencies.get_http_request", return_value=mock_request):
+            result = _get_api_key_from_context()
+            # HTTP 请求头应该优先
+            assert result == http_key
+
+    def test_fallback_to_env_var_when_no_http_request(self, monkeypatch):
+        """无 HTTP 请求时回退到环境变量"""
+        from unittest.mock import patch
+
+        test_key = "rtk_fallback_to_env"
+        monkeypatch.setenv("REGISTRYTOOLS_API_KEY", test_key)
+
+        # 模拟 get_http_request 抛出 RuntimeError（无 HTTP 请求上下文）
+        # Patch fastmcp.server.dependencies.get_http_request（动态导入的位置）
+        with patch(
+            "fastmcp.server.dependencies.get_http_request",
+            side_effect=RuntimeError("No HTTP request"),
+        ):
+            result = _get_api_key_from_context()
+            assert result == test_key
+
+    def test_graceful_degradation_when_fastmcp_unavailable(self, monkeypatch):
+        """FastMCP 不可用时优雅降级到环境变量"""
+        from unittest.mock import patch
+
+        test_key = "rtk_graceful_degradation"
+        monkeypatch.setenv("REGISTRYTOOLS_API_KEY", test_key)
+
+        # 模拟 ImportError（FastMCP 不可用）
+        # Patch fastmcp.server.dependencies.get_http_request（动态导入的位置）
+        with patch(
+            "fastmcp.server.dependencies.get_http_request",
+            side_effect=ImportError("No module named 'fastmcp'"),
+        ):
+            result = _get_api_key_from_context()
+            assert result == test_key
+
 
 class TestCheckAuth:
     """测试 _check_auth 函数"""

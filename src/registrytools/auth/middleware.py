@@ -178,7 +178,9 @@ class APIKeyAuthMiddleware:
 
         if not result.success:
             error_msg = result.error or "Authentication failed"
-            if result.error == "API Key not found" or "Invalid API Key format" in error_msg:
+            if result.error == "API Key not found" or (
+                result.error and "Invalid API Key format" in result.error
+            ):
                 raise APIKeyInvalid(error_msg)
             elif "expired" in error_msg:
                 raise APIKeyExpired(error_msg)
@@ -187,8 +189,10 @@ class APIKeyAuthMiddleware:
             else:
                 raise APIKeyInvalid(error_msg)
 
-        # result.success 为 True，key_metadata 不为 None
-        return result.key_metadata  # type: ignore
+        # 认证成功时 key_metadata 必须存在
+        # 使用 assert 帮助类型检查器理解这个不变式
+        assert result.key_metadata is not None, "key_metadata must be present when success=True"
+        return result.key_metadata
 
     def authenticate_from_header(
         self,
