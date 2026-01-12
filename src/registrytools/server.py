@@ -22,7 +22,7 @@ from registrytools.auth.middleware import (
     APIKeyInvalid,
     APIKeyPermission,
 )
-from registrytools.registry.models import SearchMethod, ToolMetadata
+from registrytools.registry.models import SearchMethod, StorageBackend, ToolMetadata
 from registrytools.registry.registry import ToolRegistry
 from registrytools.search.bm25_search import BM25Search
 from registrytools.search.regex_search import RegexSearch
@@ -54,23 +54,40 @@ def _get_api_key_from_context() -> str | None:
     """
     从请求上下文中获取 API Key
 
-    FastMCP 在 HTTP 模式下通过环境变量或请求上下文传递 API Key。
+    FastMCP 在 HTTP 模式下通过请求上下文传递 API Key。
     此函数尝试从多个来源获取 API Key：
 
-    1. 环境变量 REGISTRYTOOLS_API_KEY（用于测试）
-    2. FastMCP 请求上下文（如果可用）
+    1. HTTP 请求头（X-API-Key 或 Authorization: Bearer）
+    2. 环境变量 REGISTRYTOOLS_API_KEY（用于测试）
 
     Returns:
         API Key 字符串，如果未找到则返回 None
     """
-    # 优先从环境变量获取（用于测试和 CLI 场景）
+    # 尝试从 HTTP 请求头获取（FastMCP HTTP 模式）
+    try:
+        from fastmcp.server.dependencies import get_http_request
+
+        request = get_http_request()
+        # FastMCP 使用 Starlette Request，支持 headers 属性
+        headers = request.headers
+
+        # 尝试从 X-API-Key 头获取
+        api_key = headers.get("X-API-Key")
+        if api_key:
+            return api_key
+
+        # 尝试从 Authorization 头获取（Bearer Token 格式）
+        auth_header = headers.get("Authorization")
+        if auth_header and auth_header.startswith("Bearer "):
+            return auth_header[7:].strip()  # 移除 "Bearer " 前缀
+    except (ImportError, RuntimeError):
+        # FastMCP 不可用或当前没有 HTTP 请求上下文
+        pass
+
+    # 回退到环境变量（用于测试和 CLI 场景）
     api_key = os.getenv("REGISTRYTOOLS_API_KEY")
     if api_key:
         return api_key
-
-    # TODO: 从 FastMCP 请求上下文获取（需要进一步研究 FastMCP API）
-    # 目前 FastMCP 可能不直接暴露请求上下文到工具函数
-    # 如果需要完整的 HTTP 认证支持，可能需要使用 FastMCP 的中间件机制
 
     return None
 
@@ -210,6 +227,94 @@ def get_default_search_method() -> SearchMethod:
     # 使用默认值
     logger.debug(f"使用默认搜索方法: {SearchMethod.BM25.value}")
     return SearchMethod.BM25
+
+
+def get_default_storage_backend() -> StorageBackend:
+    """
+    获取默认存储后端
+
+    从环境变量 REGISTRYTOOLS_STORAGE_BACKEND 读取存储后端类型，
+    如果未设置或无效，则使用默认值 JSON。
+
+    优先级：
+        1. 环境变量 REGISTRYTOOLS_STORAGE_BACKEND（有效值）
+        2. 默认值 JSON
+
+    Returns:
+        默认存储后端枚举值
+
+    Examples:
+        >>> # 环境变量未设置
+        >>> get_default_storage_backend()
+        <StorageBackend.JSON: 'json'>
+
+        >>> # 环境变量设置为有效值
+        >>> get_default_storage_backend()  # REGISTRYTOOLS_STORAGE_BACKEND="sqlite"
+        <StorageBackend.SQLITE: 'sqlite'>
+
+        >>> # 环境变量设置为无效值（回退到默认）
+        >>> get_default_storage_backend()  # REGISTRYTOOLS_STORAGE_BACKEND="invalid"
+        <StorageBackend.JSON: 'json'>
+
+    Note:
+        JSON 存储适合小规模工具集（< 1000 工具），SQLite 存储适合大规模工具集（> 1000 工具）。
+    """
+    backend_str = os.getenv("REGISTRYTOOLS_STORAGE_BACKEND", "").strip().lower()
+
+    if backend_str:
+        try:
+            backend = StorageBackend(backend_str)
+            logger.info(f"使用存储后端: {backend.value}")
+            return backend
+        except ValueError:
+            logger.warning(
+                f"无效的存储后端: {backend_str}，"
+                f"支持的后端: {[m.value for m in StorageBackend]}，"
+                f"使用默认值: {StorageBackend.JSON.value}"
+            )
+
+    # 使用默认值
+    logger.debug(f"使用默认存储后端: {StorageBackend.JSON.value}")
+    return StorageBackend.JSON
+
+
+def create_storage(
+    backend: StorageBackend,
+    data_path: Path,
+) -> ToolStorage:
+    """
+    创建存储实例
+
+    根据存储后端类型创建对应的存储实例。
+
+    Args:
+        backend: 存储后端类型
+        data_path: 数据目录路径
+
+    Returns:
+        存储实例
+
+    Raises:
+        ValueError: 不支持的存储后端类型
+
+    Examples:
+        >>> from pathlib import Path
+        >>> # 创建 JSON 存储
+        >>> storage = create_storage(StorageBackend.JSON, Path("~/.RegistryTools"))
+        >>> isinstance(storage, JSONStorage)
+        True
+
+        >>> # 创建 SQLite 存储
+        >>> storage = create_storage(StorageBackend.SQLITE, Path("~/.RegistryTools"))
+        >>> isinstance(storage, SQLiteStorage)
+        True
+    """
+    if backend == StorageBackend.SQLITE:
+        return SQLiteStorage(data_path / "tools.db")
+    elif backend == StorageBackend.JSON:
+        return JSONStorage(data_path / "tools.json")
+    else:
+        raise ValueError(f"不支持的存储后端: {backend}")
 
 
 def _register_mcp_tools(

@@ -323,6 +323,7 @@ registry-tools --data-path /custom/path
 - `REGISTRYTOOLS_TRANSPORT` - 传输协议（默认: `stdio`）
 - `REGISTRYTOOLS_LOG_LEVEL` - 日志级别（默认: `INFO`）
 - `REGISTRYTOOLS_ENABLE_AUTH` - 启用 API Key 认证（默认: `false`）
+- `REGISTRYTOOLS_STORAGE_BACKEND` - 存储后端类型（默认: `json`）
 
 **配置优先级**: 环境变量 > CLI 参数 > 默认值
 

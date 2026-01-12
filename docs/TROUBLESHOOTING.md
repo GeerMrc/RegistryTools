@@ -670,6 +670,102 @@ assert tool["name"] == "github.create_pull_request"
 assert tool["category"] == "github"
 ```
 
+### 问题: 存储后端切换后数据丢失
+
+**症状**: 切换存储后端后找不到之前注册的工具。
+
+**原因**: JSON 和 SQLite 使用不同的存储文件，切换后需要迁移数据。
+
+**解决方案**:
+
+**从 JSON 迁移到 SQLite**:
+```python
+from pathlib import Path
+from registrytools.storage import JSONStorage, SQLiteStorage
+
+# 1. 从 JSON 加载工具
+json_storage = JSONStorage(Path("~/.RegistryTools/tools.json"))
+tools = json_storage.load_all()
+
+# 2. 保存到 SQLite
+sqlite_storage = SQLiteStorage(Path("~/.RegistryTools/tools.db"))
+sqlite_storage.save_many(tools)
+
+print(f"已迁移 {len(tools)} 个工具到 SQLite 存储")
+```
+
+**从 SQLite 迁移到 JSON**:
+```python
+# 1. 从 SQLite 加载工具
+sqlite_storage = SQLiteStorage(Path("~/.RegistryTools/tools.db"))
+tools = sqlite_storage.load_all()
+
+# 2. 保存到 JSON
+json_storage = JSONStorage(Path("~/.RegistryTools/tools.json"))
+json_storage.save_many(tools)
+
+print(f"已迁移 {len(tools)} 个工具到 JSON 存储")
+```
+
+**使用迁移工具**:
+```bash
+# 运行交互式迁移工具
+python examples/storage_migration.py
+```
+
+### 问题: SQLite 存储性能不如预期
+
+**症状**: 使用 SQLite 后性能没有明显提升。
+
+**诊断**:
+```bash
+# 检查工具数量
+ls -la ~/.RegistryTools/
+# 如果工具数量 < 100，JSON 可能更快
+```
+
+**解决方案**:
+
+**1. 使用正确的场景**:
+- 工具数量 < 1000: 使用 JSON（默认）
+- 工具数量 > 1000: 使用 SQLite
+
+**2. 启用 WAL 模式**（SQLite 默认启用）:
+```python
+from registrytools.storage.sqlite_storage import SQLiteStorage
+
+storage = SQLiteStorage(path)
+# WAL 模式已默认启用，提供更好的并发性能
+```
+
+**3. 检查数据库文件大小**:
+```bash
+# 如果数据库文件过大，可能需要清理
+sqlite3 ~/.RegistryTools/tools.db "VACUUM;"
+```
+
+### 问题: 无效的存储后端配置
+
+**症状**:
+```
+ValueError: 无效的存储后端: xxx
+```
+
+**解决方案**:
+
+**使用正确的配置值**:
+```bash
+# ✅ 正确
+export REGISTRYTOOLS_STORAGE_BACKEND=json
+export REGISTRYTOOLS_STORAGE_BACKEND=sqlite
+registry-tools --storage-backend json
+registry-tools --storage-backend sqlite
+
+# ❌ 错误
+export REGISTRYTOOLS_STORAGE_BACKEND=mysq  # 拼写错误
+export REGISTRYTOOLS_STORAGE_BACKEND=postgresql  # 暂不支持
+```
+
 ---
 
 ## 获取帮助

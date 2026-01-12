@@ -533,6 +533,7 @@ Cline 是另一个流行的 VSCode AI 助手。
 | `REGISTRYTOOLS_TRANSPORT` | 传输协议 | `stdio` | `stdio`, `http` |
 | `REGISTRYTOOLS_LOG_LEVEL` | 日志级别 | `INFO` | `DEBUG`, `INFO`, `WARNING`, `ERROR` |
 | `REGISTRYTOOLS_ENABLE_AUTH` | 启用 API Key 认证（仅 HTTP 模式） | `false` | `true`, `false`, `1`, `0`, `yes`, `no` |
+| `REGISTRYTOOLS_STORAGE_BACKEND` | 存储后端类型 | `json` | `json`, `sqlite` |
 | `REGISTRYTOOLS_SEARCH_METHOD` | 默认搜索方法 | `bm25` | `regex`, `bm25`, `embedding` |
 | `REGISTRYTOOLS_DEVICE` | Embedding 模型计算设备 | `cpu` | `cpu`, `gpu:0`, `gpu:1`, `auto` |
 | `REGISTRYTOOLS_DESCRIPTION` | MCP 服务器描述 | 统一的 MCP 工具注册与搜索服务... | 任意有效字符串 |

@@ -109,6 +109,55 @@ class ToolDataGenerator:
 
         return cold_tools + warm_tools + hot_tools
 
+    @staticmethod
+    def generate_xlarge_toolset(count: int = 5000) -> list[ToolMetadata]:
+        """
+        生成超大规模工具集（中大型企业场景）
+
+        介于中等规模和大规模之间的测试场景。
+
+        Args:
+            count: 工具数量，默认 5000
+
+        Returns:
+            工具元数据列表
+        """
+        # 75% 冷工具，20% 温工具，5% 热工具
+        cold_tools = [
+            ToolMetadata(
+                name=f"rare_operation_{i}",
+                description=f"Rare operation number {i} for specific use cases",
+                tags={"rare", f"specialized_{i % 30}"},
+                category=f"category_{i % 40}",
+                use_frequency=0,
+            )
+            for i in range(int(count * 0.75))
+        ]
+
+        warm_tools = [
+            ToolMetadata(
+                name=f"standard_service_{i}",
+                description=f"Standard service {i} for common workflows",
+                tags={"standard", "service", f"type_{i % 12}"},
+                category=f"category_{i % 15}",
+                use_frequency=3 + (i % 7),
+            )
+            for i in range(int(count * 0.20))
+        ]
+
+        hot_tools = [
+            ToolMetadata(
+                name=f"common_{['action', 'operation', 'task'][i % 3]}_{i}",
+                description=f"Commonly used {['action', 'operation', 'task'][i % 3]} for daily work",
+                tags={"common", "popular", "frequent"},
+                category="common",
+                use_frequency=10 + (i % 50),
+            )
+            for i in range(int(count * 0.05))
+        ]
+
+        return cold_tools + warm_tools + hot_tools
+
 
 class TestBM25Performance:
     """BM25 搜索性能测试"""
@@ -127,6 +176,11 @@ class TestBM25Performance:
     def large_toolset(self) -> list[ToolMetadata]:
         """大规模工具集（10000 工具）"""
         return ToolDataGenerator.generate_large_toolset(10000)
+
+    @pytest.fixture
+    def xlarge_toolset(self) -> list[ToolMetadata]:
+        """超大规模工具集（5000 工具）- 中大型企业场景"""
+        return ToolDataGenerator.generate_xlarge_toolset(5000)
 
     @pytest.mark.benchmark(group="indexing", min_rounds=5)
     def test_index_building_small(self, benchmark, small_toolset: list[ToolMetadata]) -> None:
@@ -171,6 +225,20 @@ class TestBM25Performance:
             searcher.index(tools)
 
         benchmark(build_index, large_toolset)
+
+    @pytest.mark.benchmark(group="indexing", min_rounds=4)
+    def test_index_building_xlarge(self, benchmark, xlarge_toolset: list[ToolMetadata]) -> None:
+        """
+        测试超大规模工具集的索引构建性能
+
+        目标: < 10s for 5000 tools
+        """
+        searcher = BM25Search()
+
+        def build_index(tools: list[ToolMetadata]) -> None:
+            searcher.index(tools)
+
+        benchmark(build_index, xlarge_toolset)
 
     @pytest.mark.benchmark(group="searching", min_rounds=10)
     def test_search_performance_warm_small(
@@ -222,6 +290,23 @@ class TestBM25Performance:
             return searcher.search(query, tools, limit)
 
         benchmark(search, "common action 50", large_toolset, 10)
+
+    @pytest.mark.benchmark(group="searching", min_rounds=6)
+    def test_search_performance_warm_xlarge(
+        self, benchmark, xlarge_toolset: list[ToolMetadata]
+    ) -> None:
+        """
+        测试超大规模工具集的搜索性能（热索引）
+
+        目标: < 300ms for 5000 tools
+        """
+        searcher = BM25Search()
+        searcher.index(xlarge_toolset)
+
+        def search(query: str, tools: list[ToolMetadata], limit: int) -> list:
+            return searcher.search(query, tools, limit)
+
+        benchmark(search, "standard service 250", xlarge_toolset, 10)
 
     @pytest.mark.benchmark(group="searching", min_rounds=5)
     def test_search_performance_cold_medium(

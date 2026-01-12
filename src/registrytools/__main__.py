@@ -16,12 +16,13 @@ RegistryTools MCP 服务器入口
     registry-tools api-key delete <key-id>
 
 环境变量:
-    REGISTRYTOOLS_DATA_PATH      数据目录路径 (默认: ~/.RegistryTools)
-    REGISTRYTOOLS_TRANSPORT       传输协议 (stdio/http, 默认: stdio)
-    REGISTRYTOOLS_LOG_LEVEL       日志级别 (DEBUG/INFO/WARNING/ERROR, 默认: INFO)
-    REGISTRYTOOLS_ENABLE_AUTH     启用 API Key 认证 (true/false, 默认: false, 仅 HTTP 模式)
-    REGISTRYTOOLS_SEARCH_METHOD   默认搜索方法 (regex/bm25/embedding, 默认: bm25)
-    REGISTRYTOOLS_DESCRIPTION     MCP 服务器描述 (可选, 默认: 统一的 MCP 工具注册与搜索服务，用于发现和筛选可用工具，提升任务执行工具调用准确性，复杂任务工具调用效率)
+    REGISTRYTOOLS_DATA_PATH        数据目录路径 (默认: ~/.RegistryTools)
+    REGISTRYTOOLS_TRANSPORT         传输协议 (stdio/http, 默认: stdio)
+    REGISTRYTOOLS_LOG_LEVEL         日志级别 (DEBUG/INFO/WARNING/ERROR, 默认: INFO)
+    REGISTRYTOOLS_ENABLE_AUTH       启用 API Key 认证 (true/false, 默认: false, 仅 HTTP 模式)
+    REGISTRYTOOLS_STORAGE_BACKEND   存储后端类型 (json/sqlite, 默认: json)
+    REGISTRYTOOLS_SEARCH_METHOD     默认搜索方法 (regex/bm25/embedding, 默认: bm25)
+    REGISTRYTOOLS_DESCRIPTION       MCP 服务器描述 (可选, 默认: 统一的 MCP 工具注册与搜索服务，用于发现和筛选可用工具，提升任务执行工具调用准确性，复杂任务工具调用效率)
 """
 
 import argparse
@@ -70,11 +71,12 @@ def main() -> None:
   http     Streamable HTTP,用于远程服务部署
 
 环境变量:
-  REGISTRYTOOLS_DATA_PATH      数据目录路径 (默认: ~/.RegistryTools)
-  REGISTRYTOOLS_TRANSPORT       传输协议 (stdio/http, 默认: stdio)
-  REGISTRYTOOLS_LOG_LEVEL       日志级别 (DEBUG/INFO/WARNING/ERROR, 默认: INFO)
-  REGISTRYTOOLS_ENABLE_AUTH     启用 API Key 认证 (true/false, 默认: false, 仅 HTTP 模式)
-  REGISTRYTOOLS_SEARCH_METHOD    默认搜索方法 (regex/bm25/embedding, 默认: bm25)
+  REGISTRYTOOLS_DATA_PATH        数据目录路径 (默认: ~/.RegistryTools)
+  REGISTRYTOOLS_TRANSPORT         传输协议 (stdio/http, 默认: stdio)
+  REGISTRYTOOLS_LOG_LEVEL         日志级别 (DEBUG/INFO/WARNING/ERROR, 默认: INFO)
+  REGISTRYTOOLS_ENABLE_AUTH       启用 API Key 认证 (true/false, 默认: false, 仅 HTTP 模式)
+  REGISTRYTOOLS_STORAGE_BACKEND   存储后端类型 (json/sqlite, 默认: json)
+  REGISTRYTOOLS_SEARCH_METHOD     默认搜索方法 (regex/bm25/embedding, 默认: bm25)
   REGISTRYTOOLS_DESCRIPTION       MCP 服务器描述 (可选, 默认: 统一的 MCP 工具注册与搜索服务，用于发现和筛选可用工具，提升任务执行工具调用准确性，复杂任务工具调用效率)
 
 示例:
@@ -114,6 +116,13 @@ def main() -> None:
         "--enable-auth",
         action="store_true",
         help="启用 API Key 认证 (仅 HTTP 模式, Phase 15)",
+    )
+    parser.add_argument(
+        "--storage-backend",
+        type=str,
+        choices=["json", "sqlite"],
+        default=None,
+        help="存储后端类型 (默认: json)",
     )
     parser.add_argument("--version", action="version", version=f"RegistryTools {__version__}")
 
@@ -193,27 +202,48 @@ def main() -> None:
         logger.warning("STDIO 模式不支持认证，认证将被禁用")
         enable_auth = False
 
+    # 存储后端配置
+    from registrytools.registry.models import StorageBackend
+    from registrytools.server import get_default_storage_backend
+
+    if args.storage_backend:
+        storage_backend = StorageBackend(args.storage_backend)
+        logger.info(f"使用 CLI 指定的存储后端: {storage_backend.value}")
+    else:
+        storage_backend = get_default_storage_backend()
+
     # 确保数据目录存在
     data_path.mkdir(parents=True, exist_ok=True)
 
     # 记录配置信息
     logger.info(f"数据路径: {data_path}")
     logger.info(f"传输协议: {transport}")
+    logger.info(f"存储后端: {storage_backend.value}")
     if transport == "http":
         logger.info(f"API Key 认证: {'启用' if enable_auth else '禁用'}")
 
     # 导入并启动服务器
-    from registrytools.server import create_auth_middleware_for_server, create_server
+    from registrytools.server import (
+        create_auth_middleware_for_server,
+        create_server,
+        create_server_with_sqlite,
+    )
 
     logger.info("正在创建 MCP 服务器...")
 
-    # 根据认证配置创建服务器
+    # 根据认证配置和存储后端创建服务器
     if enable_auth:
         auth_middleware = create_auth_middleware_for_server(data_path)
-        app = create_server(data_path, auth_middleware)
+        if storage_backend == StorageBackend.SQLITE:
+            app = create_server_with_sqlite(data_path, auth_middleware)
+        else:
+            app = create_server(data_path, auth_middleware)
         logger.info("API Key 认证中间件已启用")
     else:
-        app = create_server(data_path)
+        if storage_backend == StorageBackend.SQLITE:
+            app = create_server_with_sqlite(data_path)
+        else:
+            app = create_server(data_path)
         logger.info("API Key 认证中间件未启用")
 
     logger.info("MCP 服务器创建完成")

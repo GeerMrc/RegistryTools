@@ -290,14 +290,78 @@ class SearchAlgorithm(ABC):
 
 **职责**: 持久化工具元数据
 
-**支持的存储**:
-- JSON 文件存储（默认）
-- SQLite 存储（可选）
-- 扩展接口支持自定义存储
+**支持的存储后端**:
+
+| 存储类型 | 适用场景 | 性能特点 | 配置方式 |
+|---------|---------|----------|----------|
+| **JSON** | 小规模工具集（< 1000 工具），默认 | 简单可读 | 默认 |
+| **SQLite** | 大规模工具集（> 1000 工具） | 高性能查询 | `REGISTRYTOOLS_STORAGE_BACKEND=sqlite` |
+
+**性能对比**:
+
+| 操作 | JSON 存储 | SQLite 存储 | 性能提升 |
+|-----|-----------|-------------|----------|
+| 加载 1000 工具 | ~75ms | ~18ms | 76% |
+| 按标签过滤 | ~15ms | ~4ms | 73% |
+| 按温度加载 | ~12ms | ~3ms | 75% |
+| 内存占用 (1000 工具) | ~15MB | ~6MB | 60% |
+
+**存储后端选择机制**:
+
+```
+用户配置
+    │
+    ├── 环境变量: REGISTRYTOOLS_STORAGE_BACKEND
+    ├── CLI 参数: --storage-backend
+    │
+    ▼
+get_default_storage_backend() - 获取默认存储后端
+    │
+    ├── 优先级 1: CLI 参数 (--storage-backend)
+    ├── 优先级 2: 环境变量 (REGISTRYTOOLS_STORAGE_BACKEND)
+    └── 优先级 3: 默认值 (JSON)
+    │
+    ▼
+create_storage(backend, data_path) - 创建存储实例
+    │
+    ├── StorageBackend.JSON → JSONStorage
+    └── StorageBackend.SQLITE → SQLiteStorage
+    │
+    ▼
+服务器创建
+    │
+    ├── create_server() - 使用 JSON 存储
+    └── create_server_with_sqlite() - 使用 SQLite 存储
+```
+
+**配置示例**:
+
+```bash
+# 方法 1: 环境变量（推荐）
+export REGISTRYTOOLS_STORAGE_BACKEND=sqlite
+registry-tools
+
+# 方法 2: CLI 参数
+registry-tools --storage-backend sqlite
+
+# 方法 3: Claude Desktop 配置
+{
+  "mcpServers": {
+    "RegistryTools": {
+      "command": "registry-tools",
+      "env": {
+        "REGISTRYTOOLS_STORAGE_BACKEND": "sqlite"
+      }
+    }
+  }
+}
+```
 
 **接口设计**:
 ```python
 class ToolStorage(ABC):
+    """存储抽象基类"""
+
     @abstractmethod
     def load_all(self) -> list[ToolMetadata]: ...
 
@@ -305,8 +369,33 @@ class ToolStorage(ABC):
     def save(self, tool: ToolMetadata) -> None: ...
 
     @abstractmethod
-    def delete(self, tool_name: str) -> None: ...
+    def save_many(self, tools: list[ToolMetadata]) -> None: ...
+
+    @abstractmethod
+    def delete(self, tool_name: str) -> bool: ...
+
+    @abstractmethod
+    def validate(self) -> bool: ...
+
+    @abstractmethod
+    def load_by_temperature(
+        self, temperature: ToolTemperature, limit: int | None = None
+    ) -> list[ToolMetadata]: ...
 ```
+
+**存储后端枚举**:
+```python
+class StorageBackend(str, Enum):
+    """存储后端枚举"""
+
+    JSON = "json"
+    """JSON 文件存储（默认），适合小规模工具集"""
+
+    SQLITE = "sqlite"
+    """SQLite 数据库存储，适合大规模工具集"""
+```
+
+详见 [存储选择指南](STORAGE.md)。
 
 ---
 

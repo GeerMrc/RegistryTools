@@ -118,6 +118,59 @@ registry-tools --transport http --port 8000 --path /api/mcp
 }
 ```
 
+### 存储后端选择
+
+RegistryTools 支持两种存储后端用于持久化工具元数据：
+
+| 存储类型 | 适用场景 | 配置方式 |
+|---------|---------|----------|
+| **JSON** | 小规模工具集（< 1000 工具），默认 | `registry-tools` |
+| **SQLite** | 大规模工具集（> 1000 工具），高性能 | `export REGISTRYTOOLS_STORAGE_BACKEND=sqlite` |
+
+**默认行为**：使用 JSON 文件存储，适合大多数场景。
+
+**何时使用 SQLite**：
+- 工具数量超过 1000 个
+- 需要高性能查询和过滤
+- 需要支持并发访问
+- 需要 ACID 事务保证
+
+**环境变量配置**：
+
+```bash
+# 使用 SQLite 存储
+export REGISTRYTOOLS_STORAGE_BACKEND=sqlite
+registry-tools
+
+# 或使用 CLI 参数
+registry-tools --storage-backend sqlite
+```
+
+**完整配置示例**：
+
+```json
+{
+  "mcpServers": {
+    "RegistryTools": {
+      "command": "registry-tools",
+      "env": {
+        "REGISTRYTOOLS_STORAGE_BACKEND": "sqlite"
+      }
+    }
+  }
+}
+```
+
+**性能对比**：
+
+| 操作 | JSON 存储 | SQLite 存储 |
+|-----|-----------|-------------|
+| 加载 1000 工具 | ~75ms | ~18ms (76% 提升) |
+| 按标签过滤 | ~15ms | ~4ms (73% 提升) |
+| 内存占用 | ~15MB | ~6MB (60% 减少) |
+
+详见 [存储选择指南](docs/STORAGE.md)。
+
 ### fastmcp.json 配置
 
 使用 `fastmcp.json` 进行声明式配置 (推荐):
@@ -334,6 +387,7 @@ RegistryTools 支持灵活的配置方式。完整配置说明请参见 [配置�
 | `REGISTRYTOOLS_LOG_LEVEL` | 日志级别 | `INFO` | `DEBUG`, `INFO`, `WARNING`, `ERROR` |
 | `REGISTRYTOOLS_ENABLE_AUTH` | 启用 API Key 认证 | `false` | `true`, `false`, `1`, `0`, `yes`, `no` |
 | `REGISTRYTOOLS_SEARCH_METHOD` | 默认搜索方法 | `bm25` | `regex`, `bm25`, `embedding` |
+| `REGISTRYTOOLS_STORAGE_BACKEND` | 存储后端类型 | `json` | `json`, `sqlite` |
 | `REGISTRYTOOLS_DEVICE` | Embedding 模型计算设备 | `cpu` | `cpu`, `gpu:0`, `gpu:1`, `auto` |
 | `REGISTRYTOOLS_DESCRIPTION` | MCP 服务器描述 | 统一的 MCP 工具注册与搜索服务... | 任意有效字符串 |
 
@@ -352,6 +406,7 @@ RegistryTools 支持灵活的配置方式。完整配置说明请参见 [配置�
         "REGISTRYTOOLS_LOG_LEVEL": "INFO",
         "REGISTRYTOOLS_ENABLE_AUTH": "false",
         "REGISTRYTOOLS_SEARCH_METHOD": "bm25",
+        "REGISTRYTOOLS_STORAGE_BACKEND": "json",
         "REGISTRYTOOLS_DEVICE": "cpu",
         "REGISTRYTOOLS_DESCRIPTION": "统一的 MCP 工具注册与搜索服务，用于发现和筛选可用工具，提升任务执行工具调用准确性，复杂任务工具调用效率"
       }
@@ -371,6 +426,7 @@ claude mcp add-json "RegistryTools" '{
     "REGISTRYTOOLS_LOG_LEVEL": "INFO",
     "REGISTRYTOOLS_ENABLE_AUTH": "false",
     "REGISTRYTOOLS_SEARCH_METHOD": "bm25",
+    "REGISTRYTOOLS_STORAGE_BACKEND": "json",
     "REGISTRYTOOLS_DEVICE": "cpu",
     "REGISTRYTOOLS_DESCRIPTION": "统一的 MCP 工具注册与搜索服务，用于发现和筛选可用工具，提升任务执行工具调用准确性，复杂任务工具调用效率"
   }

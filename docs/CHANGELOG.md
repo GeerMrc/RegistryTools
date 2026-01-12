@@ -40,6 +40,49 @@
 
 ## [Unreleased]
 
+### 新增
+- **Phase 41 存储后端选择功能** (2026-01-11)
+  - 新增 `REGISTRYTOOLS_STORAGE_BACKEND` 环境变量，支持选择存储后端类型（json/sqlite）
+  - 新增 `--storage-backend` CLI 参数，支持命令行选择存储后端
+  - 新增 `StorageBackend` 枚举类型，提供类型安全的存储后端选择
+  - 新增 `get_default_storage_backend()` 函数，从环境变量读取默认存储后端
+  - 新增 `create_storage()` 工厂函数，根据配置创建对应的存储实例
+  - 默认使用 JSON 存储，保持向后兼容性
+
+### 文档
+- **新增存储选择指南** (2026-01-11)
+  - 新建 `docs/STORAGE.md` (~300 行)，提供完整的存储后端选择指南
+  - 包含 JSON vs SQLite 对比、性能数据、配置方法、数据迁移指南
+- **更新配置文档** (2026-01-11)
+  - 更新 `docs/CONFIGURATION.md` 添加 `REGISTRYTOOLS_STORAGE_BACKEND` 环境变量说明
+  - 更新 `docs/CONFIGURATION.md` 添加 `--storage-backend` CLI 参数说明
+  - 更新 `docs/CLAUDE_CONFIG.md` 添加存储后端环境变量说明
+  - 更新 `docs/IDE_CONFIG.md` 添加存储后端环境变量说明
+- **更新用户文档** (2026-01-11)
+  - 更新 `docs/USER_GUIDE.md` 添加存储后端环境变量到快速参考
+  - 更新 `docs/API.md` 添加存储后端选择章节和 Python API 配置示例
+  - 更新 `README.md` 添加存储后端选择章节到快速开始部分
+- **更新技术文档** (2026-01-11)
+  - 更新 `docs/ARCHITECTURE.md` 存储层设计部分，添加存储后端选择机制说明
+  - 更新 `docs/TROUBLESHOOTING.md` 添加存储相关问题解决方案
+  - 更新 `docs/BEST_PRACTICES.md` 添加存储选择最佳实践
+  - 更新 `docs/INSTALLATION.md` 添加存储后端部署配置说明
+
+### 示例
+- **新增 SQLite 使用示例** (2026-01-11)
+  - 新建 `examples/sqlite_usage.py`，演示如何使用 SQLite 存储后端
+  - 包含按温度加载、批量保存、事务保证等示例
+- **新增存储迁移示例** (2026-01-11)
+  - 新建 `examples/storage_migration.py`，演示如何在 JSON 和 SQLite 之间迁移数据
+  - 提供交互式迁移工具，支持双向迁移
+
+### 性能
+- **SQLite 存储性能优势** (2026-01-11)
+  - 加载 1000 工具：~18ms（比 JSON 快 76%）
+  - 按标签过滤：~4ms（比 JSON 快 73%）
+  - 按温度加载：~3ms（比 JSON 快 75%）
+  - 内存占用：~6MB（比 JSON 少 60%）
+
 ---
 
 ## [0.2.0] - 2026-01-10

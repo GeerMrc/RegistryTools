@@ -450,6 +450,7 @@ class ToolSearchResult(BaseModel):
 - `REGISTRYTOOLS_TRANSPORT` - 传输协议（默认: `stdio`）
 - `REGISTRYTOOLS_LOG_LEVEL` - 日志级别（默认: `INFO`）
 - `REGISTRYTOOLS_ENABLE_AUTH` - 启用 API Key 认证（默认: `false`）
+- `REGISTRYTOOLS_STORAGE_BACKEND` - 存储后端类型（默认: `json`）
 
 **配置优先级**: 环境变量 > CLI 参数 > 默认值
 
@@ -471,7 +472,7 @@ class ToolSearchResult(BaseModel):
 from pathlib import Path
 from registrytools.server import create_server, create_server_with_sqlite
 
-# 使用 JSON 存储
+# 使用 JSON 存储（默认）
 mcp_server = create_server(Path("/path/to/data"))
 
 # 使用 SQLite 存储
@@ -480,6 +481,33 @@ mcp_server = create_server_with_sqlite(Path("/path/to/data"))
 # 运行服务器
 mcp_server.run()
 ```
+
+### 存储后端选择
+
+**环境变量配置**:
+```bash
+# 使用 SQLite 存储
+export REGISTRYTOOLS_STORAGE_BACKEND=sqlite
+registry-tools
+
+# 使用 CLI 参数
+registry-tools --storage-backend sqlite
+```
+
+**Python API 配置**:
+```python
+from pathlib import Path
+from registrytools.server import create_server_with_sqlite
+
+# 使用 SQLite 存储
+app = create_server_with_sqlite(Path("~/.RegistryTools"))
+app.run()
+```
+
+**存储后端选择建议**:
+- 工具数量 < 1000: 使用 `json`（默认）
+- 工具数量 > 1000: 使用 `sqlite`
+- 详见 [存储选择指南](STORAGE.md)
 
 ### ToolRegistry
 

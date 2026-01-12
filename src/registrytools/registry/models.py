@@ -44,6 +44,20 @@ class ToolTemperature(str, Enum):
     """冷工具: 低频使用，延迟加载"""
 
 
+class StorageBackend(str, Enum):
+    """存储后端枚举"""
+
+    JSON = "json"
+    """JSON 文件存储（默认），适合小规模工具集（< 1000 工具）"""
+
+    SQLITE = "sqlite"
+    """SQLite 数据库存储，适合大规模工具集（> 1000 工具）"""
+
+    # 未来可扩展
+    # POSTGRES = "postgres"
+    # REDIS = "redis"
+
+
 class ToolMetadata(BaseModel):
     """
     工具元数据模型

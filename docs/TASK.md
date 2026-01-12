@@ -3802,3 +3802,86 @@ tests/test_search_method_config.py::13 passed
 - [x] 提交遵循 Conventional Commits
 
 **Phase 40 状态**: ✅ 已完成
+
+---
+
+## Phase 41: P2 测试覆盖补充完成（2026-01-11）
+
+> **目标**: 补充测试覆盖缺口，提升项目测试覆盖率
+> **触发**: Phase 37 代码质量审核发现测试缺口
+
+### 任务清单
+
+| 任务ID | 任务描述 | 状态 | 完成时间 | 备注 |
+|--------|----------|------|----------|------|
+| TASK-4101 | 创建 HTTP 认证集成测试 | ✅ DONE | 2026-01-11 | test_auth_integration.py |
+| TASK-4102 | 添加大规模性能基准测试 | ✅ DONE | 2026-01-11 | 5000 工具测试 |
+| TASK-4103 | 添加并发访问测试 | ✅ DONE | 2026-01-11 | test_concurrent_access.py |
+| TASK-4104 | 补充错误路径测试 | ✅ DONE | 2026-01-11 | test_error_scenarios.py |
+
+### 详细说明
+
+**P2-1: HTTP 认证集成测试** (TASK-4101):
+- 新增文件: `tests/test_auth_integration.py`
+- 测试类: `TestGetAPIKeyFromContext` (6个测试)
+- 测试类: `TestCheckAuth` (4个测试)
+- 测试类: `TestInputValidation` (4个测试)
+- 测试类: `TestToolRegistration` (3个测试)
+- 测试类: `TestParameterValidation` (7个测试)
+- 测试类: `TestPermissionControl` (4个测试)
+- 测试类: `TestErrorHandling` (3个测试)
+- 测试类: `TestSecurity` (4个测试)
+- 测试类: `TestBoundaryConditions` (4个测试)
+- **总计**: 39 个测试用例，全部通过
+
+**P2-2: 大规模性能基准测试** (TASK-4102):
+- 修改文件: `tests/test_performance.py`
+- 新增方法: `ToolDataGenerator.generate_xlarge_toolset()`
+- 新增测试: `test_index_building_xlarge()` (5000 工具索引)
+- 新增测试: `test_search_performance_warm_xlarge()` (5000 工具搜索)
+- 性能基准:
+  - 5000 工具索引: ~483ms
+  - 5000 工具搜索: ~24ms
+- **总计**: 2 个新测试用例，全部通过
+
+**P2-3: 并发访问测试** (TASK-4103):
+- 新增文件: `tests/test_concurrent_access.py`
+- 测试类: `TestConcurrentRegistryAccess` (6个测试)
+- 测试类: `TestConcurrentStorageAccess` (2个测试)
+- 测试类: `TestConcurrentSearcherAccess` (1个测试)
+- 测试类: `TestRaceConditions` (2个测试)
+- **总计**: 11 个测试用例，全部通过
+
+**P2-4: 错误路径测试** (TASK-4104):
+- 新增文件: `tests/test_error_scenarios.py`
+- 测试类: `TestRegistryErrorPaths` (8个测试)
+- 测试类: `TestStorageErrorPaths` (4个测试)
+- 测试类: `TestAuthErrorPaths` (9个测试)
+- 测试类: `TestSearcherErrorPaths` (4个测试)
+- 测试类: `TestEdgeCases` (6个测试)
+- 测试类: `TestConcurrentErrorScenarios` (1个测试)
+- **总计**: 31 个测试用例，全部通过
+
+### 测试结果汇总
+
+**新增测试数量**: 83 个测试用例
+- P2-1: 39 个测试
+- P2-2: 2 个测试
+- P2-3: 11 个测试
+- P2-4: 31 个测试
+
+**测试覆盖范围**:
+- HTTP Header 认证流程（X-API-Key, Authorization Bearer）
+- 并发读取、搜索、更新、注册操作
+- 大规模工具集性能（5000 工具）
+- 错误路径和边界条件
+- 竞争条件检测
+
+### 验收标准
+
+- [x] 所有 P2 测试已创建
+- [x] 所有测试通过（83个测试用例）
+- [x] 代码覆盖率保持 >80%
+- [x] 遵循开发流程规范
+
+**Phase 41 状态**: ✅ 已完成

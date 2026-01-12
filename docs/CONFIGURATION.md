@@ -83,6 +83,7 @@ registry-tools --port 8000  # 实际使用 9000
 | `REGISTRYTOOLS_TRANSPORT` | 传输协议 | `stdio` | `stdio`, `http` |
 | `REGISTRYTOOLS_LOG_LEVEL` | 日志级别 | `INFO` | `DEBUG`, `INFO`, `WARNING`, `ERROR` |
 | `REGISTRYTOOLS_ENABLE_AUTH` | 启用 API Key 认证 | `false` | `true`, `false`, `1`, `0`, `yes`, `no` |
+| `REGISTRYTOOLS_STORAGE_BACKEND` | 存储后端类型 | `json` | `json`, `sqlite` |
 | `REGISTRYTOOLS_SEARCH_METHOD` | 默认搜索方法 | `bm25` | `regex`, `bm25`, `embedding` |
 | `REGISTRYTOOLS_DEVICE` | Embedding 模型计算设备 | `cpu` | `cpu`, `gpu:0`, `gpu:1`, `auto` |
 | `REGISTRYTOOLS_DESCRIPTION` | MCP 服务器描述 | 统一的 MCP 工具注册与搜索服务，用于发现和筛选可用工具，提升任务执行工具调用准确性，复杂任务工具调用效率 | 任意有效字符串 |
@@ -168,6 +169,59 @@ registry-tools
 export REGISTRYTOOLS_ENABLE_AUTH=true
 registry-tools --transport http --port 8000
 ```
+
+#### REGISTRYTOOLS_STORAGE_BACKEND
+
+指定工具元数据存储后端类型。
+
+**默认值**: `json`
+
+**可选值**:
+- `json`: JSON 文件存储（默认），适合小规模工具集（< 1000 工具）
+- `sqlite`: SQLite 数据库存储，适合大规模工具集（> 1000 工具）
+
+**选择建议**:
+- 工具数量 < 1000: 使用 `json`（默认）
+- 工具数量 > 1000: 使用 `sqlite`
+- 需要高性能查询: 使用 `sqlite`
+- 需要人类可读: 使用 `json`
+
+**性能对比**:
+| 特性 | JSON 存储 | SQLite 存储 |
+|------|-----------|-------------|
+| 文件格式 | JSON 文件 | SQLite 数据库 |
+| 数据结构 | 字典嵌套 | 关系型表 |
+| 适用规模 | < 1000 工具 | > 1000 工具 |
+| 查询性能 | 全量加载 | SQL 优化 |
+| 并发支持 | 文件锁 | WAL 模式 |
+| 可读性 | 人类可读 | 二进制格式 |
+| 数据文件 | `tools.json` | `tools.db` |
+
+**目录结构**:
+```
+~/.RegistryTools/
+├── tools.json              # JSON 存储文件（默认）
+├── tools.db                # SQLite 存储文件（使用 SQLite 时）
+└── api_keys.db             # API Key 数据库（如果启用认证）
+```
+
+**示例**:
+```bash
+# 使用 SQLite 存储
+export REGISTRYTOOLS_STORAGE_BACKEND=sqlite
+registry-tools
+
+# 使用 CLI 参数
+registry-tools --storage-backend sqlite
+
+# 使用环境变量和 CLI 参数组合（CLI 参数优先级更高）
+export REGISTRYTOOLS_STORAGE_BACKEND=json
+registry-tools --storage-backend sqlite  # 实际使用 sqlite
+```
+
+**注意事项**:
+- 存储后端切换后，需要手动迁移数据
+- 详见 [存储迁移指南](STORAGE.md#数据迁移)
 
 #### REGISTRYTOOLS_DESCRIPTION
 
@@ -336,6 +390,7 @@ registry-tools
 | `--port` | integer | `8000` | HTTP 端口 |
 | `--path` | string | `/` | HTTP 路径前缀 |
 | `--enable-auth` | flag | `false` | 启用 API Key 认证 |
+| `--storage-backend` | string | `json` | 存储后端: `json` 或 `sqlite` |
 | `--version` | flag | - | 显示版本信息 |
 
 ### API Key 管理参数

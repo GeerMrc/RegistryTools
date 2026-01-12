@@ -254,11 +254,18 @@ class SQLiteStorage(ToolStorage):
 
         Args:
             temperature: 温度级别 (HOT/WARM/COLD)
-            limit: 加载数量限制
+            limit: 加载数量限制（必须为非负整数）
 
         Returns:
             工具元数据列表
+
+        Raises:
+            ValueError: 如果 limit 为负数
         """
+        # 输入验证：limit 必须为非负整数
+        if limit is not None and limit < 0:
+            raise ValueError(f"limit must be non-negative, got {limit}")
+
         self._ensure_initialized()
 
         try:
@@ -266,6 +273,7 @@ class SQLiteStorage(ToolStorage):
                 cursor = conn.cursor()
 
                 # 根据温度构建 WHERE 子句
+                # 注意：where_clause 基于枚举值和常量阈值构建，不涉及用户输入
                 if temperature.value == "hot":
                     where_clause = f"use_frequency >= {HOT_TOOL_THRESHOLD}"
                 elif temperature.value == "warm":
@@ -277,6 +285,7 @@ class SQLiteStorage(ToolStorage):
                     where_clause = f"use_frequency < {WARM_TOOL_THRESHOLD}"
 
                 # 构建 SQL 查询
+                # 注意：表名是类常量，where_clause 是内部构建，limit 已验证为非负整数
                 sql = f"SELECT * FROM {self._TABLE_NAME} WHERE {where_clause}"
                 if limit:
                     sql += f" LIMIT {limit}"
